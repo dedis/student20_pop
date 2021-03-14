@@ -344,7 +344,7 @@ type CastVoteData struct {
 	LaoID      []byte    `json:"lao"`
 	ElectionID []byte    `json:"election"`
 	CreatedAt  Timestamp `json:"created_at"`
-	Votes      []Vote    `json:"questions"`
+	Votes      []Vote    `json:"votes"`
 }
 
 // ElectionEndData represents the message data used for ending an election.

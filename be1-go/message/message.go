@@ -265,7 +265,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 }
 func (m *Message) parseElectionData(action ElectionAction, data[]byte) error{
 	switch action {
-	case SetupElectionAction:
+	case ElectionSetupAction:
 		setup := &ElectionSetupData{}
 
 		err := json.Unmarshal(data,setup)
@@ -283,14 +283,32 @@ func (m *Message) parseElectionData(action ElectionAction, data[]byte) error{
 			return xerrors.Errorf("failed to parse cast vote data : %v", err)
 		}
 		// TODO: update votes if same client sent multiple votes
-		if endElection := /* TODO: find a way to add*/ ;
+		if endElection := /* find end election*/ ;
 		cast.CreatedAt < endElection{
-		//TODO: how should we deny it, return an error?
+			//TODO: how should we deny it, return an error?
 			return xerrors.Errorf("Vote submitted too late")
 		}
 		m.Data = cast
 		return  nil
+	case ElectionEndAction:
+		end := &ElectionEndData{}
+		err:= json.Unmarshal(data, end)
+
+		if err!= nil {
+			return xerrors.Errorf("failed to parse end of election data : %v, err")
+		}
+		m.Data = end
+		return nil
+	case ElectionResultAction:
+		result := &ElectionResultData{}
+		err := json.Unmarshal(data, result)
+
+		if err != nil{
+			return xerrors.Errorf("failed to parse result of election data: %v,err")
+		}
+		m.Data = result
+		return nil
 	default:
-		return xerrors.Errorf("invalid action : %s", action)
+		return xerrors.Errorf("invalid election action : %s", action)
 	}
 }
