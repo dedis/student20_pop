@@ -105,10 +105,3 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	return nil
 }
 
-
-func (c *baseChannel) Publish(publish message.Publish) error{
-	if err := c.VerifyPublishMessage(publish); err != nil{
-		return err
-	}
-
-}

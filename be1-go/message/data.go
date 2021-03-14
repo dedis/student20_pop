@@ -274,37 +274,100 @@ type WitnessMessageData struct {
 	Signature Signature `json:"signature"`
 }
 // ADED FOR ELECTION ************************************
-type ElectionDataAction DataAction
+// ElectionAction represents the action associated with an "election" data message.
+type ElectionAction DataAction
 
-var(
-	SetupAction ElectionDataAction = "setup"
-	CastVoteAction ElectionDataAction = "cast_vote"
+var (
+	// ElectionSetupAction represents the action associated with the data for setting up an election.
+	ElectionSetupAction ElectionAction = "setup"
+
+	// CastVoteAction represents the action associated with the data for casting a vote in
+	// an election.
+	CastVoteAction ElectionAction = "cast_vote"
+
+	// ElectionEndAction represents the action associated with the data for ending an election.
+	ElectionEndAction ElectionAction = "end"
+
+	// ElectionResultAction represents the action associated with the data for the tallying of
+	// an election.
+	ElectionResultAction ElectionAction = "result"
 )
-//Data type for cast votes
-type CastVoteData struct {
-	*GenericData
-	LAOId []byte `json:"lao"`
-	ElectionId []byte `json:"election"`
-	CreatedAt Timestamp `json:creation_at`
-	Votes  //TODO: check what to put here `json:"votes"`
 
+// VotingMethod represents the method used for a particular vote.
+type VotingMethod string
 
+var (
+	// PluralityMethod represents the relative majority voting method.
+	PluralityMethod VotingMethod = "Plurality"
+	// ApprovalMethod represents a single-winner electoral system where each voter may
+	// approve any number of ballot options.
+	ApprovalMethod VotingMethod = "Approval"
+)
 
+// BallotOption represents a response option to a question.
+type BallotOption string
 
+// Question represents a question that is asked during an election.
+type Question struct {
+	ID            PublicKey      `json:"id"`
+	QuestionAsked string         `json:"question"`
+	VotingMethod  VotingMethod   `json:"voting_method"`
+	BallotOptions []BallotOption `json:"ballot_options"`
+	WriteIn       bool           `json:"write_in"`
 }
-//Data type for election setup
+
+// ElectionSetupData represents the message data used for setting up an election.
 type ElectionSetupData struct {
 	*GenericData
-	ID []byte `json:"id"`
-	LAOId []byte `json:"lao"`
-	Name string `json:"name"`
-	Version string `json:"version"`
-	CreatedAt Timestamp `json:"created_at"`
-	StartTime Timestamp `json:"start_time"`
-	EndTime Timestamp `json:"end_time"`
-	Questions  //TODO: check what to put here `json:"questions"`
+
+	ID        []byte     `json:"id"`
+	LaoID     []byte     `json:"lao"`
+	Name      string     `json:"name"`
+	Version   string     `json:"version"`
+	CreatedAt Timestamp  `json:"created_at"`
+	StartTime Timestamp  `json:"start_time"`
+	EndTime   Timestamp  `json:"end_time"`
+	Questions []Question `json:"questions"`
 }
 
+// Vote represents a vote in an election.
+type Vote struct {
+	ID          PublicKey `json:"id"`
+	QuestionID  []byte    `json:"question"`
+	VoteIndexes []int     `json:"vote"`
+	WriteIn     string    `json:"write_in"`
+}
+
+// CastVoteData represents the message data used for casting a vote during an election.
+type CastVoteData struct {
+	*GenericData
+	LaoID      []byte    `json:"lao"`
+	ElectionID []byte    `json:"election"`
+	CreatedAt  Timestamp `json:"created_at"`
+	Votes      []Vote    `json:"questions"`
+}
+
+// ElectionEndData represents the message data used for ending an election.
+type ElectionEndData struct {
+	*GenericData
+	LaoID           []byte    `json:"lao"`
+	ElectionID      []byte    `json:"election"`
+	CreatedAt       Timestamp `json:"created_at"`
+	RegisteredVotes []byte    `json:"registered_votes"`
+}
+
+// QuestionResult represents the result of a question in an election.
+type QuestionResult struct {
+	ID     PublicKey      `json:"id"`
+	Result []BallotOption `json:"result"`
+}
+
+// ElectionResultData represents the message data for the result of an election.
+type ElectionResultData struct {
+	*GenericData
+	Questions         []QuestionResult         `json:"questions"`
+	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
+}
 //-------------------------------------------------------
 
 

@@ -134,7 +134,7 @@ func (m *Message) VerifyAndUnmarshalData() error {
 		}
 	// ADDED FOR NEW DATA OBJECT TYPE FOR ELECTION
 	case DataObject(ElectionObject):
-		err := m.parseElectionData(ElectionDataAction(action), m.RawData)
+		err := m.parseElectionData(ElectionAction(action), m.RawData)
 		if err != nil {
 			xerrors.Errorf("error parsing election data %v", err)
 		}
@@ -256,7 +256,6 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 		if err != nil {
 			return xerrors.Errorf("failed to parse state lao data: %v", err)
 		}
-
 		m.Data = state
 		return nil
 	default:
@@ -264,10 +263,18 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 	}
 
 }
-func (m *Message) parseElectionData(action ElectionDataAction, data[]byte) error{
+func (m *Message) parseElectionData(action ElectionAction, data[]byte) error{
 	switch action {
-	case SetupAction:
-		//TODO: implement
+	case SetupElectionAction:
+		setup := &ElectionSetupData{}
+
+		err := json.Unmarshal(data,setup)
+
+		if err != nil {
+			return xerrors.Errorf("failed to parse election setup data: %v", err)
+		}
+		m.Data = setup
+		return nil
 	case CastVoteAction:
 		cast := &CastVoteData{}
 
@@ -275,8 +282,12 @@ func (m *Message) parseElectionData(action ElectionDataAction, data[]byte) error
 		if err != nil {
 			return xerrors.Errorf("failed to parse cast vote data : %v", err)
 		}
-		// TODO: check if message creation time is passed end of election
 		// TODO: update votes if same client sent multiple votes
+		if endElection := /* TODO: find a way to add*/ ;
+		cast.CreatedAt < endElection{
+		//TODO: how should we deny it, return an error?
+			return xerrors.Errorf("Vote submitted too late")
+		}
 		m.Data = cast
 		return  nil
 	default:
