@@ -280,12 +280,6 @@ func (m *Message) parseElectionData(action ElectionAction, data[]byte) error{
 		if err != nil {
 			return xerrors.Errorf("failed to parse cast vote data : %v", err)
 		}
-		//// TODO: update votes if same client sent multiple votes
-		//if endElection := /* TODO:this should be checked here or in base channel*/ ;
-		//cast.CreatedAt < endElection{
-		//	//TODO: how should we deny it, return an error?
-		//	return xerrors.Errorf("Vote submitted too late")
-		//}
 		m.Data = cast
 		return  nil
 	case ElectionEndAction:
