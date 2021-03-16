@@ -245,6 +245,8 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
 		err = c.processRollCallObject(data)
+	case message.ElectionObject:
+		err = c.processElectionObject(*msg)
 	}
 
 	if err != nil {
@@ -497,4 +499,135 @@ func (c *laoChannel) processRollCallObject(data message.Data) error {
 	}
 
 	return nil
+}
+func (c *laoChannel) processElectionObject(msg message.Message) error {
+	action := message.ElectionAction(msg.Data.GetAction())
+
+	if action != message.ElectionSetupAction {
+		return &message.Error{
+			Code:        -1,
+			Description: fmt.Sprintf("invalid action: %s", action),
+		}
+	}
+	err := c.createElection(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to setup the election", err)
+	}
+
+	return nil
+}
+
+func (c *laoChannel) createElection(msg message.Message) error {
+	o := c.hub
+
+	o.Lock()
+	defer o.Unlock()
+
+	// Check the data
+	data, ok := msg.Data.(*message.ElectionSetupData)
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: "failed to cast data to SetupElectionData",
+		}
+	}
+
+	// Check if the Lao ID of the message corresponds to the channel ID
+	encodedLaoID := base64.StdEncoding.EncodeToString(data.LaoID)
+	channelID := c.channelID[6:]
+	if channelID != encodedLaoID {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("Lao ID of the message (Lao: %s) is different from the channelID (channel: %s)", encodedLaoID, channelID),
+		}
+	}
+
+	// Compute the new election channel id
+	encodedElectionID := base64.StdEncoding.EncodeToString(data.ID)
+	encodedID := encodedLaoID + "/" + encodedElectionID
+
+	// Create the new election channel
+	electionCh := electionChannel{
+		createBaseChannel(o, "/root/"+encodedID),
+	}
+
+	// Add the SetupElection message to the new election channel
+	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
+	electionCh.inbox[messageID] = msg
+	electionCh.inbox["0"] = msg//have this message saved at a place by
+	//default
+
+	// Add the new election channel to the organizerHub
+	o.channelByID[encodedID] = &electionCh
+
+	return nil
+}
+
+type electionChannel struct {
+	*baseChannel
+}
+
+func (c *electionChannel) Subscribe(client *Client, msg message.Subscribe) error {
+	return c.baseChannel.Subscribe(client, msg)
+}
+
+func (c *electionChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
+	return c.baseChannel.Unsubscribe(client, msg)
+}
+
+func (c *electionChannel) Publish(publish message.Publish) error {
+	err := c.baseChannel.VerifyPublishMessage(publish)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message on an election channel: %v", err)
+	}
+
+	msg := publish.Params.Message
+
+	data := msg.Data
+
+	object := data.GetObject()
+
+	if object == message.ElectionObject {
+
+		action := message.ElectionAction(data.GetAction())
+
+		switch action {
+		case message.CastVoteAction:
+			voteData, ok := msg.Data.(*message.CastVoteData)
+			if !ok {
+				return &message.Error{
+					Code:        -4,
+					Description: "failed to cast data to SetupElectionData",
+				}
+			}
+			setupMessage,ok := c.inbox["0"]
+			if !ok{
+				return xerrors.Errorf("Election Setup has not been done yet")
+			}
+			setupData,ok := setupMessage.Data.(*message.ElectionSetupData)
+			if !ok {
+				return &message.Error{
+					Code:        -4,
+					Description: "failed to cast data to SetupElectionData",
+				}
+			}
+			if voteData.CreatedAt > setupData.EndTime {
+				return xerrors.Errorf("Vote casted too late")
+			}
+			//This should update any previously set vote if the message ids are the same
+			messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
+			c.inbox[messageID] = *msg
+			//TODO: check if parsing is correct and proceed with the following messages
+		case message.ElectionEndAction:
+			//TODO:idea : Check that the time of creation is beyond the end of the election
+			// TODO:idea continues: empty all the votes coming from the same client that are before the most recent cast vote message
+		case message.ElectionResultAction:
+		}
+	}
+
+	return nil
+}
+
+func (c *electionChannel) Catchup(catchup message.Catchup) []message.Message {
+	return c.baseChannel.Catchup(catchup)
 }

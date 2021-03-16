@@ -90,7 +90,7 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	}
 
 	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
-
+	
 	// Check if the message already exists
 	c.inboxMu.RLock()
 	if _, ok := c.inbox[msgIDEncoded]; ok {

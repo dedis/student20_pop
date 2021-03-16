@@ -132,13 +132,11 @@ func (m *Message) VerifyAndUnmarshalData() error {
 		if err != nil {
 			return xerrors.Errorf("error parsing roll call data: %v", err)
 		}
-	// ADDED FOR NEW DATA OBJECT TYPE FOR ELECTION
 	case DataObject(ElectionObject):
 		err := m.parseElectionData(ElectionAction(action), m.RawData)
 		if err != nil {
 			xerrors.Errorf("error parsing election data %v", err)
 		}
-	//*******************************************
 	default:
 		return xerrors.Errorf("failed to parse data object of type: %s", gd.GetObject())
 	}
@@ -265,7 +263,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 }
 func (m *Message) parseElectionData(action ElectionAction, data[]byte) error{
 	switch action {
-	case ElectionSetupAction:
+	case ElectionSetupAction://Unnecessary?
 		setup := &ElectionSetupData{}
 
 		err := json.Unmarshal(data,setup)
@@ -282,12 +280,12 @@ func (m *Message) parseElectionData(action ElectionAction, data[]byte) error{
 		if err != nil {
 			return xerrors.Errorf("failed to parse cast vote data : %v", err)
 		}
-		// TODO: update votes if same client sent multiple votes
-		if endElection := /* find end election*/ ;
-		cast.CreatedAt < endElection{
-			//TODO: how should we deny it, return an error?
-			return xerrors.Errorf("Vote submitted too late")
-		}
+		//// TODO: update votes if same client sent multiple votes
+		//if endElection := /* TODO:this should be checked here or in base channel*/ ;
+		//cast.CreatedAt < endElection{
+		//	//TODO: how should we deny it, return an error?
+		//	return xerrors.Errorf("Vote submitted too late")
+		//}
 		m.Data = cast
 		return  nil
 	case ElectionEndAction:
