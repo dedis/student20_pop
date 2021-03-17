@@ -1,5 +1,7 @@
 package ch.epfl.pop.json
 
+import ch.epfl.pop.model.network.method.{Broadcast, Catchup, Publish, Subscribe, Unsubscribe}
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
@@ -99,4 +101,12 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit val reopenRollCallFormat: JsonFormat[ReopenRollCall] = jsonFormat3(ReopenRollCall.apply)
 
   implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = jsonFormat2(WitnessMessage.apply)
+
+  implicit val messageFormat : JsonFormat[Message] = jsonFormat5(Message.apply)
+
+  implicit val broadcastFormat : JsonFormat[Broadcast] = jsonFormat2(Broadcast.apply)
+  implicit val catchupFormat : JsonFormat[Catchup] = jsonFormat1(Catchup.apply)
+  implicit val publishFormat : JsonFormat[Publish] = jsonFormat2(Publish.apply)
+  implicit val subscribeFormat : JsonFormat[Subscribe] = jsonFormat1(Subscribe.apply)
+  implicit val unsubscribeFormat : JsonFormat[Unsubscribe] = jsonFormat1(Unsubscribe.apply)
 }
