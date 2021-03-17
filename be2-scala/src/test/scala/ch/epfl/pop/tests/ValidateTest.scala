@@ -4,7 +4,7 @@ import ch.epfl.pop.Validate
 import ch.epfl.pop.crypto.Hash
 import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CloseRollCallMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, CreateRollCallMessageClient, OpenRollCallMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
 import ch.epfl.pop.json.JsonUtils.MessageContentDataBuilder
-import ch.epfl.pop.json.{Actions, ByteArray, Hash, MessageContent, Methods, Objects}
+import ch.epfl.pop.json.{Actions, ByteArray, HashJson, MessageContent, Methods, Objects}
 import ch.epfl.pop.tests.MessageCreationUtils._
 import com.google.crypto.tink.subtle.Ed25519Sign.KeyPair
 import org.scalatest.FunSuite
@@ -65,7 +65,7 @@ class ValidateTest extends FunSuite {
     laoName + "\"]"
   private val laoId = md.digest(laoString.getBytes(UTF_8))
   private val root = "/root"
-  private def createLao(id: Hash = laoId, name: String = laoName, creation: Long = laoCreation,
+  private def createLao(id: HashJson = laoId, name: String = laoName, creation: Long = laoCreation,
                         organizer: ByteArray = laoOrganizer, sender: Array[Byte] = pk): CreateLaoMessageClient = {
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Lao, Actions.Create)
@@ -128,7 +128,7 @@ class ValidateTest extends FunSuite {
 
   /* --------------- VALIDATE BROADCAST LAO --------------- */
 
-  private def broadcastLao(modificationId: Hash,id: Hash = laoId, creation: Long = laoCreation, name: String = laoName, lastModified: Long = laoCreation,
+  private def broadcastLao(modificationId: HashJson, id: HashJson = laoId, creation: Long = laoCreation, name: String = laoName, lastModified: Long = laoCreation,
                            organizer: ByteArray = laoOrganizer, sender: Array[Byte] = pk): BroadcastLaoMessageClient = {
     val data = new MessageContentDataBuilder()
       .setHeader(Objects.Lao, Actions.State)
@@ -270,7 +270,7 @@ class ValidateTest extends FunSuite {
 
   /* --------------- VALIDATE BROADCAST MEETING --------------- */
 
-  private def broadcastMeeting(modificationId: Hash, id: Hash = meetingId, name: String = meetingName,
+  private def broadcastMeeting(modificationId: HashJson, id: HashJson = meetingId, name: String = meetingName,
                                creation: Long = meetingCreation, start: Long = meetingStart, end: Long = meetingEnd): BroadcastMeetingMessageClient = {
 
     val data = new MessageContentDataBuilder()
@@ -332,7 +332,7 @@ class ValidateTest extends FunSuite {
   private val rcName = "My roll-call"
   private val rcId = Hash.computeRollCallId(laoId, rcCreation, rcName)
 
-  private def createRollCall(id: Hash, creation: Long, start: Long): CreateRollCallMessageClient = {
+  private def createRollCall(id: HashJson, creation: Long, start: Long): CreateRollCallMessageClient = {
   val data = new MessageContentDataBuilder()
     .setHeader(Objects.RollCall, Actions.Create)
     .setId(id)

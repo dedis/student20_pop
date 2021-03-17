@@ -1,10 +1,12 @@
 package ch.epfl.pop.model.network.method.message.data.lao
 
+import ch.epfl.pop.json.HighLevelProtocol.stateLaoFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
+import spray.json._
 
 case class StateLao(
                      id: Hash,
@@ -16,8 +18,8 @@ case class StateLao(
                      modification_id: Hash,
                      modification_signatures: List[WitnessSignaturePair]
                    ) extends MessageData {
-  override val _object: ObjectType = ObjectType.LAO
-  override val action: ActionType = ActionType.STATE
+  override def _object: ObjectType = ObjectType.LAO
+  override def action: ActionType = ActionType.STATE
 }
 
 object StateLao extends Parsable {
@@ -35,5 +37,7 @@ object StateLao extends Parsable {
     new StateLao(id, name, creation, last_modified, organizer, witnesses, modification_id, modification_signatures)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): StateLao = ???
+  override def buildFromJson(messageData: MessageData, payload: String): StateLao =
+    // TODO exception handling
+    payload.parseJson.asJsObject.convertTo[StateLao]
 }

@@ -3,7 +3,7 @@ package ch.epfl.pop.crypto
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
-import ch.epfl.pop.json.{Base64String, Hash, Key, Signature}
+import ch.epfl.pop.json.{Base64String, HashJson, Key, SignatureJson}
 
 import java.util.Base64
 
@@ -15,7 +15,7 @@ object Hash {
    * @param signature the signature of the message
    * @return the id of the message
    */
-  def computeMessageId(msg: Base64String, signature: Signature): Hash = {
+  def computeMessageId(msg: Base64String, signature: SignatureJson): HashJson = {
     val data = arrayRepr(msg, Base64.getEncoder.encodeToString(signature))
     val id = getMessageDigest().digest(data.getBytes(StandardCharsets.UTF_8))
     id
@@ -28,7 +28,7 @@ object Hash {
    * @param name the name of the LAO
    * @return the id of the LAO
    */
-  def computeLAOId(organizer: Key, creation: Long, name: String): Hash = {
+  def computeLAOId(organizer: Key, creation: Long, name: String): HashJson = {
     val data = arrayRepr(Base64.getEncoder.encodeToString(organizer), creation.toString, name)
     val id = getMessageDigest().digest(data.getBytes(StandardCharsets.UTF_8))
     id
@@ -42,7 +42,7 @@ object Hash {
    * @param name the name of the meeting
    * @return the id of the meeting
    */
-  def computeMeetingId(laoID: Hash, creation: Long, name: String): Hash = computeGenericId("M", laoID, creation, name)
+  def computeMeetingId(laoID: HashJson, creation: Long, name: String): HashJson = computeGenericId("M", laoID, creation, name)
 
   /**
    * Compute the roll-call id, which is Hash('R'||laoId||creation||name)
@@ -51,10 +51,10 @@ object Hash {
    * @param name the name of the roll-call
    * @return the id of the roll-call
    */
-  def computeRollCallId(laoID: Hash, creation: Long, name: String): Hash = computeGenericId("R", laoID, creation, name)
+  def computeRollCallId(laoID: HashJson, creation: Long, name: String): HashJson = computeGenericId("R", laoID, creation, name)
 
 
-  private def computeGenericId(typ: String, a: Array[Byte], l: Long, s: String): Hash = {
+  private def computeGenericId(typ: String, a: Array[Byte], l: Long, s: String): HashJson = {
     val data = arrayRepr(typ, Base64.getEncoder.encodeToString(a), l.toString, s)
     val id = getMessageDigest().digest(data.getBytes(StandardCharsets.UTF_8))
     id

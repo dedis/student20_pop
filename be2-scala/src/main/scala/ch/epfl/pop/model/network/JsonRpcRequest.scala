@@ -1,6 +1,8 @@
 package ch.epfl.pop.model.network
 import ch.epfl.pop.model.network.method.Params
 import ch.epfl.pop.model.network.method.message.data.MessageData
+import spray.json._
+import DefaultJsonProtocol._
 
 case class JsonRpcRequest(
                            jsonrpc: String,

@@ -1,6 +1,6 @@
 package ch.epfl.pop.crypto
 
-import ch.epfl.pop.json.{Base64String, Key, Signature}
+import ch.epfl.pop.json.{Base64String, Key, SignatureJson}
 import com.google.crypto.tink.subtle.Ed25519Verify
 
 import java.security.GeneralSecurityException
@@ -17,7 +17,7 @@ object Signature {
    * @param key       the public key used for verification
    * @return whether the signature is correct
    */
-  def verify(msg: Base64String, signature: Signature, key: Key): Boolean = {
+  def verify(msg: Base64String, signature: SignatureJson, key: Key): Boolean = {
     val ed = new Ed25519Verify(key)
     val msgDecoded = Base64.getDecoder.decode(msg.getBytes(UTF_8))
 

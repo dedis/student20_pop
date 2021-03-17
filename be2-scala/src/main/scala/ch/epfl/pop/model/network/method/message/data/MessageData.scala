@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network.method.message.data
 
 trait MessageData {
-  val _object: ObjectType.ObjectType
-  val action: ActionType.ActionType
+  def _object: ObjectType.ObjectType
+  def action: ActionType.ActionType
 }

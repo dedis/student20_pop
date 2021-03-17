@@ -44,7 +44,7 @@ object DBActor {
    * @param id the id of the message we want to read
    * @param replyTo the actor to reply to
    */
-  final case class Read(channel: ChannelName, id: Hash, replyTo: ActorRef[Option[MessageContent]]) extends DBMessage
+  final case class Read(channel: ChannelName, id: HashJson, replyTo: ActorRef[Option[MessageContent]]) extends DBMessage
 
 
   /**

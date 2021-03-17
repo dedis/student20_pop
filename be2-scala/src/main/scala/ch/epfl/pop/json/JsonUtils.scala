@@ -69,7 +69,7 @@ object JsonUtils {
 
     /* witness a message related fields */
     var message_id: Base64String = ""
-    var signature: Signature = Array[Byte]()
+    var signature: SignatureJson = Array[Byte]()
 
     /* meeting related fields */
     var location: String = ""
@@ -107,7 +107,7 @@ object JsonUtils {
     def setModificationId(modification_id: ByteArray): MessageContentDataBuilder = { this.modification_id = modification_id; this }
     def setMessageId(id: Base64String): MessageContentDataBuilder = { this.message_id = id; this }
     def setModificationSignatures(modification_sig: List[KeySignPair]): MessageContentDataBuilder = { this.modification_signatures = modification_sig; this}
-    def setSignature(signature: Signature): MessageContentDataBuilder = { this.signature = signature; this }
+    def setSignature(signature: SignatureJson): MessageContentDataBuilder = { this.signature = signature; this }
     def setLocation(location: String): MessageContentDataBuilder = { this.location = location; this }
     def setStart(start: TimeStamp): MessageContentDataBuilder = { this.start = start; this }
     def setEnd(end: TimeStamp): MessageContentDataBuilder = { this.end = end; this }

@@ -19,7 +19,7 @@ import ch.epfl.pop.DBActor
 import ch.epfl.pop.DBActor.DBMessage
 import ch.epfl.pop.crypto.{Hash, Signature}
 import ch.epfl.pop.json.JsonMessages._
-import ch.epfl.pop.json.{Actions, Base64String, ChannelName, KeySignPair, MessageContent, MessageContentData, MessageErrorContent, MessageParameters, Methods, Objects, Signature}
+import ch.epfl.pop.json.{Actions, Base64String, ChannelName, KeySignPair, MessageContent, MessageContentData, MessageErrorContent, MessageParameters, Methods, Objects, SignatureJson}
 import ch.epfl.pop.pubsub.{ChannelActor, PublishSubscribe}
 import org.iq80.leveldb.Options
 import org.scalatest.FunSuite

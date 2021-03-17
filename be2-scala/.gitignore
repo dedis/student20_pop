@@ -12,5 +12,8 @@ target
 .idea
 out
 
+# Mac OS
+*.DS_Store
+
 # Test
 database_test

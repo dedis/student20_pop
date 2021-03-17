@@ -14,9 +14,9 @@ package object json {
   type ByteArray = Array[Byte]
 
   type TimeStamp = Long
-  type Signature = ByteArray
+  type SignatureJson = ByteArray
   type Key = ByteArray
-  type Hash = ByteArray
+  type HashJson = ByteArray
 
   type ChannelName = String
   type ChannelMessage = MessageContent
@@ -48,8 +48,8 @@ package object json {
                                    encodedData: Base64String,
                                    data: MessageContentData,
                                    sender: Key,
-                                   signature: Signature,
-                                   message_id: Hash,
+                                   signature: SignatureJson,
+                                   message_id: HashJson,
                                    witness_signatures: List[KeySignPair]
                                  ) {
 
@@ -59,7 +59,7 @@ package object json {
 
   final case class MessageErrorContent(code: Int, description: String)
 
-  final case class KeySignPair(witness: Key, signature: Signature)
+  final case class KeySignPair(witness: Key, signature: SignatureJson)
 
   /* --------------------------------------------------------- */
   /* ---------------------- ADMIN TYPES ---------------------- */
@@ -97,35 +97,35 @@ package object json {
 
   /** Data field of a JSON message */
   final case class MessageContentData(
-    /* basic common fields */
-    _object: Objects,
-    action: Actions,
+                                       /* basic common fields */
+                                       _object: Objects,
+                                       action: Actions,
 
-    /* LAO related fields */
-    id: Array[Byte],
-    name: String,
-    creation: TimeStamp,
-    last_modified: TimeStamp,
-    organizer: Key,
-    witnesses: List[Key],
+                                       /* LAO related fields */
+                                       id: Array[Byte],
+                                       name: String,
+                                       creation: TimeStamp,
+                                       last_modified: TimeStamp,
+                                       organizer: Key,
+                                       witnesses: List[Key],
 
-    /* state LAO broadcast fields */
-    modification_id: Array[Byte],
-    modification_signatures: List[KeySignPair],
+                                       /* state LAO broadcast fields */
+                                       modification_id: Array[Byte],
+                                       modification_signatures: List[KeySignPair],
 
-    /* witness a message related fields */
-    message_id: Base64String,
-    signature: Signature,
+                                       /* witness a message related fields */
+                                       message_id: Base64String,
+                                       signature: SignatureJson,
 
-    /* meeting related fields */
-    location: String,
-    start: TimeStamp,
-    end: TimeStamp,
-    extra: UNKNOWN,
+                                       /* meeting related fields */
+                                       location: String,
+                                       start: TimeStamp,
+                                       end: TimeStamp,
+                                       extra: UNKNOWN,
 
-    /* roll call related fields */
-    scheduled: TimeStamp,
-    roll_call_description: String,
-    attendees: List[Key],
+                                       /* roll call related fields */
+                                       scheduled: TimeStamp,
+                                       roll_call_description: String,
+                                       attendees: List[Key],
   )
 }

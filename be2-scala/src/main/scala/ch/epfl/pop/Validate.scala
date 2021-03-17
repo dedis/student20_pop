@@ -2,7 +2,7 @@ package ch.epfl.pop
 
 import java.util.Arrays
 import ch.epfl.pop.crypto.{Hash, Signature}
-import ch.epfl.pop.json.{Actions, Hash, Key, MessageContent, MessageContentData, MessageErrorContent}
+import ch.epfl.pop.json.{Actions, HashJson, Key, MessageContent, MessageContentData, MessageErrorContent}
 import ch.epfl.pop.crypto.Signature.verify
 import ch.epfl.pop.json.JsonMessages.{BroadcastLaoMessageClient, BroadcastMeetingMessageClient, CloseRollCallMessageClient, CreateLaoMessageClient, CreateMeetingMessageClient, CreateRollCallMessageClient, OpenRollCallMessageClient, UpdateLaoMessageClient, WitnessMessageMessageClient}
 import ch.epfl.pop.json.JsonUtils.ErrorCodes.InvalidData
@@ -117,7 +117,7 @@ object Validate {
    * @param laoId the id of the LAO
    * @return None if correct, an error otherwise
    */
-  def validate(msg: CreateMeetingMessageClient, laoId: Hash): Option[MessageErrorContent] = {
+  def validate(msg: CreateMeetingMessageClient, laoId: HashJson): Option[MessageErrorContent] = {
     val midLevelMsg = msg.params.message.get
     val createMsg = midLevelMsg.data
     val id = Hash.computeMeetingId(laoId, createMsg.creation, createMsg.name)
@@ -164,7 +164,7 @@ object Validate {
    * @param laoId the id of the LAO
    * @return None if correct, an error otherwise
    */
-  def validate(msg: CreateRollCallMessageClient, laoId: Hash): Option[MessageErrorContent] = {
+  def validate(msg: CreateRollCallMessageClient, laoId: HashJson): Option[MessageErrorContent] = {
     val midLevelMsg = msg.params.message.get
     val createMsg = midLevelMsg.data
 

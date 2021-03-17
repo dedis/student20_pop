@@ -1,10 +1,12 @@
 package ch.epfl.pop.model.network.method.message.data.meeting
 
+import ch.epfl.pop.json.HighLevelProtocol.stateMeetingFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, Timestamp, WitnessSignaturePair}
+import spray.json._
 
 case class StateMeeting(
                          id: Hash,
@@ -18,8 +20,8 @@ case class StateMeeting(
                          modification_id: Hash,
                          modification_signatures: List[WitnessSignaturePair]
                        ) extends MessageData {
-  override val _object: ObjectType = ObjectType.MEETING
-  override val action: ActionType = ActionType.STATE
+  override def _object: ObjectType = ObjectType.MEETING
+  override def action: ActionType = ActionType.STATE
 }
 
 object StateMeeting extends Parsable {
@@ -39,5 +41,7 @@ object StateMeeting extends Parsable {
     new StateMeeting(id, name, creation, last_modified, location, start, end, extra, modification_id, modification_signatures)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): StateMeeting = ???
+  override def buildFromJson(messageData: MessageData, payload: String): StateMeeting =
+    // TODO exception handling
+    payload.parseJson.asJsObject.convertTo[StateMeeting]
 }

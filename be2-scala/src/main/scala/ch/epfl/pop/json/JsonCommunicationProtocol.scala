@@ -137,7 +137,7 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
               new MessageContentDataBuilder()
                 .setHeader(Objects.Message, action.convertTo[Actions])
                 .setMessageId(mid.convertTo[Base64String])
-                .setSignature(signature.convertTo[Signature])
+                .setSignature(signature.convertTo[SignatureJson])
                 .build()
 
             // parsing error : invalid message content data fields
@@ -310,8 +310,8 @@ object JsonCommunicationProtocol extends DefaultJsonProtocol {
             string64Data,
             decodedData.parseJson.convertTo[MessageContentData],
             sender.convertTo[Key],
-            signature.convertTo[Signature],
-            message_id.convertTo[Hash],
+            signature.convertTo[SignatureJson],
+            message_id.convertTo[HashJson],
             witnesses.map(_.convertTo[KeySignPair]).toList
           )
 
