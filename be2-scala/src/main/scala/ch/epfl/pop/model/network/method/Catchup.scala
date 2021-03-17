@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network.method
 
-import ch.epfl.pop.json.HighLevelProtocol.catchupFormat
+import ch.epfl.pop.json.Protocol.catchupFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.MessageData
 import spray.json._

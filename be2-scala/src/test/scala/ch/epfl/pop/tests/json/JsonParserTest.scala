@@ -1,6 +1,6 @@
 package ch.epfl.pop.tests.json
 
-import ch.epfl.pop.json.HighLevelProtocol._
+import ch.epfl.pop.json.Protocol._
 import ch.epfl.pop.json.Objects
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}

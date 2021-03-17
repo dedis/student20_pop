@@ -3,6 +3,7 @@ import ch.epfl.pop.model.network.method.Params
 import ch.epfl.pop.model.network.method.message.data.MessageData
 import spray.json._
 import DefaultJsonProtocol._
+import ch.epfl.pop.json.Protocol.jsonRpcRequestFormat
 
 case class JsonRpcRequest(
                            jsonrpc: String,
@@ -22,5 +23,7 @@ object JsonRpcRequest extends Parsable {
     new JsonRpcRequest(jsonrpc, method, params, id)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): JsonRpcRequest = ???
+  override def buildFromJson(messageData: MessageData, payload: String): JsonRpcRequest =
+  // TODO exception handling
+    payload.parseJson.asJsObject.convertTo[JsonRpcRequest]
 }

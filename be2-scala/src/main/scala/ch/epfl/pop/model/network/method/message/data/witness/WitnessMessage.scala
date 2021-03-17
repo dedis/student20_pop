@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network.method.message.data.witness
 
-import ch.epfl.pop.json.HighLevelProtocol.witnessMessageFormat
+import ch.epfl.pop.json.Protocol.witnessMessageFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType

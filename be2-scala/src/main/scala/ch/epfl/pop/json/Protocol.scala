@@ -1,7 +1,12 @@
 package ch.epfl.pop.json
 
-import ch.epfl.pop.model.network.method.{Broadcast, Catchup, Publish, Subscribe, Unsubscribe}
+import ch.epfl.pop.model.network.Method.Method
+import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, Method}
+import ch.epfl.pop.model.network.method.{Broadcast, Catchup, Params, Publish, Subscribe, Unsubscribe}
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
+import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
@@ -10,13 +15,12 @@ import ch.epfl.pop.model.objects._
 import spray.json.{DefaultJsonProtocol, JsNull, JsNumber, JsObject, JsString, JsValue, JsonFormat, RootJsonFormat, deserializationError, enrichAny}
 
 
-object HighLevelProtocol extends DefaultJsonProtocol {
+object Protocol extends DefaultJsonProtocol {
 
   implicit object Base64DataFormat extends JsonFormat[Base64Data] {
     override def read(json: JsValue): Base64Data = json match {
       case JsString(data) => Base64Data(data)
-      case _ =>
-        throw new IllegalArgumentException("Can't parse json value " + json + " to a Base64Data object")
+      case _ => throw new IllegalArgumentException("Can't parse json value " + json + " to a Base64Data object")
     }
 
     override def write(obj: Base64Data): JsValue = JsString(obj.data)
@@ -25,8 +29,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit object HashFormat extends JsonFormat[Hash] {
     override def read(json: JsValue): Hash = json match {
       case JsString(data) => Hash(Base64Data(data))
-      case _ =>
-        throw new IllegalArgumentException("Can't parse json value " + json + " to a Hash object")
+      case _ => throw new IllegalArgumentException("Can't parse json value " + json + " to a Hash object")
     }
 
     override def write(obj: Hash): JsValue = obj.base64Data.toJson
@@ -35,8 +38,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit object PublicKeyFormat extends JsonFormat[PublicKey] {
     override def read(json: JsValue): PublicKey = json match {
       case JsString(data) => PublicKey(Base64Data(data))
-      case _ =>
-        throw new IllegalArgumentException("Can't parse json value " + json + " to a PublicKey object")
+      case _ => throw new IllegalArgumentException("Can't parse json value " + json + " to a PublicKey object")
     }
 
     override def write(obj: PublicKey): JsValue = obj.base64Data.toJson
@@ -45,8 +47,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit object SignatureFormat extends JsonFormat[Signature] {
     override def read(json: JsValue): Signature = json match {
       case JsString(data) => Signature(Base64Data(data))
-      case _ =>
-        throw new IllegalArgumentException("Can't parse json value " + json + " to a Signature object")
+      case _ => throw new IllegalArgumentException("Can't parse json value " + json + " to a Signature object")
     }
 
     override def write(obj: Signature): JsValue = obj.signature.toJson
@@ -55,8 +56,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit object TimestampFormat extends JsonFormat[Timestamp] {
     override def read(json: JsValue): Timestamp = json match {
       case JsNumber(time) => Timestamp(time.toLong)
-      case _ =>
-        throw new IllegalArgumentException("Can't parse json value " + json + " to a Timestamp object")
+      case _ => throw new IllegalArgumentException("Can't parse json value " + json + " to a Timestamp object")
     }
 
     override def write(obj: Timestamp): JsValue = obj.time.toJson
@@ -65,8 +65,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit object WitnessSignaturePairFormat extends JsonFormat[WitnessSignaturePair] {
     override def read(json: JsValue): WitnessSignaturePair = json.asJsObject().getFields("witness", "signature") match {
       case Seq(JsString(w), JsString(s)) => WitnessSignaturePair(PublicKey(Base64Data(w)), Signature(Base64Data(s)))
-      case _ =>
-        throw new IllegalArgumentException("Can't parse json value " + json + " to a WitnessSignaturePair object")
+      case _ => throw new IllegalArgumentException("Can't parse json value " + json + " to a WitnessSignaturePair object")
     }
 
     override def write(obj: WitnessSignaturePair): JsValue = JsObject(
@@ -88,6 +87,53 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     }
   }
 
+  implicit object methodFormat extends JsonFormat[Method] {
+    override def read(json: JsValue): Method = json match {
+      case JsString(method) => Method.unapply(method).getOrElse(Method.INVALID)
+      case _ => throw new IllegalArgumentException("Can't parse json value " + json + " to a Method")
+    }
+
+    override def write(obj: Method): JsValue = JsObject("method" ->JsString(obj.toString))
+  }
+
+  implicit object objectTypeFormat extends JsonFormat[ObjectType] {
+    override def read(json: JsValue): ObjectType = json match {
+      case JsString(method) => Method.unapply(method).getOrElse(ObjectType.INVALID)
+      case _ => throw new IllegalArgumentException("Can't parse json value " + json + " to an ObjectType")
+    }
+
+    override def write(obj: ObjectType): JsValue = JsObject("object" ->JsString(obj.toString))
+  }
+
+  implicit object actionTypeFormat extends JsonFormat[ActionType] {
+    override def read(json: JsValue): ActionType = json match {
+      case JsString(method) => Method.unapply(method).getOrElse(ActionType.INVALID)
+      case _ => throw new IllegalArgumentException("Can't parse json value " + json + " to an ActionType")
+    }
+
+    override def write(obj: ActionType): JsValue = JsObject("action" -> JsString(obj.toString))
+  }
+
+  implicit object jsonRpcRequestFormat extends JsonFormat[JsonRpcRequest] {
+    override def read(json: JsValue): JsonRpcRequest = ???
+
+    override def write(obj: JsonRpcRequest): JsValue = ???
+  }
+
+  implicit val errorObjectFormat : JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
+  implicit val jsonRpcResponse : JsonFormat[JsonRpcResponse] = jsonFormat4(JsonRpcResponse.apply)
+
+  implicit val broadcastFormat : JsonFormat[Broadcast] = jsonFormat2(Broadcast.apply)
+  implicit val catchupFormat : JsonFormat[Catchup] = jsonFormat1(Catchup.apply)
+  implicit val publishFormat : JsonFormat[Publish] = jsonFormat2(Publish.apply)
+  implicit val subscribeFormat : JsonFormat[Subscribe] = jsonFormat1(Subscribe.apply)
+  implicit val unsubscribeFormat : JsonFormat[Unsubscribe] = jsonFormat1(Unsubscribe.apply)
+
+  implicit object messageFormat extends JsonFormat[Message] {
+    override def read(json: JsValue): Message = ???
+
+    override def write(obj: Message): JsValue = ???
+  }
   implicit val createLaoFormat: RootJsonFormat[CreateLao] = jsonFormat5(CreateLao.apply)
   implicit val stateLaoFormat: JsonFormat[StateLao] = jsonFormat8(StateLao.apply)
   implicit val updateLaoFormat: JsonFormat[UpdateLao] = jsonFormat4(UpdateLao.apply)
@@ -101,12 +147,4 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit val reopenRollCallFormat: JsonFormat[ReopenRollCall] = jsonFormat3(ReopenRollCall.apply)
 
   implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = jsonFormat2(WitnessMessage.apply)
-
-  implicit val messageFormat : JsonFormat[Message] = jsonFormat5(Message.apply)
-
-  implicit val broadcastFormat : JsonFormat[Broadcast] = jsonFormat2(Broadcast.apply)
-  implicit val catchupFormat : JsonFormat[Catchup] = jsonFormat1(Catchup.apply)
-  implicit val publishFormat : JsonFormat[Publish] = jsonFormat2(Publish.apply)
-  implicit val subscribeFormat : JsonFormat[Subscribe] = jsonFormat1(Subscribe.apply)
-  implicit val unsubscribeFormat : JsonFormat[Unsubscribe] = jsonFormat1(Unsubscribe.apply)
 }

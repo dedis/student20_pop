@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network.method.message.data.lao
 
-import ch.epfl.pop.json.HighLevelProtocol.stateLaoFormat
+import ch.epfl.pop.json.Protocol.stateLaoFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType

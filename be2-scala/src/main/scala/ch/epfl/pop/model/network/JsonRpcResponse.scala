@@ -1,8 +1,8 @@
 package ch.epfl.pop.model.network
 
-import ch.epfl.pop.json.Objects
+import ch.epfl.pop.json.Protocol.jsonRpcResponse
 import ch.epfl.pop.model.network.method.message.data.MessageData
-import spray.json.DefaultJsonProtocol.{IntJsonFormat, StringJsonFormat, jsonFormat4}
+import spray.json._
 
 case class JsonRpcResponse(
                            jsonrpc: String,
@@ -22,5 +22,7 @@ object JsonRpcResponse extends Parsable {
     new JsonRpcResponse(jsonrpc, result, error, id)
   }
 
-  override def buildFromJson(messageData: MessageData, payload: String): JsonRpcResponse = ???
+  override def buildFromJson(messageData: MessageData, payload: String): JsonRpcResponse =
+  // TODO exception handling
+    payload.parseJson.asJsObject.convertTo[JsonRpcResponse]
 }
