@@ -591,25 +591,28 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 
 		action := message.ElectionAction(data.GetAction())
 
+		setupMessage,ok := c.inbox["0"]
+		if !ok{
+			return xerrors.Errorf("Election Setup has not been done yet")
+		}
+		setupData,ok := setupMessage.Data.(*message.ElectionSetupData)
+		if !ok {
+			return &message.Error{
+				Code:        -4,
+				Description: "failed to cast data to SetupElectionData",
+			}
+		}
 		switch action {
 		case message.CastVoteAction:
 			voteData, ok := msg.Data.(*message.CastVoteData)
 			if !ok {
 				return &message.Error{
 					Code:        -4,
-					Description: "failed to cast data to SetupElectionData",
+					Description: "failed to cast data to CastVoteData",
 				}
 			}
-			setupMessage,ok := c.inbox["0"]
 			if !ok{
 				return xerrors.Errorf("Election Setup has not been done yet")
-			}
-			setupData,ok := setupMessage.Data.(*message.ElectionSetupData)
-			if !ok {
-				return &message.Error{
-					Code:        -4,
-					Description: "failed to cast data to SetupElectionData",
-				}
 			}
 			if voteData.CreatedAt > setupData.EndTime {
 				return xerrors.Errorf("Vote casted too late")
@@ -619,13 +622,49 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			c.inbox[messageID] = *msg
 			//TODO: check if parsing is correct and proceed with the following messages
 		case message.ElectionEndAction:
-			//TODO:idea : Check that the time of creation is beyond the end of the election
+			endElectionData, ok := msg.Data.(*message.ElectionEndData)
+			if !ok {
+				return &message.Error{
+					Code:        -4,
+					Description: "failed to cast data to ElectionEndData",
+				}
+			}
+			if endElectionData.CreatedAt < setupData.EndTime{
+				return xerrors.Errorf("Can't send end election message before the end of the election")
+			}
 			// TODO:idea continues: empty all the votes coming from the same client that are before the most recent cast vote message
+			var allMessages []message.Message
+			for _,v := range c.inbox{
+				allMessages = append(allMessages,v)
+			}
+			allCastVoteMessages := getAllCastVoteMessages(allMessages)
+			for _,allSenderVotes := range allCastVoteMessages{
+				if len(allSenderVotes) > 1{
+					//TODO: will we populate the registeredVotes field?
+					//TODO: should we delete
+					latestVote := allSenderVotes[0]
+					for _,vote := range allSenderVotes{
+
+					}
+				}
+			}
 		case message.ElectionResultAction:
 		}
 	}
 
 	return nil
+}
+func getAllCastVoteMessages(msgs []message.Message) map[string][]message.Message{
+	castVoteMessages := make(map[string][]message.Message)
+	for _,v := range msgs{
+		_, ok := v.Data.(*message.CastVoteData)
+		//TODO: question : will casting fail if v is dont of type CastVoteData?
+		if ok {
+			castVoteMessages[v.Sender.String()] =
+			 	append(castVoteMessages[v.Sender.String()],v)
+		}
+	}
+	return  castVoteMessages
 }
 
 func (c *electionChannel) Catchup(catchup message.Catchup) []message.Message {
