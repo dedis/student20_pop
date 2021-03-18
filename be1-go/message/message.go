@@ -263,7 +263,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 }
 func (m *Message) parseElectionData(action ElectionAction, data[]byte) error{
 	switch action {
-	case ElectionSetupAction://Unnecessary?
+	case ElectionSetupAction:
 		setup := &ElectionSetupData{}
 
 		err := json.Unmarshal(data,setup)
