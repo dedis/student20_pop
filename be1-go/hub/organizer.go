@@ -549,6 +549,11 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	// Create the new election channel
 	electionCh := electionChannel{
 		createBaseChannel(o, "/root/"+encodedID),
+		data.Questions[0].VotingMethod,//TODO : check if this is waht was meanth by method ot is it rather pluralityy and stuff??,
+		data.StartTime,
+		data.EndTime,
+		false,
+		getAllQuestionsForElectionChannel(data.Questions),
 	}
 
 	// Add the SetupElection message to the new election channel
@@ -563,8 +568,57 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	return nil
 }
 
+func getAllQuestionsForElectionChannel(questions []message.Question)map[string]question{
+	qs := make(map[string]question)
+	for _,q := range questions{
+		qs[ base64.StdEncoding.EncodeToString(q.ID)] = question{
+			q.BallotOptions,
+			make([]validVote,0),
+		}
+	}
+	return qs
+}
+
 type electionChannel struct {
 	*baseChannel
+
+	// Voting method of the election
+	method message.VotingMethod
+
+	// Starting time of the election
+	start message.Timestamp
+
+	// Ending time of the election
+	end message.Timestamp
+
+	// True if the election is over and false otherwise
+	terminated bool
+
+	// Questions asked to the participants
+	//the key will be the string representation of the id of type byte[]
+	questions map[string]question
+}
+
+type question struct {
+	// ID of th question
+	//id []byte
+
+	// Different options
+	ballotOptions []message.BallotOption
+
+	// list of all valid votes
+	validVotes []validVote
+}
+
+type validVote struct {
+	// time of the creation of the vote
+	voteTime message.Timestamp
+
+	// indexes of the ballot options
+	indexes []int
+
+	// Public key of the voter
+	voterKey message.PublicKey
 }
 
 func (c *electionChannel) Subscribe(client *Client, msg message.Subscribe) error {
@@ -591,17 +645,17 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 
 		action := message.ElectionAction(data.GetAction())
 
-		setupMessage,ok := c.inbox["0"]
-		if !ok{
-			return xerrors.Errorf("Election Setup has not been done yet")
-		}
-		setupData,ok := setupMessage.Data.(*message.ElectionSetupData)
-		if !ok {
-			return &message.Error{
-				Code:        -4,
-				Description: "failed to cast data to SetupElectionData",
-			}
-		}
+		//setupMessage,ok := c.inbox["0"]
+		//if !ok{
+		//	return xerrors.Errorf("Election Setup has not been done yet")
+		//}
+		//setupData,ok := setupMessage.Data.(*message.ElectionSetupData)
+		//if !ok {
+		//	return &message.Error{
+		//		Code:        -4,
+		//		Description: "failed to cast data to SetupElectionData",
+		//	}
+		//}
 		switch action {
 		case message.CastVoteAction:
 			voteData, ok := msg.Data.(*message.CastVoteData)
@@ -614,13 +668,25 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			if !ok{
 				return xerrors.Errorf("Election Setup has not been done yet")
 			}
-			if voteData.CreatedAt > setupData.EndTime {
+			if voteData.CreatedAt > c.end {
 				return xerrors.Errorf("Vote casted too late")
 			}
 			//This should update any previously set vote if the message ids are the same
 			messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
 			c.inbox[messageID] = *msg
-			//TODO: check if parsing is correct and proceed with the following messages
+			//TODO: add all user votes to valid votes array of question
+			for _,q := range voteData.Votes{
+				QuestionID :=  base64.StdEncoding.EncodeToString(q.QuestionID)
+				qs,ok := c.questions[QuestionID]
+				if ok{
+					qs.validVotes=append(qs.validVotes,
+						validVote{voteData.CreatedAt,
+							q.VoteIndexes,
+							q.ID})
+				}else{
+					return xerrors.Errorf("No Question with this ID exists")
+				}
+			}
 		case message.ElectionEndAction:
 			endElectionData, ok := msg.Data.(*message.ElectionEndData)
 			if !ok {
@@ -629,25 +695,27 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 					Description: "failed to cast data to ElectionEndData",
 				}
 			}
-			if endElectionData.CreatedAt < setupData.EndTime{
+			if endElectionData.CreatedAt < c.end{
 				return xerrors.Errorf("Can't send end election message before the end of the election")
 			}
 			// TODO:idea continues: empty all the votes coming from the same client that are before the most recent cast vote message
-			var allMessages []message.Message
-			for _,v := range c.inbox{
-				allMessages = append(allMessages,v)
-			}
-			allCastVoteMessages := getAllCastVoteMessages(allMessages)
-			for _,allSenderVotes := range allCastVoteMessages{
-				if len(allSenderVotes) > 1{
-					//TODO: will we populate the registeredVotes field?
-					//TODO: should we delete
-					latestVote := allSenderVotes[0]
-					for _,vote := range allSenderVotes{
-
+			voterIds := make(map[string]validVote)
+			for _,question := range c.questions{
+				for _,vote := range question.validVotes{
+					if vVote,ok := voterIds[vote.voterKey.String()];ok{
+						if vVote.voteTime < vote.voteTime{
+							voterIds[vote.voterKey.String()] = vote
+							question.validVotes,ok =deleteVote(vVote,question.validVotes)
+							if !ok{
+								return xerrors.Errorf("couldn't delete vote")
+							}
+						}
+					}else {
+						voterIds[vote.voterKey.String()] = vote
 					}
 				}
 			}
+			// TODO: add the valid votes to RegisteredVotes array
 		case message.ElectionResultAction:
 		}
 	}
@@ -658,7 +726,7 @@ func getAllCastVoteMessages(msgs []message.Message) map[string][]message.Message
 	castVoteMessages := make(map[string][]message.Message)
 	for _,v := range msgs{
 		_, ok := v.Data.(*message.CastVoteData)
-		//TODO: question : will casting fail if v is dont of type CastVoteData?
+		//TODO: question : will casting fail if v is not of type CastVoteData?
 		if ok {
 			castVoteMessages[v.Sender.String()] =
 			 	append(castVoteMessages[v.Sender.String()],v)
@@ -666,7 +734,15 @@ func getAllCastVoteMessages(msgs []message.Message) map[string][]message.Message
 	}
 	return  castVoteMessages
 }
-
+func deleteVote(vote validVote, votes []validVote) ([]validVote,bool){
+	for index,v := range votes{
+		if v.voteTime == vote.voteTime && v.voterKey.String() == vote.voterKey.String() {
+			votes[index] = votes[len(votes)-1]
+			return votes[:len(votes)-1],true
+		}
+	}
+	return votes,false
+}
 func (c *electionChannel) Catchup(catchup message.Catchup) []message.Message {
 	return c.baseChannel.Catchup(catchup)
 }
