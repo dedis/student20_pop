@@ -2,12 +2,14 @@ package hub
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"student20_pop"
 	"sync"
+	"sort"
 
 	"student20_pop/message"
 
@@ -700,11 +702,14 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			}
 			// TODO:idea continues: empty all the votes coming from the same client that are before the most recent cast vote message
 			voterIds := make(map[string]validVote)
+			//we check all the votes for all the questions
 			for _,question := range c.questions{
 				for _,vote := range question.validVotes{
+					//We check if there is already a vote coming from this sender
 					if vVote,ok := voterIds[vote.voterKey.String()];ok{
 						if vVote.voteTime < vote.voteTime{
 							voterIds[vote.voterKey.String()] = vote
+							//If same sender sent 2 votes delete the older one
 							question.validVotes,ok =deleteVote(vVote,question.validVotes)
 							if !ok{
 								return xerrors.Errorf("couldn't delete vote")
@@ -712,8 +717,16 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 						}
 					}else {
 						voterIds[vote.voterKey.String()] = vote
+						voterIds[vote.voterKey.String()] = vote
 					}
 				}
+			}
+			for _,question := range c.questions{
+				hashed,err := sortVotes(question.validVotes)
+				if err != nil {
+					return xerrors.Errorf("Error while hashing")
+				}
+				endElectionData.RegisteredVotes = hashed
 			}
 			// TODO: add the valid votes to RegisteredVotes array
 		case message.ElectionResultAction:
@@ -734,6 +747,7 @@ func getAllCastVoteMessages(msgs []message.Message) map[string][]message.Message
 	}
 	return  castVoteMessages
 }
+//deletes a a given vote from the given list of votes
 func deleteVote(vote validVote, votes []validVote) ([]validVote,bool){
 	for index,v := range votes{
 		if v.voteTime == vote.voteTime && v.voterKey.String() == vote.voterKey.String() {
@@ -742,6 +756,19 @@ func deleteVote(vote validVote, votes []validVote) ([]validVote,bool){
 		}
 	}
 	return votes,false
+}
+func sortVotes(votes []validVote)([]byte,error){
+	sort.Slice(votes,
+		func(i int, j int) bool {return votes[i].voteTime < votes[j].voteTime})
+	h := sha256.New()
+	for _,v := range votes {
+		s := v.voterKey.String()
+		if len(s) == 0 {
+			return nil, xerrors.Errorf("empty string to hash()")
+		}
+		h.Write([]byte(fmt.Sprintf("%d%s", len(s), s)))
+	}
+	return h.Sum(nil),nil
 }
 func (c *electionChannel) Catchup(catchup message.Catchup) []message.Message {
 	return c.baseChannel.Catchup(catchup)
