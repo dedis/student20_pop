@@ -574,8 +574,9 @@ func getAllQuestionsForElectionChannel(questions []message.Question)map[string]q
 	qs := make(map[string]question)
 	for _,q := range questions{
 		qs[ base64.StdEncoding.EncodeToString(q.ID)] = question{
+			q.ID,
 			q.BallotOptions,
-			make([]validVote,0),
+			make(map[string]validVote),
 		}
 	}
 	return qs
@@ -603,13 +604,13 @@ type electionChannel struct {
 
 type question struct {
 	// ID of th question
-	//id []byte
+	id []byte
 
 	// Different options
 	ballotOptions []message.BallotOption
 
 	// list of all valid votes
-	validVotes []validVote
+	validVotes map[string]validVote
 }
 
 type validVote struct {
@@ -619,8 +620,6 @@ type validVote struct {
 	// indexes of the ballot options
 	indexes []int
 
-	// Public key of the voter
-	voterKey message.PublicKey
 }
 
 func (c *electionChannel) Subscribe(client *Client, msg message.Subscribe) error {
@@ -668,7 +667,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 				}
 			}
 			if !ok{
-				return xerrors.Errorf("Election Setup has not been done yet")
+				return xerrors.Errorf("Couldn't cast to castVoteData")
 			}
 			if voteData.CreatedAt > c.end {
 				return xerrors.Errorf("Vote casted too late")
@@ -681,10 +680,14 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 				QuestionID :=  base64.StdEncoding.EncodeToString(q.QuestionID)
 				qs,ok := c.questions[QuestionID]
 				if ok{
-					qs.validVotes=append(qs.validVotes,
-						validVote{voteData.CreatedAt,
-							q.VoteIndexes,
-							q.ID})
+					earlierVote,ok := qs.validVotes[msg.Sender.String()]
+					// if the sender didn't previously cast a vote or if the vote
+					//is no longer valid update it
+					if !ok  || earlierVote.voteTime > voteData.CreatedAt {
+						qs.validVotes[msg.Sender.String()] =
+							validVote{voteData.CreatedAt,
+								q.VoteIndexes}
+					}
 				}else{
 					return xerrors.Errorf("No Question with this ID exists")
 				}
@@ -700,29 +703,10 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 			if endElectionData.CreatedAt < c.end{
 				return xerrors.Errorf("Can't send end election message before the end of the election")
 			}
-			// TODO:idea continues: empty all the votes coming from the same client that are before the most recent cast vote message
-			voterIds := make(map[string]validVote)
-			//we check all the votes for all the questions
+			// since now we elminate in cast votes the duplicate votes we are sure that the voter casted one vote for one question
+			//TODO: update the changes in accordance to the election channel struct
 			for _,question := range c.questions{
-				for _,vote := range question.validVotes{
-					//We check if there is already a vote coming from this sender
-					if vVote,ok := voterIds[vote.voterKey.String()];ok{
-						if vVote.voteTime < vote.voteTime{
-							voterIds[vote.voterKey.String()] = vote
-							//If same sender sent 2 votes delete the older one
-							question.validVotes,ok =deleteVote(vVote,question.validVotes)
-							if !ok{
-								return xerrors.Errorf("couldn't delete vote")
-							}
-						}
-					}else {
-						voterIds[vote.voterKey.String()] = vote
-						voterIds[vote.voterKey.String()] = vote
-					}
-				}
-			}
-			for _,question := range c.questions{
-				hashed,err := sortVotes(question.validVotes)
+				hashed,err := sortHashVotes(question.validVotes)
 				if err != nil {
 					return xerrors.Errorf("Error while hashing")
 				}
@@ -747,26 +731,25 @@ func getAllCastVoteMessages(msgs []message.Message) map[string][]message.Message
 	}
 	return  castVoteMessages
 }
-//deletes a a given vote from the given list of votes
-func deleteVote(vote validVote, votes []validVote) ([]validVote,bool){
-	for index,v := range votes{
-		if v.voteTime == vote.voteTime && v.voterKey.String() == vote.voterKey.String() {
-			votes[index] = votes[len(votes)-1]
-			return votes[:len(votes)-1],true
-		}
+func sortHashVotes(votes2 map[string]validVote)([]byte,error){
+	type kv struct {
+		voteTime message.Timestamp
+		sender string
 	}
-	return votes,false
-}
-func sortVotes(votes []validVote)([]byte,error){
+	votes := make(map[int]kv)
+	i := 0
+	for k,v := range votes2{
+		votes[i] = kv{v.voteTime,k}
+		i += 1
+	}
 	sort.Slice(votes,
 		func(i int, j int) bool {return votes[i].voteTime < votes[j].voteTime})
 	h := sha256.New()
 	for _,v := range votes {
-		s := v.voterKey.String()
-		if len(s) == 0 {
+		if len(v.sender) == 0 {
 			return nil, xerrors.Errorf("empty string to hash()")
 		}
-		h.Write([]byte(fmt.Sprintf("%d%s", len(s), s)))
+		h.Write([]byte(fmt.Sprintf("%d%s", len(v.sender), v.sender)))
 	}
 	return h.Sum(nil),nil
 }
