@@ -551,7 +551,8 @@ func (c *laoChannel) createElection(msg message.Message) error {
 	// Create the new election channel
 	electionCh := electionChannel{
 		createBaseChannel(o, "/root/"+encodedID),
-		data.Questions[0].VotingMethod,//TODO : check if this is waht was meanth by method ot is it rather pluralityy and stuff??,
+		data.Questions[0].VotingMethod,//TODO : check if this is what was meanth by method ot is it rather pluralityy and stuff??,
+		//Also can it happen that there is a valid setup without questions?
 		data.StartTime,
 		data.EndTime,
 		false,
@@ -719,18 +720,19 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 
 	return nil
 }
-func getAllCastVoteMessages(msgs []message.Message) map[string][]message.Message{
-	castVoteMessages := make(map[string][]message.Message)
-	for _,v := range msgs{
-		_, ok := v.Data.(*message.CastVoteData)
-		//TODO: question : will casting fail if v is not of type CastVoteData?
-		if ok {
-			castVoteMessages[v.Sender.String()] =
-			 	append(castVoteMessages[v.Sender.String()],v)
-		}
-	}
-	return  castVoteMessages
-}
+//Used in a previous version, will maybe needed again
+//func getAllCastVoteMessages(msgs []message.Message) map[string][]message.Message{
+//	castVoteMessages := make(map[string][]message.Message)
+//	for _,v := range msgs{
+//		_, ok := v.Data.(*message.CastVoteData)
+//		//TODO: question : will casting fail if v is not of type CastVoteData?
+//		if ok {
+//			castVoteMessages[v.Sender.String()] =
+//			 	append(castVoteMessages[v.Sender.String()],v)
+//		}
+//	}
+//	return  castVoteMessages
+//}
 func sortHashVotes(votes2 map[string]validVote)([]byte,error){
 	type kv struct {
 		voteTime message.Timestamp
