@@ -26,7 +26,7 @@ type Subscribe struct {
 type Params struct {
 	Channel string `json:"channel"`
 
-	Message *Message `json:"message"`
+	Message *Message `json:"message,omitempty"`
 }
 
 // Unsubscribe represents the Unsubscribe message.
