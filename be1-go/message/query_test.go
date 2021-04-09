@@ -29,7 +29,7 @@ func createMessage(i int, timestamp Timestamp) (Message, error) {
 	return msg, nil
 }
 
-func compareQuery(q1, q2 Query) (bool, error) {
+func compareQueries(q1, q2 Query) (bool, error) {
 	m1, m2 := q1.GetMethod(), q2.GetMethod()
 	if m1 != m2 {
 		return false, nil
@@ -37,14 +37,25 @@ func compareQuery(q1, q2 Query) (bool, error) {
 	if q1.GetChannel() != q2.GetChannel() {
 		return false, nil
 	}
-	if m1 != "broadcast" {
+
+	switch m1 {
+	case "broadcast":
 		if q1.GetID() != q2.GetID() {
 			return false, nil
 		}
-	}
-	if m1 == "subscribe" || m1 == "unsubscribe" {
+		return compareParams(q1, q2)
+	case "subscribe":
 		return true, nil
+	case "unsubscribe":
+		return true, nil
+	case "catchup":
+		return true, nil
+	default:
+		return compareParams(q1, q2)
 	}
+}
+
+func compareParams(q1, q2 Query) (bool, error) {
 	p1, ok := q1.GetParams()
 	if !ok {
 		return false, xerrors.Errorf("failed to get the params of the first query")
@@ -54,12 +65,25 @@ func compareQuery(q1, q2 Query) (bool, error) {
 		return false, xerrors.Errorf("failed to get the params of the second query")
 	}
 
-	return compareMessage(*p1.Message, *p2.Message), nil
-
+	return compareMessages(*p1.Message, *p2.Message), nil
 }
 
-func compareMessage(m1, m2 Message) bool {
-	return bytes.Equal(m1.MessageID, m2.MessageID) && bytes.Equal(m1.Sender, m2.Sender) && bytes.Equal(m1.Signature, m2.Signature)
+func compareMessages(m1, m2 Message) bool {
+	return bytes.Equal(m1.Sender, m2.Sender) && bytes.Equal(m1.Signature, m2.Signature)
+}
+
+func testQuery(t *testing.T, q1 Query) {
+	buf, err := json.Marshal(q1)
+	require.NoError(t, err)
+
+	genericMsg := &GenericMessage{}
+	err = json.Unmarshal(buf, genericMsg)
+	require.NoError(t, err)
+
+	q2 := *genericMsg.Query
+	res, err := compareQueries(q1, q2)
+	require.NoError(t, err)
+	require.True(t, res)
 }
 
 func Test_MarshalBroadcast(t *testing.T) {
@@ -70,17 +94,7 @@ func Test_MarshalBroadcast(t *testing.T) {
 	q1 := Query{
 		Broadcast: NewBroadcast(channel, &msg),
 	}
-	buf, err := json.Marshal(q1)
-	require.NoError(t, err)
-
-	genericMsg := &GenericMessage{}
-	err = json.Unmarshal(buf, genericMsg)
-	require.NoError(t, err)
-
-	q2 := *genericMsg.Query
-	res, err := compareQuery(q1, q2)
-	require.NoError(t, err)
-	require.True(t, res)
+	testQuery(t, q1)
 }
 
 func Test_MarshalPublish(t *testing.T) {
@@ -98,17 +112,7 @@ func Test_MarshalPublish(t *testing.T) {
 			},
 		},
 	}
-	buf, err := json.Marshal(q1)
-	require.NoError(t, err)
-
-	genericMsg := &GenericMessage{}
-	err = json.Unmarshal(buf, genericMsg)
-	require.NoError(t, err)
-
-	q2 := *genericMsg.Query
-	res, err := compareQuery(q1, q2)
-	require.NoError(t, err)
-	require.True(t, res)
+	testQuery(t, q1)
 }
 
 func Test_MarshalSubscribe(t *testing.T) {
@@ -121,17 +125,7 @@ func Test_MarshalSubscribe(t *testing.T) {
 			},
 		},
 	}
-	buf, err := json.Marshal(q1)
-	require.NoError(t, err)
-
-	genericMsg := &GenericMessage{}
-	err = json.Unmarshal(buf, genericMsg)
-	require.NoError(t, err)
-
-	q2 := *genericMsg.Query
-	res, err := compareQuery(q1, q2)
-	require.NoError(t, err)
-	require.True(t, res)
+	testQuery(t, q1)
 }
 
 func Test_MarshalUnsubscribe(t *testing.T) {
@@ -144,15 +138,18 @@ func Test_MarshalUnsubscribe(t *testing.T) {
 			},
 		},
 	}
-	buf, err := json.Marshal(q1)
-	require.NoError(t, err)
+	testQuery(t, q1)
+}
 
-	genericMsg := &GenericMessage{}
-	err = json.Unmarshal(buf, genericMsg)
-	require.NoError(t, err)
-
-	q2 := *genericMsg.Query
-	res, err := compareQuery(q1, q2)
-	require.NoError(t, err)
-	require.True(t, res)
+func Test_MarshalCatchup(t *testing.T) {
+	q1 := Query{
+		Subscribe: &Subscribe{
+			ID:     10,
+			Method: "catchup",
+			Params: Params{
+				Channel: channel,
+			},
+		},
+	}
+	testQuery(t, q1)
 }
