@@ -1,52 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/fragment_qrcode"
-                                                       android:layout_width="match_parent"
-                                                       android:layout_height="match_parent">
-
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
         <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab"/>
-
-        <RelativeLayout
-                android:layout_width="match_parent"
+            android:id="@+id/guideline_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab"/>
+        <LinearLayout
+            android:layout_width="404dp"
+            android:layout_height="608dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal_bottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal">
+            <TextView
+                android:id="@+id/scan_description"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constrainedHeight="true"
+                android:gravity="center"
+                android:text="@string/qrcode_scanning_add_attendee"
+                android:textSize="@dimen/size_title"
+                android:textStyle="bold" />
+            <com.github.dedis.student20_pop.utility.qrcode.CameraPreview
+                android:id="@+id/qr_camera_preview"
+                android:layout_width="346dp"
+                android:layout_height="474dp"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </LinearLayout>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_horizontal_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/guideline_horizontal_bottom"/>
+        <Button
+            android:id="@+id/add_attendee_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/close_roll_call"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+        <LinearLayout
+            android:id="@+id/add_attendee_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_text_small"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/guideline_horizontal">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/camera_preview_margin">
-
-                <TextView
-                        android:id="@+id/scan_description"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/qrcode_scanning_add_attendee"
-                        android:textSize="@dimen/size_title"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@id/qr_camera_preview"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
-
-                <com.github.dedis.student20_pop.utility.qrcode.CameraPreview
-                        android:id="@+id/qr_camera_preview"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintDimensionRatio="@string/camera_preview_ratio"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/scan_description"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </RelativeLayout>
-
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/total"
+                android:textSize="@dimen/size_title"/>
+            <TextView
+                android:id="@+id/add_attendee_number_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="0"
+                android:textSize="@dimen/size_title"/>
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

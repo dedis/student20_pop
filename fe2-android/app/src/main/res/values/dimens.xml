@@ -3,11 +3,13 @@
 
     <!-- Tabs -->
     <dimen name="guideline_horizontal_tab">0.08</dimen>
+    <dimen name="guideline_horizontal_bottom">0.92</dimen>
     <dimen name="guideline_vertical_tab_home">0.33</dimen>
     <dimen name="guideline_vertical_tab_connect">0.66</dimen>
 
     <!-- Text -->
     <dimen name="margin_text">32dp</dimen>
+    <dimen name="margin_text_small">16dp</dimen>
     <dimen name="margin_top">5dp</dimen>
     <dimen name="size_title">24sp</dimen>
     <dimen name="size_body">18sp</dimen>

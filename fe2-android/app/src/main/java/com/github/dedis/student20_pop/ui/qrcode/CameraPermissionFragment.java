@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.student20_pop.databinding.FragmentCameraPermBinding;
+import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.home.HomeActivity;
 
 /** Fragment handling permission granting for the camera */
@@ -43,9 +44,13 @@ public final class CameraPermissionFragment extends Fragment {
     FragmentActivity activity = getActivity();
     if (activity instanceof HomeActivity) {
       mCameraPermissionViewModel = HomeActivity.obtainViewModel(activity);
+    } else if (activity instanceof LaoDetailActivity) {
+      mCameraPermissionViewModel = LaoDetailActivity.obtainViewModel(activity);
     } else {
-      throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
+      throw new IllegalArgumentException("cannot obtain view model for "+ TAG);
     }
+
+
 
     mCameraPermFragBinding.setLifecycleOwner(activity);
 

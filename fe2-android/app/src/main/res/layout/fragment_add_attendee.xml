@@ -6,14 +6,14 @@
                                                    android:layout_height="match_parent">
 
     <LinearLayout
-            android:id="@+id/add_attendee_qr_code_fragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@id/add_attendee_confirm_cancel"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+        android:id="@+id/add_attendee_qr_code_fragment"
+        android:layout_width="3dp"
+        android:layout_height="7dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/add_attendee_confirm_cancel"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
     <LinearLayout
             android:id="@+id/add_attendee_number"

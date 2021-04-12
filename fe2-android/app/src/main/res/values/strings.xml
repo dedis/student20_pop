@@ -106,5 +106,6 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+    <string name="total">Total:</string>
 
 </resources>

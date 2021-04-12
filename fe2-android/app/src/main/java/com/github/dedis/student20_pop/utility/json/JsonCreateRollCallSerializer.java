@@ -21,21 +21,14 @@ public class JsonCreateRollCallSerializer
     JsonObject object = json.getAsJsonObject();
     String desc = object.has(DESCRIPTION) ? object.get(DESCRIPTION).getAsString() : null;
 
-    for (CreateRollCall.StartType type : CreateRollCall.StartType.ALL) {
-      if (object.has(type.getJsonMember())) {
-        long start = object.get(type.getJsonMember()).getAsLong();
-        return new CreateRollCall(
-            temp.getId(),
-            temp.getName(),
-            temp.getCreation(),
-            start,
-            type,
-            temp.getLocation(),
-            desc);
-      }
-    }
-
-    throw new JsonParseException("Could not find start time");
+    return new CreateRollCall(
+        temp.getId(),
+        temp.getName(),
+        temp.getCreation(),
+        temp.getProposedStart(),
+        temp.getProposedEnd(),
+        temp.getLocation(),
+        desc);
   }
 
   @Override
@@ -44,8 +37,6 @@ public class JsonCreateRollCallSerializer
     JsonObject object = internalGson.toJsonTree(src, CreateRollCall.class).getAsJsonObject();
     // Add optional field if needed
     src.getDescription().ifPresent(desc -> object.addProperty(DESCRIPTION, desc));
-    // Add start time with the good field
-    object.addProperty(src.getStartType().getJsonMember(), src.getStartTime());
     return object;
   }
 }

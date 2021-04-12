@@ -1,31 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
   <data>
+    <import type="android.view.View" />
+    <import type="com.github.dedis.student20_pop.model.network.method.message.data.EventState" />
+
     <variable
-      name="event"
-      type="com.github.dedis.student20_pop.model.event.Event" />
+        name="event"
+        type="com.github.dedis.student20_pop.model.event.Event" />
+    <variable
+      name="rollCall"
+      type="com.github.dedis.student20_pop.model.RollCall" />
+    <variable
+        name="isRollCall"
+        type="boolean" />
+    <variable
+        name="view_model"
+        type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
   </data>
 
-  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/event_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <TextView
-      android:id="@+id/event_title"
-      android:layout_width="wrap_content"
+  <LinearLayout
+      android:id="@+id/my_layout"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginHorizontal="@dimen/margin_text"
-      android:gravity="center"
-      android:textSize="@dimen/size_body"
-      android:textStyle="bold" />
+      android:orientation="horizontal">
 
-    <TextView
-      android:id="@+id/event_description"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginHorizontal="@dimen/margin_text" />
+    <LinearLayout
+        android:id="@+id/roll_call_layout"
+        android:layout_width="296dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+      <TextView
+          android:id="@+id/roll_call_title"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text"
+          android:gravity="center"
+          android:text=""
+          android:textSize="@dimen/size_body"
+          android:textStyle="bold"
+          android:visibility="@{isRollCall ? View.VISIBLE : View.GONE}" />
+
+      <TextView
+          android:id="@+id/roll_call_time"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text"
+          android:text=""
+          android:visibility="@{isRollCall ? View.VISIBLE : View.GONE}" />
+
+      <TextView
+          android:id="@+id/roll_call_location"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text"
+          android:text="@{`Location: `+rollCall.getLocation()}"
+          android:visibility="@{isRollCall ? View.VISIBLE : View.GONE}" />
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/open_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OPEN" />
+    <Button
+        android:id="@+id/reopen_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="REOPEN" />
+    <Button
+        android:id="@+id/scheduled_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="SCHEDULED" />
+    <Button
+        android:id="@+id/enter_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ENTER" />
+    <Button
+        android:id="@+id/closed_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="CLOSED" />
 
   </LinearLayout>
+
 </layout>

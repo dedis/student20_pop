@@ -64,6 +64,7 @@
           app:layout_constraintLeft_toLeftOf="parent"
           app:layout_constraintTop_toTopOf="parent" />
 
+
         <ListView
           android:id="@+id/witness_list"
           android:layout_width="match_parent"

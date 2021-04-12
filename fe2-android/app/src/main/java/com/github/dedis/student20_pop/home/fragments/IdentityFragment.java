@@ -12,6 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.utility.security.Keys;
+import com.google.crypto.tink.KeysetHandle;
+
 import net.glxn.qrgen.android.QRCode;
 
 /**
@@ -30,9 +33,15 @@ public class IdentityFragment extends Fragment {
   private EditText identityEmailEditText;
   private EditText identityPhoneEditText;
   private ImageView qrCode;
+  private String pk;
 
-  public static IdentityFragment newInstance() {
-    return new IdentityFragment();
+  public IdentityFragment(String pk) {
+    super();
+    this.pk = pk;
+  }
+
+  public static IdentityFragment newInstance(String pk) {
+    return new IdentityFragment(pk);
   }
 
   @Nullable
@@ -82,9 +91,13 @@ public class IdentityFragment extends Fragment {
     String laoId = app.getCurrentLaoUnsafe().getId();
     String uniqueIdentity = key + laoId;*/
 
+    /*KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+    String publicKey = Keys.getEncodedKey(publicKeysetHandle);*/
+
     identityNameEditText.setText("USERNAME");
 
-    Bitmap myBitmap = QRCode.from("UNIQUE IDENTITY").bitmap();
+    //Bitmap myBitmap = QRCode.from("UNIQUE IDENTITY").bitmap();
+    Bitmap myBitmap = QRCode.from(pk+"UNIQUE IDENTITY").bitmap();
     qrCode.setImageBitmap(myBitmap);
 
     return view;

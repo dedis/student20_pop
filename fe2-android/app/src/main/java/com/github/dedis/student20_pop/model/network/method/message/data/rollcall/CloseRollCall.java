@@ -10,22 +10,22 @@ public class CloseRollCall extends Data {
 
   private final String updateId;
   private final String closes;
-  private final long end;
+  private final long closedAt;
   private final List<String> attendees;
 
   /**
    * Constructor for a data Close Roll-Call Event
    *
-   * @param updateId SHA256('R'||lao_id||closes||end)
+   * @param updateId SHA256('R'||lao_id||closes||closedAt)
    * @param closes The 'update_id' of the latest roll call open, or in its absence, the 'id' field
    *     of the roll call creation
-   * @param end timestamp of the roll call end time
+   * @param closedAt timestamp of the roll call close
    * @param attendees list of attendees of the Roll-Call
    */
-  public CloseRollCall(String updateId, String closes, long end, List<String> attendees) {
+  public CloseRollCall(String updateId, String closes, long closedAt, List<String> attendees) {
     this.updateId = updateId;
     this.closes = closes;
-    this.end = end;
+    this.closedAt = closedAt;
     this.attendees = attendees;
   }
 
@@ -47,8 +47,8 @@ public class CloseRollCall extends Data {
     return closes;
   }
 
-  public long getEnd() {
-    return end;
+  public long getClosedAt() {
+    return closedAt;
   }
 
   public List<String> getAttendees() {
