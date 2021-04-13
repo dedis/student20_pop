@@ -1,13 +1,11 @@
 package message
 
 import (
-	"bytes"
 	"encoding/json"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"golang.org/x/xerrors"
 )
 
 var channel = "/root/channel_id"
@@ -29,47 +27,37 @@ func createMessage(i int, timestamp Timestamp) (Message, error) {
 	return msg, nil
 }
 
-func compareQueries(q1, q2 Query) (bool, error) {
+func assertEqualQueries(t *testing.T, q1, q2 Query) {
 	m1, m2 := q1.GetMethod(), q2.GetMethod()
-	if m1 != m2 {
-		return false, nil
-	}
-	if q1.GetChannel() != q2.GetChannel() {
-		return false, nil
-	}
+
+	require.Equal(t, m1, m2)
+
+	require.Equal(t, q1.GetChannel(), q2.GetChannel())
 
 	switch m1 {
 	case "broadcast":
-		if q1.GetID() != q2.GetID() {
-			return false, nil
-		}
-		return compareParams(q1, q2)
-	case "subscribe":
-		return true, nil
-	case "unsubscribe":
-		return true, nil
-	case "catchup":
-		return true, nil
+		assertEqualParams(t, q1, q2)
+	case "publish":
+		require.Equal(t, q1.GetID(), q2.GetID())
+		assertEqualParams(t, q1, q2)
 	default:
-		return compareParams(q1, q2)
+		require.Equal(t, q1.GetID(), q2.GetID())
 	}
 }
 
-func compareParams(q1, q2 Query) (bool, error) {
+func assertEqualParams(t *testing.T, q1, q2 Query) {
 	p1, ok := q1.GetParams()
-	if !ok {
-		return false, xerrors.Errorf("failed to get the params of the first query")
-	}
-	p2, ok := q2.GetParams()
-	if !ok {
-		return false, xerrors.Errorf("failed to get the params of the second query")
-	}
+	require.True(t, ok)
 
-	return compareMessages(*p1.Message, *p2.Message), nil
+	p2, ok := q2.GetParams()
+	require.True(t, ok)
+
+	assertEqualMessage(t, *p1.Message, *p2.Message)
 }
 
-func compareMessages(m1, m2 Message) bool {
-	return bytes.Equal(m1.Sender, m2.Sender) && bytes.Equal(m1.Signature, m2.Signature)
+func assertEqualMessage(t *testing.T, m1, m2 Message) {
+	require.Equal(t, m1.Sender, m2.Sender)
+	require.Equal(t, m1.Signature, m2.Signature)
 }
 
 func testQuery(t *testing.T, q1 Query) {
@@ -81,9 +69,7 @@ func testQuery(t *testing.T, q1 Query) {
 	require.NoError(t, err)
 
 	q2 := *genericMsg.Query
-	res, err := compareQueries(q1, q2)
-	require.NoError(t, err)
-	require.True(t, res)
+	assertEqualQueries(t, q1, q2)
 }
 
 func Test_MarshalBroadcast(t *testing.T) {
