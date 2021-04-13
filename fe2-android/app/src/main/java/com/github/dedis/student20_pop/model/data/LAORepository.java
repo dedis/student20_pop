@@ -485,9 +485,9 @@ public class LAORepository {
       CreateLao data = (CreateLao) message.getData();
       createLaoRequests.put(id, "/root/" + data.getId());
     }else{
-      /* uncomment this for testing roll calls without receiving broadcast message from backend:
-
-      //this is just for testing, to be removed when backend responding works:
+      //uncomment the following for testing roll calls without receiving broadcast message from backend
+      //this is just for testing, to be removed when backend responding fully works:
+      /*
       if(message.getData() instanceof CreateRollCall) {
         handleCreateRollCall(channel, (CreateRollCall) message.getData());
       }
