@@ -78,9 +78,6 @@ public class LAORepository {
   // Outstanding create laos
   private Map<Integer, String> createLaoRequests;
 
-  // Outstanding create roll calls, open roll calls and close roll calls
-  private Map<Integer, String> rollCallRequests;
-
   // Observable for view models that need access to all LAO Names
   private BehaviorSubject<List<Lao>> allLaoSubject;
 
@@ -103,7 +100,6 @@ public class LAORepository {
     subscribeRequests = new HashMap<>();
     catchupRequests = new HashMap<>();
     createLaoRequests = new HashMap<>();
-    rollCallRequests = new HashMap<>();
 
     unprocessed = PublishSubject.create();
 
@@ -133,8 +129,6 @@ public class LAORepository {
         catchupRequests.remove(id);
       } else if (createLaoRequests.containsKey(id)) {
         createLaoRequests.remove(id);
-      } else if (rollCallRequests.containsKey(id)) {
-        rollCallRequests.remove(id);
       }
       return;
     }
@@ -182,13 +176,6 @@ public class LAORepository {
                 .collect(Collectors.toList()));
         Log.d(TAG, "createLaoRequest contains this id. posted allLaos to `allLaoSubject`");
         sendCatchup(channel);
-      } else if (rollCallRequests.containsKey(id)) {
-        String channel = rollCallRequests.get(id);
-        rollCallRequests.remove(id);
-
-        Log.d(TAG, "roll call request");
-        //sendCatchup(channel);
-
       }
 
       return;
@@ -326,7 +313,6 @@ public class LAORepository {
   private boolean handleCreateRollCall(String channel, CreateRollCall createRollCall) {
     Lao lao = laoById.get(channel).getLao();
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
-    Log.d(TAG, createRollCall.getId());
 
     RollCall rollCall = new RollCall();
     rollCall.setId(createRollCall.getId());
@@ -341,8 +327,7 @@ public class LAORepository {
     rollCall.setDescription(createRollCall.getDescription().orElse(""));
 
     lao.updateRollCall(rollCall.getId(), rollCall);
-    Log.d(TAG, lao.getRollCalls().toString());
-    Log.d(TAG, String.valueOf(lao.getRollCalls().size()));
+
     return false;
   }
 
@@ -501,8 +486,9 @@ public class LAORepository {
     if (message.getData() instanceof CreateLao) {
       CreateLao data = (CreateLao) message.getData();
       createLaoRequests.put(id, "/root/" + data.getId());
-    }else if(message.getData() instanceof CreateRollCall || message.getData() instanceof OpenRollCall || message.getData() instanceof CloseRollCall){
-      rollCallRequests.put(id, channel);
+    }else{
+      /* uncomment this for testing roll calls without receiving broadcast message from backend:
+
       //this is just for testing, to be removed when backend responding works:
       if(message.getData() instanceof CreateRollCall) {
         handleCreateRollCall(channel, (CreateRollCall) message.getData());
@@ -513,6 +499,7 @@ public class LAORepository {
       if(message.getData() instanceof CloseRollCall) {
         handleCloseRollCall(channel, (CloseRollCall) message.getData());
       }
+      */
     }
 
     mRemoteDataSource.sendMessage(publish);

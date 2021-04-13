@@ -126,6 +126,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     mFragmentCreateRollCallEventBinding.setLifecycleOwner(getActivity());
 
+
     return mFragmentCreateRollCallEventBinding.getRoot();
   }
 }

@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -261,7 +262,8 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       binding.setRollCall(rollCall);
       binding.setIsRollCall(true);
       SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
-      binding.rollCallTime.setText("Time: "+DATE_FORMAT.format(rollCall.getStart()));
+      binding.rollCallTime.setText("Time: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
+
       binding.rollCallTitle.setText("Roll Call: "+rollCall.getName());
 
       binding.setViewModel(viewModel);
@@ -280,9 +282,8 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
               clicked -> {
                 viewModel.openConnectRollCall(rollCall.getId());
               });
-      //TODO: add listener for enterButton
+      //TODO: add listener for enterButton for attendees
 
-      //Log.d("Try", ((RollCall)event).getName());
     }
 
     binding.setLifecycleOwner(lifecycleOwner);
