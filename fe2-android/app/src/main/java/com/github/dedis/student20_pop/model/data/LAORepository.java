@@ -83,8 +83,6 @@ public class LAORepository {
 
   private Observable<GenericMessage> upstream;
 
-  private OpenRollCall lastOpen;
-
   private LAORepository(
       @NonNull LAODataSource.Remote remoteDataSource,
       @NonNull LAODataSource.Local localDataSource,
