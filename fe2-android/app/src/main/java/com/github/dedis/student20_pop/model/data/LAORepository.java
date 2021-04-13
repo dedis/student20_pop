@@ -480,7 +480,6 @@ public class LAORepository {
     Single<Answer> answer = createSingle(id);
 
     Publish publish = new Publish(channel, id, message);
-
     if (message.getData() instanceof CreateLao) {
       CreateLao data = (CreateLao) message.getData();
       createLaoRequests.put(id, "/root/" + data.getId());
