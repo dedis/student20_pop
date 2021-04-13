@@ -17,8 +17,6 @@ public class CreateRollCall extends Data {
   private String id;
   private String name;
   private long creation;
-  //private transient long start;
-  //private transient StartType startType;
   private long proposedStart;
   private long proposedEnd;
   private String location;

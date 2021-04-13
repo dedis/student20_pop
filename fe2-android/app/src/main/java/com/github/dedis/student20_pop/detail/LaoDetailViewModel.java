@@ -78,22 +78,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final MutableLiveData<Event<EventType>> mNewLaoEventEvent = new MutableLiveData<>();
   private String mCurrentRollCallId = "";
 
-  //from pull request not yet merged:
-  /*private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
-          .map(mCurrentLao,
-                  lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>() :
-                          lao.getRollCalls().values().stream().collect(Collectors.toList()));*/
-
-  //private final List<com.github.dedis.student20_pop.model.event.Event> a = mCurrentLao.getValue() == null ? new ArrayList<>() : new ArrayList<>(mCurrentLao.getValue().getRollCalls().values());
-  //private final MutableLiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = new MutableLiveData<>(mCurrentLao.getValue() == null ? new ArrayList<>() : new ArrayList<>(mCurrentLao.getValue().getRollCalls().values()));
-
   private final LiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = Transformations
           .map(mCurrentLao,
                   lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>() :
                           lao.getRollCalls().values().stream().collect(Collectors.toList()));
-  /*private final MutableLiveData<List<com.github.dedis.student20_pop.model.event.Event>> mLaoEvents = new MutableLiveData<List<com.github.dedis.student20_pop.model.event.Event>(Transformations.map(mCurrentLao,
-  lao -> lao == null ? new ArrayList<com.github.dedis.student20_pop.model.event.Event>() :
-          lao.getRollCalls().values().stream().collect(Collectors.toList())));*/
+
   /*
    * Dependencies for this class
    */
@@ -281,35 +270,12 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String laoId = channel.substring(6); // removing /root/ prefix
     createRollCall = new CreateRollCall(title, proposedStart, proposedEnd, "Lausanne", description, laoId);
 
-    /*
-    RollCall rollCall = new RollCall();
-    rollCall.setId(createRollCall.getId());
-    rollCall.setName(createRollCall.getName());
-    rollCall.setCreation(createRollCall.getCreation());
-
-    if (createRollCall.getStartType() == StartType.NOW) {
-      rollCall.setStart(createRollCall.getStartTime());
-    } else {
-      rollCall.setScheduled(createRollCall.getStartTime());
-    }
-    Log.d(TAG, rollCall.getName());
-    rollCall.setLocation(createRollCall.getLocation());
-    rollCall.setDescription(createRollCall.getDescription().orElse(""));
-
-    lao.updateRollCall(rollCall.getId(), rollCall);
-    //List<com.github.dedis.student20_pop.model.event.Event>
-    Log.d(TAG, "length of "+lao.getRollCall(rollCall.getId()));
-    Log.d(TAG, "length of "+ new ArrayList<>(lao.getRollCalls().values()).get(0).getDescription());
-    mCurrentLao.postValue(lao);
-    //mLaoEvents.postValue(new ArrayList<com.github.dedis.student20_pop.model.event.Event>(lao.getRollCalls().values()));
-    */
     try {
 
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
       byte[] sender = Base64.getDecoder().decode(publicKey);
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-
 
       MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
       Log.d(TAG, "sending publish message");

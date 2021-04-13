@@ -50,8 +50,7 @@ public class LaoDetailFragment extends Fragment {
 
     mLaoDetailFragBinding.setViewModel(mLaoDetailViewModel);
     mLaoDetailFragBinding.setLifecycleOwner(getActivity());
-
-      Log.d(TAG, "lao name 1 "+mLaoDetailViewModel.getCurrentLaoName().getValue());
+    
     return mLaoDetailFragBinding.getRoot();
   }
 
@@ -69,7 +68,6 @@ public class LaoDetailFragment extends Fragment {
     setupWitnessListAdapter();
     setupWitnessListUpdates();
 
-      Log.d(TAG, "lao name 2 "+mLaoDetailViewModel.getCurrentLaoName().getValue());
     // TODO: Add witness handler
 
     //    setupSwipeRefresh();
