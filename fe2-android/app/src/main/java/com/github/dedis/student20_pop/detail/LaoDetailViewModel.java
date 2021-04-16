@@ -1,8 +1,12 @@
 package com.github.dedis.student20_pop.detail;
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Application;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -40,8 +44,10 @@ import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -65,6 +71,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final MutableLiveData<Event<Boolean>> mCloseRollCallEvent = new MutableLiveData<>();
 
   private final MutableLiveData<Event<Boolean>> mCreatedRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<String>>  mScanWarning = new MutableLiveData<>();
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -93,7 +100,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final AndroidKeysetManager mKeysetManager;
   private CompositeDisposable disposables;
   private Gson mGson;
-  private List<String> attendees = new ArrayList<>();
+  private Set<String> attendees = new HashSet<>();
 
   public LaoDetailViewModel(
           @NonNull Application application,
@@ -148,7 +155,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   public LiveData<Event<Boolean>> getCreatedRollCallEvent() {
     return mCreatedRollCallEvent;
   }
-
+  public LiveData<Event<String>> getScanWarning() {
+    return mScanWarning;
+  }
   //from pull request:
   public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() {
     return mLaoEvents;
@@ -358,7 +367,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String channel = lao.getChannel();//try loa.getId() ??
     String laoId = channel.substring(6); // removing /root/ prefix
     String updateId = Hash.hash("R", laoId, mCurrentRollCallId, Long.toString(end));
-    CloseRollCall closeRollCall = new CloseRollCall(updateId, mCurrentRollCallId, end, attendees);
+    CloseRollCall closeRollCall = new CloseRollCall(updateId, mCurrentRollCallId, end, new ArrayList<>(attendees));
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
@@ -410,8 +419,17 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
+    try{
+      Base64.getDecoder().decode(barcode.rawValue);
+    }catch(IllegalArgumentException e){
+      mScanWarning.postValue(new Event<>("Invalid QR code. Please try again."));
+      return;
+    }
+    if(attendees.contains(barcode.rawValue)){
+      mScanWarning.postValue(new Event<>("This QR code has already been scanned. Please try again."));
+      return;
+    }
     attendees.add(barcode.rawValue);
-    //mNbAttendees.postValue(new Event<>(mNbAttendees.getValue().getContentIfNotHandled()+1));
     mNbAttendees.postValue(new Event<>(attendees.size()));
   }
 }

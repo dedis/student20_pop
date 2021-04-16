@@ -314,7 +314,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     Collections.sort(events);
     long now = Instant.now().getEpochSecond();
     for (Event event : events) {
-      if (event.getEndTimestamp() < now) {
+      if (event.getEndTimestamp() <= now) {
         eventsMap.get(PAST).add(event);
       } else if (event.getStartTimestamp() > now) {
         eventsMap.get(FUTURE).add(event);
