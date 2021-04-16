@@ -132,6 +132,11 @@ func (m *Message) VerifyAndUnmarshalData() error {
 		if err != nil {
 			return xerrors.Errorf("error parsing roll call data: %v", err)
 		}
+	case DataObject(ElectionObject):
+		err := m.parseElectionData(ElectionAction(action), m.RawData)
+		if err != nil {
+			xerrors.Errorf("error parsing election data %v", err)
+		}
 	default:
 		return xerrors.Errorf("failed to parse data object of type: %s", gd.GetObject())
 	}
@@ -249,10 +254,53 @@ func (m *Message) parseLAOData(action LaoDataAction, data []byte) error {
 		if err != nil {
 			return xerrors.Errorf("failed to parse state lao data: %v", err)
 		}
-
 		m.Data = state
 		return nil
 	default:
 		return xerrors.Errorf("invalid action: %s", action)
+	}
+
+}
+func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
+	switch action {
+	case ElectionSetupAction:
+		setup := &ElectionSetupData{}
+
+		err := json.Unmarshal(data, setup)
+
+		if err != nil {
+			return xerrors.Errorf("failed to parse election setup data: %v", err)
+		}
+		m.Data = setup
+		return nil
+	case CastVoteAction:
+		cast := &CastVoteData{}
+
+		err := json.Unmarshal(data, cast)
+		if err != nil {
+			return xerrors.Errorf("failed to parse cast vote data : %v", err)
+		}
+		m.Data = cast
+		return nil
+	case ElectionEndAction:
+		end := &ElectionEndData{}
+		err := json.Unmarshal(data, end)
+
+		if err != nil {
+			return xerrors.Errorf("failed to parse end of election data : %v", err)
+		}
+		m.Data = end
+		return nil
+	case ElectionResultAction:
+		result := &ElectionResultData{}
+		err := json.Unmarshal(data, result)
+
+		if err != nil {
+			return xerrors.Errorf("failed to parse result of election data: %v", err)
+		}
+		m.Data = result
+		return nil
+	default:
+		return xerrors.Errorf("invalid election action : %s", action)
 	}
 }
