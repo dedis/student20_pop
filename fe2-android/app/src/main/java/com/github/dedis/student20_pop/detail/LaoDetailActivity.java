@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
+import com.github.dedis.student20_pop.detail.fragments.CastVoteFragment;
 import com.github.dedis.student20_pop.detail.fragments.ElectionSetupFragment;
 import com.github.dedis.student20_pop.detail.fragments.ManageElectionFragment;
 import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
@@ -257,8 +258,14 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupCastVotesFragment() {
-
-
+     CastVoteFragment castVoteFragment =
+              (CastVoteFragment)
+                      getSupportFragmentManager().findFragmentById(R.id.fragment_cast_vote);
+      if (castVoteFragment == null) {
+          castVoteFragment = castVoteFragment.newInstance();
+          ActivityUtils.replaceFragmentInActivity(
+                  getSupportFragmentManager(), castVoteFragment, R.id.fragment_container_lao_detail);
+      }
   }
   private void setupElectionResultsFragment() {
   }

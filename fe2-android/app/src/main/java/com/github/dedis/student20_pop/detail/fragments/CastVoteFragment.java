@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.dedis.student20_pop.R;
+import com.github.dedis.student20_pop.databinding.FragmentCastVoteBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 
@@ -43,7 +44,7 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
     private TextView electionNameText;
     private ListView lvBallots;
     private Button voteButton;
-    //private FragmentCastVoteBinding mElectionDisplayFragBinding;
+    private FragmentCastVoteBinding mElectionDisplayFragBinding;
 
     private LaoDetailViewModel mLaoDetailViewModel;
 
@@ -79,7 +80,7 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
         }
     }
 
-   /* @Override
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -119,7 +120,7 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
         lvBallots.setOnItemClickListener(this);
         voteButton.setOnClickListener(buttonListener);
         return mElectionDisplayFragBinding.getRoot();
-    } */
+    }
 
     private void setBallotOptions(){
 
