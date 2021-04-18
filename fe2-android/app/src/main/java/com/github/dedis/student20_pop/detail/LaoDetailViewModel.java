@@ -353,6 +353,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
   public void terminateCurrentElection() {
     if(mCurrentLao.getValue().removeElection(mCurrentElection.getValue().getId())) {
       Log.d(TAG, "Election deleted : " + mCurrentElection.getValue().getId());
+      Lao lao = getCurrentLao();
+      mCurrentLao.postValue(lao);
       openLaoDetail();
     } else {
       Log.d(TAG, "Impossible to delete election : " + mCurrentElection.getValue().getId());

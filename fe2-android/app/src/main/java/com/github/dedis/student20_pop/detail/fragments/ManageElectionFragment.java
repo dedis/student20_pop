@@ -64,6 +64,8 @@ public class ManageElectionFragment extends Fragment {
         startTime = mManageElectionFragBinding.displayedStartTime;
         endTime = mManageElectionFragBinding.displayedEndTime;
         question = mManageElectionFragBinding.electionQuestion;
+        laoName = mManageElectionFragBinding.manageElectionLaoName;
+        electionName = mManageElectionFragBinding.manageElectionTitle;
         Date dCurrent = new java.util.Date(System.currentTimeMillis()); // Get's the date based on the unix time stamp
         Date dStart = new java.util.Date(laoDetailViewModel.getCurrentElection().getStartTimestamp() * 1000);// *1000 because it needs to be in milisecond
         Date dEnd = new java.util.Date(laoDetailViewModel.getCurrentElection().getEndTimestamp() * 1000);
@@ -72,6 +74,7 @@ public class ManageElectionFragment extends Fragment {
         endTime.setText(DATE_FORMAT.format(dEnd));
         laoName.setText(laoDetailViewModel.getCurrentLaoName().getValue());
         electionName.setText(laoDetailViewModel.getCurrentElection().getName());
+        question.setText("Election Question : " + laoDetailViewModel.getCurrentElection().getQuestion());
 
         mManageElectionFragBinding.setLifecycleOwner(getActivity());
         return mManageElectionFragBinding.getRoot();

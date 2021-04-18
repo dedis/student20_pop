@@ -278,10 +278,10 @@ EventCategory category = (EventCategory) getGroup(groupPosition);
           Election election =(Election) event;
           electionBinding.setElection(election);
           Date dStart = new java.util.Date(Long.valueOf(election.getStartTimestamp())*1000);// *1000 because it needs to be in milisecond
-          String dateStart = new SimpleDateFormat("dd/MM/yyyy HH:mm",Locale.FRENCH).format(dStart);
+          String dateStart = DATE_FORMAT.format(dStart);
           electionBinding.electionStartDate.setText("Start date : " +dateStart);
           Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp())*1000);
-          String dateEnd = new SimpleDateFormat("dd/MM, yyyy HH:mm",Locale.FRENCH).format(dEnd);
+          String dateEnd = DATE_FORMAT.format(dEnd);
           electionBinding.electionEndDate.setText("End Date : " + dateEnd);
           if(category == PRESENT) {
            electionBinding.electionActionButton.setText("Cast Vote");
