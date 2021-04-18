@@ -21,6 +21,7 @@ import java.util.List;
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.AbstractEventCreationFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
@@ -144,6 +145,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                     for (String ballotOption: ballotOptions) {
                         if (!ballotOption.equals("")) filteredBallotOptions.add(ballotOption);
                     }
+
                     laoDetailViewModel.createNewElection(title, startTimeInSeconds, endTimeInSeconds, votingMethod.toString(), mSetupElectionFragBinding.writeIn.isChecked(), filteredBallotOptions, question);
                 });
 
@@ -151,9 +153,26 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
         cancelButton.setOnClickListener(
                 v ->
                     laoDetailViewModel.openLaoDetail());
-        mSetupElectionFragBinding.setLifecycleOwner(getActivity());
 
+        // Subscribe on updates for Election Creation
+
+        laoDetailViewModel
+                .getElectionCreated()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean action = booleanEvent.getContentIfNotHandled();
+                            if (action != null) {
+                                laoDetailViewModel.openLaoDetail();
+                            }
+                        });
+
+        mSetupElectionFragBinding.setLifecycleOwner(getActivity());
         return mSetupElectionFragBinding.getRoot();
+
+
+
+        //
 
     }
 

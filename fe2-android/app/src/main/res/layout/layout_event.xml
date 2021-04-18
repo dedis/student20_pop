@@ -1,31 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
   <data>
     <variable
       name="event"
       type="com.github.dedis.student20_pop.model.event.Event" />
+    <import type="android.view.View" />
+    <variable
+        name="view_model"
+        type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
+    <variable
+        name="handleElectionListener"
+        type="com.github.dedis.student20_pop.detail.listeners.OnEventTypeSelectedListener" />
+    <variable
+        name="manageEventListener"
+        type="com.github.dedis.student20_pop.detail.listeners.OnEventTypeSelectedListener" />
   </data>
 
-  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/event_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+  <LinearLayout
+      android:id="@+id/event_layout"
+      android:layout_width="match_parent"
+      android:layout_height="55dp"
+      android:orientation="vertical">
 
-    <TextView
-      android:id="@+id/event_title"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginHorizontal="@dimen/margin_text"
-      android:gravity="center"
-      android:textSize="@dimen/size_body"
-      android:textStyle="bold" />
+    <LinearLayout
+        android:id="@+id/event_layout2"
+        android:layout_width="354dp"
+        android:layout_height="57dp"
+        android:orientation="vertical">
 
-    <TextView
-      android:id="@+id/event_description"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginHorizontal="@dimen/margin_text" />
+      <TextView
+          android:id="@+id/event_title"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text"
+          android:gravity="center"
+          android:textSize="@dimen/size_body"
+          android:textStyle="bold" />
+
+      <TextView
+          android:id="@+id/event_description"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text" />
+
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/edit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:contentDescription="@string/handle_events"
+        android:src="@drawable/ic_baseline_edit_24"
+        android:visibility="@{view_model.isOrganizer() ? View.VISIBLE : View.GONE}" />
 
   </LinearLayout>
 </layout>

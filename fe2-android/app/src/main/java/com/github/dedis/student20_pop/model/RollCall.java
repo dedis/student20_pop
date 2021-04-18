@@ -1,6 +1,8 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventType;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +21,7 @@ public class RollCall extends Event {
 
   public RollCall() {
     this.attendees = new HashSet<>();
+    type = EventType.ROLL_CALL;
   }
 
   public String getId() {

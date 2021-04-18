@@ -11,13 +11,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
 import com.github.dedis.student20_pop.detail.fragments.ElectionSetupFragment;
-import com.github.dedis.student20_pop.detail.fragments.RollCallEventCreationFragment;
+import com.github.dedis.student20_pop.detail.fragments.ManageElectionFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.model.event.EventType;
-import com.github.dedis.student20_pop.ui.LaoDetailFragment;
-import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
-import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragment;
+import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import java.util.Objects;
 
@@ -90,7 +91,46 @@ public class LaoDetailActivity extends AppCompatActivity {
                 handleNewEvent(eventType);
               }
             });
+
+//    // Subscribe to "open Cast Votes event" event
+    mViewModel
+            .getOpenCastVotes()
+            .observe(
+                    this,
+                    booleanEvent -> {
+                      Boolean event = booleanEvent.getContentIfNotHandled();
+                      if(event!= null) {
+                        setupCastVotesFragment();
+                      }
+                    });
+
+    // Subscribe to "Election Display event" event
+    mViewModel
+            .getOpenElectionResultsEvent()
+            .observe(
+                    this,
+                    booleanEvent -> {
+                      Boolean event = booleanEvent.getContentIfNotHandled();
+                      if(event!= null) {
+                        setupElectionResultsFragment();
+                      }
+                    });
+
+    // Subscribe to " Manage Election event" event
+    mViewModel
+            .getOpenManageElectionEvent()
+            .observe(
+                    this,
+                    booleanEvent -> {
+                      Boolean event = booleanEvent.getContentIfNotHandled();
+                      if(event!= null) {
+                        setupManageElectionFragment();
+                      }
+                    });
   }
+
+
+
 
   public void handleNewEvent(EventType eventType) {
     Log.d(TAG, "event type: " + eventType.toString());
@@ -203,4 +243,22 @@ public class LaoDetailActivity extends AppCompatActivity {
               getSupportFragmentManager(), electionSetupFragment, R.id.fragment_container_lao_detail);
     }
   }
+  private void setupManageElectionFragment() {
+
+    ManageElectionFragment manageElectionFragment =
+            (ManageElectionFragment)
+                    getSupportFragmentManager().findFragmentById(R.id.fragment_manage_election);
+    if (manageElectionFragment == null) {
+     manageElectionFragment = ManageElectionFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+              getSupportFragmentManager(), manageElectionFragment, R.id.fragment_container_lao_detail);
+    }
+
+  }
+  //TODO : Implement those two methods
+  private void setupCastVotesFragment() { }
+  private void setupElectionResultsFragment() {
+  }
+
+
 }

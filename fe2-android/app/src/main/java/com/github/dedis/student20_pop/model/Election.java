@@ -1,6 +1,7 @@
 package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
+import com.github.dedis.student20_pop.model.event.EventType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,9 @@ public class Election extends Event {
     //votes as attribute ?
 
 
-    public Election() { this.ballotOptions = new ArrayList<>(); }
+    public Election() { this.ballotOptions = new ArrayList<>();
+    type = EventType.ELECTION;
+    }
 
     public String getId() {
         return id;

@@ -45,6 +45,7 @@
     <string name="past_events">Past Events</string>
     <string name="present_events">Present Events</string>
     <string name="future_events">Future Events</string>
+    <string name = "handle_events">Handle Events</string>
 
     <!-- Poll Event -->
     <string name="poll_event">Poll Event</string>
@@ -116,7 +117,10 @@
 
     <!-- E-voting -->
     <string name="elections">Elections</string>
-
+    <string name="voting_management">Voting Management</string>
+    <string name="terminate_election">Terminate Election</string>
+    <string name="displayed_end_time">displayed end time</string>
+    <string name="displayed_current_time">displayed current time</string>
 
 
 </resources>

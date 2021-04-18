@@ -13,11 +13,19 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.github.dedis.student20_pop.databinding.LayoutElectionDisplayBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventBinding;
 import com.github.dedis.student20_pop.databinding.LayoutEventCategoryBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
+import com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener;
+import com.github.dedis.student20_pop.detail.listeners.OnEventTypeSelectedListener;
+import com.github.dedis.student20_pop.model.Election;
+import com.github.dedis.student20_pop.model.RollCall;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
@@ -25,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -110,6 +119,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     }
 
     return this.eventsMap.get(categories[groupPosition]).get(childPosition);
+
   }
 
   /**
@@ -199,7 +209,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
                 arrayAdapter,
                 ((dialog, which) -> {
                   dialog.dismiss();
-                  viewModel.addEvent(EventType.values()[which]);
+                  viewModel.chooseEventType(EventType.values()[which]);
                 }));
             builder.show();
           }
@@ -242,7 +252,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     // TODO : For the moment, events are displayed the same if user is attendee or organizer,
     // in the future it could be nice to have a pencil icon to allow organizer to modify an event
 
-    LayoutEventBinding binding;
+    ViewDataBinding binding;
     Event event = ((Event) getChild(groupPosition, childPosition));
     if (convertView == null) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -250,12 +260,57 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     } else {
       binding = DataBindingUtil.getBinding(convertView);
     }
+      // we use a switch case to handle all the different type of actions we want when we click on a certain event
 
-    binding.setEvent(event);
-    binding.setLifecycleOwner(lifecycleOwner);
+EventCategory category = (EventCategory) getGroup(groupPosition);
+/* if the election is the present when we click on it it will launch cast vote, if it's in the past it will launch
+            if the election is in the past it will display all the election results */
 
-    binding.executePendingBindings();
-    return binding.getRoot();
+      switch (event.type) {
+        case ELECTION:
+         LayoutElectionDisplayBinding electionBinding ;
+          if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            electionBinding = LayoutElectionDisplayBinding.inflate(inflater, parent, false);
+          } else {
+            electionBinding = DataBindingUtil.getBinding(convertView);
+          }
+          Election election =(Election) event;
+          electionBinding.setElection(election);
+          Date dStart = new java.util.Date(Long.valueOf(election.getStartTimestamp())*1000);// *1000 because it needs to be in milisecond
+          String dateStart = new SimpleDateFormat("dd/MM/yyyy HH:mm",Locale.FRENCH).format(dStart);
+          electionBinding.electionStartDate.setText("Start date : " +dateStart);
+          Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp())*1000);
+          String dateEnd = new SimpleDateFormat("dd/MM, yyyy HH:mm",Locale.FRENCH).format(dEnd);
+          electionBinding.electionEndDate.setText("End Date : " + dateEnd);
+          if(category == PRESENT) {
+           electionBinding.electionActionButton.setText("Cast Vote");
+            electionBinding.electionActionButton.setOnClickListener(
+                    clicked -> viewModel.openCastVotes());
+          }
+          else if (category == PAST) {
+            electionBinding.electionActionButton.setText("Election Results");
+              electionBinding.electionActionButton.setOnClickListener(
+                      clicked -> viewModel.openElectionResults(true));
+
+          }
+          else if (category == FUTURE) {
+            electionBinding.electionActionButton.setVisibility(View.GONE);
+          }
+
+          electionBinding.electionEditButton.setOnClickListener( clicked -> {
+              viewModel.setCurrentElection(election);
+              viewModel.openManageElection(true);
+          });
+          electionBinding.setEventCategory(category);
+          electionBinding.setViewModel(viewModel);
+          electionBinding.setLifecycleOwner(lifecycleOwner);
+          electionBinding.executePendingBindings();
+          return electionBinding.getRoot();
+            }
+
+
+return binding.getRoot();
   }
 
   /**
@@ -265,7 +320,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
-    eventsMap = new HashMap<>();
     long now = Instant.now().getEpochSecond();
     for (Event event : events) {
       if (event.getEndTimestamp() < now) {

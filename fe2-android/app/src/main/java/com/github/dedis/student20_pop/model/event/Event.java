@@ -6,7 +6,7 @@ public abstract class Event implements Comparable<Event> {
   public abstract long getStartTimestamp();
 
   public abstract long getEndTimestamp();
-
+  public  EventType type;
   @Override
   public int compareTo(Event o) {
     int start = Long.compare(this.getStartTimestamp(), o.getStartTimestamp());
@@ -16,4 +16,5 @@ public abstract class Event implements Comparable<Event> {
 
     return Long.compare(this.getEndTimestamp(), o.getEndTimestamp());
   }
+
 }
