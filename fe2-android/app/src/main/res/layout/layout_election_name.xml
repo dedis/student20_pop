@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View.OnClickListener" />
+
+        <variable
+            name="election"
+            type="com.github.dedis.student20_pop.model.Election" />
+
+        <variable
+            name="listener"
+            type="com.github.dedis.student20_pop.detail.listeners.OnEventCreatedListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_election"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lao"
+        android:onClick="@{() -> listener.OnEventClicked(election)}">
+
+        <TextView
+            android:id="@+id/lao_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_text"
+            android:textSize="@dimen/size_body"
+            android:textStyle="bold"
+            android:text="@{election.name}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_text"
+            android:textSize="@dimen/size_small"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

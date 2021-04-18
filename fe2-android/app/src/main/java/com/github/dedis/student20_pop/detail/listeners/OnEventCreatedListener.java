@@ -4,5 +4,5 @@ import com.github.dedis.student20_pop.model.event.Event;
 
 public interface OnEventCreatedListener {
 
-  void OnEventCreatedListener(Event event);
+  void OnEventClicked(Event event);
 }

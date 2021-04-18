@@ -58,7 +58,8 @@
             android:id="@+id/election_action_button"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:text="ACTION" />
+            android:text="Vote"
+            android:visibility="@{eventCategory == EventCategory.PRESENT ? View.VISIBLE : View.GONE}"/>
 
 
         <Button

@@ -129,6 +129,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public void setupHomeButton() {
+
     Button homeButton = (Button) findViewById(R.id.tab_home);
 
     homeButton.setOnClickListener(v -> mViewModel.openHome());

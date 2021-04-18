@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Collections;
 import java.util.List;
 
-public class ElectionQuestion extends Data {
+public class  ElectionQuestion extends Data {
 
     private String id;
     private String question;

@@ -11,9 +11,11 @@ import com.github.dedis.student20_pop.Event;
 import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.data.LAORepository;
+import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall.StartType;
@@ -30,6 +32,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -104,6 +107,60 @@ public class LaoDetailViewModel extends AndroidViewModel {
     disposables.dispose();
   }
 
+
+  public void sendVote(Election election, boolean writeIn, List<List<Long>> votes, String question) {
+    Log.d(TAG, "sending a new vote in election : " + election.getName());
+
+    Lao lao = getCurrentLao();
+    if (lao == null) {
+      Log.d(TAG, "failed to retrieve current lao");
+      return;
+    }
+
+    String channel = lao.getChannel();
+    CastVote  castVote;
+    String laoId = channel.substring(6); // removing /root/ prefix
+    castVote = new CastVote(writeIn, votes, question, election.getId(), laoId);
+
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getDecoder().decode(publicKey);
+
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, castVote, signer, mGson);
+
+      Log.d(TAG, "sending publish message");
+      Disposable disposable =
+              mLAORepository
+                      .sendPublish(channel, msg)
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .timeout(5, TimeUnit.SECONDS)
+                      .subscribe(
+                              answer -> {
+                                if (answer instanceof Result) {
+                                    Log.d(TAG, "sent a vote successfully");
+                                    // Toast ? + send back to election screen or details screen ?
+                                    openLaoDetail();
+                                } else {
+                                  Log.d(TAG, "failed to send the vote");
+                                }
+                              },
+                              throwable -> {
+                                Log.d(TAG, "timed out waiting for result on cast_vote", throwable);
+                              });
+
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, "failed to retrieve public key", e);
+      return;
+    }
+  }
+
+
+
   /**
    * Creates new roll call event.
    * <p>
@@ -169,6 +226,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
     }
     return createRollCall.getId();
   }
+
   public void createNewElection(String name, long start, long end, String voting_method, boolean write_in, List<String> ballot_options, String question) {
     Log.d(TAG,"creating a new election with name " + name);
 
@@ -203,7 +261,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
                       .subscribe(
                               answer -> {
                                 if (answer instanceof Result) {
-                                  Log.d(TAG, "setup an election");
+                                  Log.d(TAG, "created an election successfully");
                                   mElectionCreated.postValue(new Event<>(true));
                                   mCurrentLao.postValue(lao);
                                 }
@@ -319,6 +377,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
+
   public void openHome() {
     mOpenHomeEvent.setValue(new Event<>(true));
   }
@@ -441,9 +500,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
                   }
                   mIsOrganizer.postValue(false);
                 }));
-  }
-  public void openCastVotes(String id) {
-
   }
 
 

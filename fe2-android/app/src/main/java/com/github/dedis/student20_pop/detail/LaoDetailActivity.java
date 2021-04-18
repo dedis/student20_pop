@@ -145,7 +145,7 @@ public class LaoDetailActivity extends AppCompatActivity {
         setupCreatePollFragment();
         break;
       case ELECTION:
-        setupCreateElectionSetupFragment();
+        setupCreateElectionFragment();
         break;
       default:
         Log.d(TAG, "unknown event type: " + eventType.toString());
@@ -233,7 +233,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
 
-  private void setupCreateElectionSetupFragment() {
+  private void setupCreateElectionFragment() {
     ElectionSetupFragment electionSetupFragment =
             (ElectionSetupFragment)
               getSupportFragmentManager().findFragmentById(R.id.fragment_setup_election_event);
@@ -255,10 +255,12 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
 
   }
-  //TODO : Implement those two methods
-  private void setupCastVotesFragment() { }
+
+  private void setupCastVotesFragment() {
+
+
+  }
   private void setupElectionResultsFragment() {
   }
-
 
 }
