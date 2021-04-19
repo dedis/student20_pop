@@ -107,7 +107,6 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
-<<<<<<< HEAD
     <string name="election_name">Election Name</string>
     <string name="lao_name">LAO name</string>
     <string name="election_setup">Election Setup</string>
@@ -123,10 +122,8 @@
     <string name="displayed_end_time">displayed end time</string>
     <string name="displayed_current_time">displayed current time</string>
 
-=======
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="button_text">Cast Vote</string>
->>>>>>> origin/work-fe2-castVote-johannpluss
 
 </resources>

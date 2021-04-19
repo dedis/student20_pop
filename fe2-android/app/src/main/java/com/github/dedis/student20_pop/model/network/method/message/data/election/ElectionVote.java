@@ -21,7 +21,7 @@ public class ElectionVote extends Data {
     private String id;
     @SerializedName(value = "question_id")
     private String questionId; // id of the question
-    private List<Long> vote;
+    private List<Long> votes;
     private Boolean writeIn;
 
     /**
@@ -30,13 +30,13 @@ public class ElectionVote extends Data {
     public ElectionVote(
             String questionId,
             List<Long> votes,
-            Boolean write_in,
+            Boolean writeIn,
             String electionId) {
 
         this.questionId = questionId;
         this.writeIn = writeIn;
-        this.vote = vote;
-        this.id = Hash.hash("Vote", electionId, questionId, vote.toString());
+        this.votes = votes;
+        this.id = Hash.hash("Vote", electionId, questionId, votes.toString());
     }
 
 
@@ -50,7 +50,7 @@ public class ElectionVote extends Data {
 
     public Boolean getWriteIn() { return writeIn; }
 
-    public List<Long> getVote_results(){ return vote;}
+    public List<Long> getVote_results(){ return votes;}
 
     @Override
     public String getObject() {

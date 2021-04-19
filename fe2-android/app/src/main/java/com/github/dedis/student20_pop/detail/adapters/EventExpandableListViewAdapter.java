@@ -286,7 +286,10 @@ EventCategory category = (EventCategory) getGroup(groupPosition);
           if(category == PRESENT) {
            electionBinding.electionActionButton.setText("Cast Vote");
             electionBinding.electionActionButton.setOnClickListener(
-                    clicked -> viewModel.openCastVotes());
+                    clicked ->{
+                        viewModel.setCurrentElection(election);
+                        viewModel.openCastVotes();
+                    });
           }
           else if (category == PAST) {
             electionBinding.electionActionButton.setText("Election Results");

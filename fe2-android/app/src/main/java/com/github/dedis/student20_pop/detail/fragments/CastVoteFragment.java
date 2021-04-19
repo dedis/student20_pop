@@ -20,7 +20,9 @@ import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentCastVoteBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.model.Election;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -36,9 +38,9 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
 
 
     private int numberOfChoices;
-    String [] ballotOptions;
+    List<String> ballotOptions;
     Set<String> selectedOptions;
-    int selectedOption;
+    private long selectedOption;
     private TextView laoNameText;
     private TextView voteInText;
     private TextView electionNameText;
@@ -46,15 +48,17 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
     private Button voteButton;
     private FragmentCastVoteBinding mElectionDisplayFragBinding;
 
+    private Election election;
     private LaoDetailViewModel mLaoDetailViewModel;
 
 
 
-    private View.OnClickListener buttonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            castVote();
-        }
+    private View.OnClickListener buttonListener = v -> {
+        List<List<Long>> list = Arrays.asList(Arrays.asList(selectedOption));
+        System.out.println("Size is " + list.size());
+        System.out.println(list.get(0).get(0));
+        mLaoDetailViewModel.sendVote(election, list );
+
     };
 
 
@@ -97,15 +101,19 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
         voteButton = mElectionDisplayFragBinding.castVoteButton;
         voteButton.setEnabled(false);
 
+
+
+        //Getting election
+        election = mLaoDetailViewModel.getCurrentElection();
+
         //Getting the Lao Name
         laoNameText.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
 
         //Getting ballot options
-//        setBallotOptions();
-        setDummyBallotOptions();
+        ballotOptions = election.getBallotOptions();
 
         //todo get real election name
-        electionNameText.setText("General Election");
+        electionNameText.setText(election.getName());
 
         lvBallots = mElectionDisplayFragBinding.castVoteListView;
 
@@ -126,12 +134,12 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
 
     }
 
-    private void setDummyBallotOptions(){
-        ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Linus Torvalds", "Ken Thompson", "Tim Berners-Lee", "Charles Babbage", "Barbara Liskov", "Ronald Rivest", "Adi Shamir", "Len Adleman"};
-
-      //  ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else", "FOO BAR", "Some other stuff", "stuff", "Anything", "Some other stuff"};
-      //  ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else"};
-    }
+//    private void setDummyBallotOptions(){
+//        ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Linus Torvalds", "Ken Thompson", "Tim Berners-Lee", "Charles Babbage", "Barbara Liskov", "Ronald Rivest", "Adi Shamir", "Len Adleman"};
+//
+//      //  ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else", "FOO BAR", "Some other stuff", "stuff", "Anything", "Some other stuff"};
+//      //  ballotOptions = new String[]{"Alan Turing", "John von Neumann", "Claude Shannon", "Something else"};
+//    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -143,14 +151,14 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
         }//No previously selected option
 
         else if(selectedOption == position){
-            lvBallots.setItemChecked(selectedOption, false);
+            lvBallots.setItemChecked((int) selectedOption, false);
             selectedOption = -1;
             voteButton.setEnabled(false);
             view.setBackgroundColor(Color.WHITE);
         }//Unselecting choice
 
         else{
-            lvBallots.setItemChecked(selectedOption, false);
+            lvBallots.setItemChecked((int) selectedOption, false);
             selectedOption = position;
             lvBallots.setItemChecked(position, true);
             voteButton.setEnabled(true);
@@ -170,9 +178,6 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
 //        }
     }
 
-    private void castVote(){
-
-    }
 
 
 }

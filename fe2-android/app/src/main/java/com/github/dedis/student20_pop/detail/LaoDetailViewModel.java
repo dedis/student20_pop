@@ -108,7 +108,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
   }
 
 
-  public void sendVote(Election election, boolean writeIn, List<List<Long>> votes, String question) {
+  public void sendVote(Election election, List<List<Long>> votes) {
     Log.d(TAG, "sending a new vote in election : " + election.getName());
 
     Lao lao = getCurrentLao();
@@ -120,7 +120,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
     String channel = lao.getChannel();
     CastVote  castVote;
     String laoId = channel.substring(6); // removing /root/ prefix
-    castVote = new CastVote(writeIn, votes, question, election.getId(), laoId);
+    castVote = new CastVote(election.getWriteIn(), votes, election.getQuestion(), election.getId(), laoId);
 
 
     try {
