@@ -124,17 +124,11 @@
 
       </LinearLayout>
 
-      <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/swipe_refresh">
-
-        <ExpandableListView
+      <ExpandableListView
           android:id="@+id/exp_list_view"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:layoutDirection="ltr" />
-      </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>

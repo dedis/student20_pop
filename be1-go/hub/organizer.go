@@ -2,14 +2,12 @@ package hub
 
 import (
 	"bytes"
-	//"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"student20_pop"
 	"sync"
-	"log"
-	//"sort"
 
 	"student20_pop/message"
 
@@ -199,6 +197,12 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	}
 
 	encodedID := base64.StdEncoding.EncodeToString(data.ID)
+	if _, ok := o.channelByID[encodedID]; ok {
+		return &message.Error{
+			Code:        -3,
+			Description: "failed to create lao: another one with the same ID exists",
+		}
+	}
 
 	laoChannelID := "/root/" + encodedID
 
@@ -208,22 +212,13 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
 
-	id := base64.StdEncoding.EncodeToString(data.ID)
-	o.channelByID[id] = &laoCh
+	o.channelByID[encodedID] = &laoCh
 
 	return nil
 }
 
 type laoChannel struct {
 	*baseChannel
-}
-
-func (c *laoChannel) Subscribe(client *Client, msg message.Subscribe) error {
-	return c.baseChannel.Subscribe(client, msg)
-}
-
-func (c *laoChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
-	return c.baseChannel.Unsubscribe(client, msg)
 }
 
 func (c *laoChannel) Publish(publish message.Publish) error {
@@ -247,8 +242,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
 		err = c.processRollCallObject(data)
-	case message.ElectionObject:
-		err = c.processElectionObject(*msg)
 	}
 
 	if err != nil {
@@ -258,17 +251,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 
 	c.broadcastToAllClients(*msg)
 	return nil
-}
-
-func (c *laoChannel) Catchup(catchup message.Catchup) []message.Message {
-	result := c.baseChannel.Catchup(catchup)
-
-	// TODO: define order for Roll call
-	//sort.Slice(result, func(i, j int) bool {
-	//return result[i].Data.GetTimestamp() < result[j].GetTimestamp()
-	//})
-
-	return result
 }
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
@@ -501,162 +483,4 @@ func (c *laoChannel) processRollCallObject(data message.Data) error {
 	}
 
 	return nil
-}
-func (c *laoChannel) processElectionObject(msg message.Message) error {
-	action := message.ElectionAction(msg.Data.GetAction())
-
-	if action != message.ElectionSetupAction {
-		return &message.Error{
-			Code:        -1,
-			Description: fmt.Sprintf("invalid action: %s", action),
-		}
-	}
-	err := c.createElection(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to setup the election", err)
-	}
-
-	return nil
-}
-
-func (c *laoChannel) createElection(msg message.Message) error {
-	o := c.hub
-
-	o.Lock()
-	defer o.Unlock()
-
-	// Check the data
-	data, ok := msg.Data.(*message.ElectionSetupData)
-
-	if !ok {
-		return &message.Error{
-			Code:        -4,
-			Description: "failed to cast data to SetupElectionData",
-		}
-	}
-
-	// Check if the Lao ID of the message corresponds to the channel ID
-	encodedLaoID := base64.StdEncoding.EncodeToString(data.LaoID)
-	channelID := c.channelID[6:]
-	if channelID != encodedLaoID {
-		return &message.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("Lao ID of the message (Lao: %s) is different from the channelID (channel: %s)", encodedLaoID, channelID),
-		}
-	}
-
-	// Compute the new election channel id
-	encodedElectionID := base64.StdEncoding.EncodeToString(data.ID)
-	encodedID := encodedLaoID + "/" + encodedElectionID
-
-	// Create the new election channel
-	electionCh := electionChannel{
-		createBaseChannel(o, "/root/"+encodedID),
-		data.Questions[0].VotingMethod,//TODO : check if this is what was meanth by method ot is it rather pluralityy and stuff??,
-		//Also can it happen that there is a valid setup without questions?
-		data.StartTime,
-		data.EndTime,
-		false,
-		getAllQuestionsForElectionChannel(data.Questions),
-	}
-
-	// Add the SetupElection message to the new election channel
-	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
-	electionCh.inbox[messageID] = msg
-	electionCh.inbox["0"] = msg//have this message saved at a place by
-	//default
-
-	// Add the new election channel to the organizerHub
-	o.channelByID[encodedID] = &electionCh
-
-	return nil
-}
-
-func getAllQuestionsForElectionChannel(questions []message.Question)map[string]question{
-	qs := make(map[string]question)
-	for _,q := range questions{
-		qs[ base64.StdEncoding.EncodeToString(q.ID)] = question{
-			q.ID,
-			q.BallotOptions,
-			make(map[string]validVote),
-		}
-	}
-	return qs
-}
-
-type electionChannel struct {
-	*baseChannel
-
-	// Voting method of the election
-	method message.VotingMethod
-
-	// Starting time of the election
-	start message.Timestamp
-
-	// Ending time of the election
-	end message.Timestamp
-
-	// True if the election is over and false otherwise
-	terminated bool
-
-	// Questions asked to the participants
-	//the key will be the string representation of the id of type byte[]
-	questions map[string]question
-}
-
-type question struct {
-	// ID of th question
-	id []byte
-
-	// Different options
-	ballotOptions []message.BallotOption
-
-	// list of all valid votes
-	validVotes map[string]validVote
-}
-
-type validVote struct {
-	// time of the creation of the vote
-	voteTime message.Timestamp
-
-	// indexes of the ballot options
-	indexes []int
-
-}
-func (c *electionChannel) Subscribe(client *Client, msg message.Subscribe) error {
-	return c.baseChannel.Subscribe(client, msg)
-}
-
-func (c *electionChannel) Unsubscribe(client *Client, msg message.Unsubscribe) error {
-	return c.baseChannel.Unsubscribe(client, msg)
-}
-
-func (c *electionChannel) Publish(publish message.Publish) error {
-	err := c.baseChannel.VerifyPublishMessage(publish)
-	if err != nil {
-		return xerrors.Errorf("failed to verify publish message on an election channel: %v", err)
-	}
-
-	msg := publish.Params.Message
-
-	data := msg.Data
-
-	object := data.GetObject()
-
-	if object == message.ElectionObject {
-
-		action := message.ElectionAction(data.GetAction())
-
-		switch action {
-		case message.CastVoteAction:
-		case message.ElectionEndAction:
-		case message.ElectionResultAction:
-		}
-	}
-
-	return nil
-}
-
-func (c *electionChannel) Catchup(catchup message.Catchup) []message.Message {
-	return c.baseChannel.Catchup(catchup)
 }

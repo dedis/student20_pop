@@ -29,27 +29,26 @@ import java.util.Locale;
  */
 public abstract class AbstractEventCreationFragment extends Fragment {
 
-  public static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
-  public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   public static final int START_DATE_REQUEST_CODE = 11; // Used to identify the request
   public static final int END_DATE_REQUEST_CODE = 12;
   public static final int START_TIME_REQUEST_CODE = 13;
   public static final int END_TIME_REQUEST_CODE = 14;
   public static final String NO_LOCATION = "";
-  public static Calendar startDate;
-  public static Calendar endDate;
-  public static Calendar startTime;
-  public static Calendar endTime;
-  public static Calendar today = Calendar.getInstance();
-  public static Calendar completeStartTime = Calendar.getInstance();
-  public static Calendar completeEndTime = Calendar.getInstance();
+  public final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
+  public final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
   public static long startTimeInSeconds;
   public static long endTimeInSeconds;
+  private Calendar startDate;
+  private Calendar endDate;
+  private Calendar startTime;
+  private Calendar endTime;
+  private Calendar today = Calendar.getInstance();
+  private Calendar completeStartTime = Calendar.getInstance();
+  private Calendar completeEndTime = Calendar.getInstance();
   private EditText startDateEditText;
   private EditText endDateEditText;
   private EditText startTimeEditText;
   private EditText endTimeEditText;
-  private Calendar selection;
 
   public void setDateAndTimeView(View view, Fragment fragment, FragmentManager fragmentManager) {
     startDateEditText = view.findViewById(R.id.start_date_edit_text);
@@ -123,7 +122,8 @@ public abstract class AbstractEventCreationFragment extends Fragment {
 
   public void checkDates(int requestCode, int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK) {
-      selection = (Calendar) data.getSerializableExtra(getString(R.string.picker_selection));
+      Calendar selection =
+          (Calendar) data.getSerializableExtra(getString(R.string.picker_selection));
       switch (requestCode) {
         case START_DATE_REQUEST_CODE:
           startDate = selection;

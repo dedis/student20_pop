@@ -8,18 +8,6 @@
         android:layout_height="match_parent">
 
         <include
-            android:id="@+id/manage_election_tab_home"
-            layout="@layout/tab_home"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <include
-            android:id="@+id/manage_election_tab_identity"
-            layout="@layout/tab_identity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <include
             android:id="@+id/manage_election_tab_back"
             layout="@layout/tab_back"
             android:layout_width="match_parent"
@@ -35,15 +23,14 @@
             app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
 
-
-
         <ScrollView
             android:id="@+id/manage_election_scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="50dp"
             android:fillViewport="true"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/manage_election_guideline_horizontal">
 
             <LinearLayout
                 android:id="@+id/manage_election_fields_ll"
@@ -118,8 +105,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginStart="127dp"
-                            android:autofillHints="false"
-                            android:focusableInTouchMode="false" />
+                            android:autofillHints="false" />
 
                     </LinearLayout>
 
@@ -147,8 +133,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginStart="79dp"
-                            android:autofillHints="false"
-                            android:focusableInTouchMode="false" />
+                            android:autofillHints="false" />
 
                     </LinearLayout>
 
@@ -176,8 +161,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginStart="90dp"
-                            android:autofillHints="false"
-                            android:focusableInTouchMode="false" />
+                            android:autofillHints="false" />
 
                     </LinearLayout>
 

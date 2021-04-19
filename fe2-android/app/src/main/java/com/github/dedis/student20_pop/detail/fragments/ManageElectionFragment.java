@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.detail.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentManageElectionBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.home.HomeActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,6 +41,7 @@ public class ManageElectionFragment extends Fragment {
     private TextView question;
     private LaoDetailViewModel laoDetailViewModel;
 
+
     public static ManageElectionFragment newInstance() {
         return new ManageElectionFragment();
     }
@@ -48,14 +52,10 @@ public class ManageElectionFragment extends Fragment {
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-
         mManageElectionFragBinding =
                 FragmentManageElectionBinding.inflate(inflater, container, false);
 
         laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
-
-        //setDateAndTimeView(mManageElectionFragBinding.getRoot(), this, getFragmentManager());
-
         terminate = mManageElectionFragBinding.terminateElection;
         editName = mManageElectionFragBinding.editName;
         editQuestion = mManageElectionFragBinding.editQuestion;
@@ -75,7 +75,6 @@ public class ManageElectionFragment extends Fragment {
         laoName.setText(laoDetailViewModel.getCurrentLaoName().getValue());
         electionName.setText(laoDetailViewModel.getCurrentElection().getName());
         question.setText("Election Question : " + laoDetailViewModel.getCurrentElection().getQuestion());
-
         mManageElectionFragBinding.setLifecycleOwner(getActivity());
         return mManageElectionFragBinding.getRoot();
 
@@ -84,13 +83,43 @@ public class ManageElectionFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        setupHomeButton();
+        Button back = (Button) getActivity().findViewById(R.id.tab_back);
+        back.setOnClickListener(c->laoDetailViewModel.openLaoDetail());
         //On click, terminate button  current Election
         terminate.setOnClickListener(
                 v -> {
-                    //computeTimesInSeconds();
                     laoDetailViewModel.terminateCurrentElection();
                     laoDetailViewModel.openLaoDetail();
                 });
+
+        // Subscribe to "open home" event
+        laoDetailViewModel
+                .getOpenHomeEvent()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null) {
+                                setupHomeActivity();
+                            }
+                        });
+
+
     }
+    public void setupHomeButton() {
+        Button homeButton = (Button) getActivity().findViewById(R.id.tab_home);
+
+        homeButton.setOnClickListener(v -> laoDetailViewModel.openHome());
+    }
+    private void setupHomeActivity() {
+        Intent intent = new Intent(getActivity(), HomeActivity.class);
+        getActivity().setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
+        getActivity().finish();
+    }
+
+
+
 }
+
+
