@@ -24,6 +24,7 @@ public final class TimePickerFragment extends AppCompatDialogFragment
     return new TimePickerDialog(getActivity(), this, hourOfDay, minute, true);
   }
 
+
   /**
    * Called when the user is done setting a new time and the dialog has closed.
    *

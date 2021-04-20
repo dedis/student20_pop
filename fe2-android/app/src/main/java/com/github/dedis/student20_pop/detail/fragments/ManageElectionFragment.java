@@ -1,7 +1,13 @@
 package com.github.dedis.student20_pop.detail.fragments;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +16,19 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentManageElectionBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
+import com.github.dedis.student20_pop.detail.fragments.pickers.DatePickerFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -32,13 +42,15 @@ public class ManageElectionFragment extends Fragment {
     private TextView laoName;
     private TextView electionName;
     private Button terminate;
-    private Button editName;
-    private Button editQuestion;
-    private Button editBallotOptions;
     private TextView currentTime;
     private TextView startTime;
     private TextView endTime;
     private TextView question;
+    private Button editName;
+    private Button editQuestion;
+    private Button editBallotOptions;
+    private Button editStartTimeButton;
+    private Calendar modifyStartTime = Calendar.getInstance();
     private LaoDetailViewModel laoDetailViewModel;
 
 
@@ -57,6 +69,7 @@ public class ManageElectionFragment extends Fragment {
 
         laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
         terminate = mManageElectionFragBinding.terminateElection;
+        editStartTimeButton = mManageElectionFragBinding.editStartTime;
         editName = mManageElectionFragBinding.editName;
         editQuestion = mManageElectionFragBinding.editQuestion;
         editBallotOptions = mManageElectionFragBinding.editBallotOptions;
@@ -83,9 +96,41 @@ public class ManageElectionFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setupHomeButton();
-     //   Button back = (Button) getActivity().findViewById(R.id.tab_back);
-     //   back.setOnClickListener(c->laoDetailViewModel.openLaoDetail());
+        Button back = (Button) getActivity().findViewById(R.id.tab_back);
+        back.setOnClickListener(v->laoDetailViewModel.openLaoDetail());
+
+        Calendar now = Calendar.getInstance();
+
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    //Yes button clicked
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        };
+        // Date Select Listener.
+        TimePickerDialog.OnTimeSetListener timeSetListener = (view, hourOfDay, minute) -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show();
+        };
+
+        editStartTimeButton.setOnClickListener(
+                v -> {
+
+
+                    // create the timePickerDialog
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
+                            timeSetListener, now.HOUR_OF_DAY, now.MINUTE, true);
+                    timePickerDialog.setButton(TimePickerDialog.BUTTON_POSITIVE,"Modify Time",timePickerDialog);
+                    // show the timePicker
+                    timePickerDialog.show();
+                });
+
         //On click, terminate button  current Election
         terminate.setOnClickListener(
                 v -> {
@@ -93,31 +138,9 @@ public class ManageElectionFragment extends Fragment {
                     laoDetailViewModel.openLaoDetail();
                 });
 
-        // Subscribe to "open home" event
-        laoDetailViewModel
-                .getOpenHomeEvent()
-                .observe(
-                        this,
-                        booleanEvent -> {
-                            Boolean event = booleanEvent.getContentIfNotHandled();
-                            if (event != null) {
-                                setupHomeActivity();
-                            }
-                        });
 
 
     }
-    public void setupHomeButton() {
-        Button homeButton = (Button) getActivity().findViewById(R.id.tab_home);
-
-        homeButton.setOnClickListener(v -> laoDetailViewModel.openHome());
-    }
-    private void setupHomeActivity() {
-        Intent intent = new Intent(getActivity(), HomeActivity.class);
-        getActivity().setResult(HomeActivity.LAO_DETAIL_REQUEST_CODE, intent);
-        getActivity().finish();
-    }
-
 
 
 }
