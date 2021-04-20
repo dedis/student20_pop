@@ -10,13 +10,13 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
-import com.github.dedis.student20_pop.detail.fragments.RollCallEventCreationFragment;
+import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
+import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
-import com.github.dedis.student20_pop.home.fragments.IdentityFragment;
 import com.github.dedis.student20_pop.model.event.EventType;
-import com.github.dedis.student20_pop.ui.LaoDetailFragment;
-import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
-import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import java.util.Objects;
 

@@ -10,26 +10,27 @@
 		"update_id": {
 			"type": "string",
 			"contentEncoding": "base64",
-			"$comment": "Hash : SHA256('R'||lao_id||opens||start)"
+			"$comment": "Hash : SHA256('R'||lao_id||opens||opened_at)"
 		},
 		"opens": {
 			"type": "string",
 			"contentEncoding": "base64",
 			"$comment": "The 'update_id' of the latest roll call close, or in its absence, the 'id' field of the roll call creation"
 		},
-		"start": {
+		"opened_at": {
 			"description": "[Timestamp] start time",
 			"type": "integer",
 			"minimum": 0,
-			"$comment": "The start time correspond to the time the event is opened/reopened"
+			"$comment": "The time at which the roll call is opened/reopened"
 		 }
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "update_id", "opens", "start"],
+	"required": ["object", "action", "update_id", "opens", "opened_at"],
 	"note": [
-		"If the roll-call was started in future mode (see create roll-call), it can be opened using",
-		"the open roll-call query. If it was closed, but it need to be reopened later (e.g. the ",
-		"organizer forgot to scan the public key of one attendee), then it can reopen it by using",
-		"the open query. In this case, the action should be set to reopen."
+		"The roll_call/open message opens a roll call. This message would lead to a transition from the",
+		"created -> opened state after witnesses attest the message. Witnesses should attest this when they",
+		"can ensure the roll call has actually started. roll_call/reopen may be used to re-open a",
+		"closed roll call in case of a human error (forgot to scan a QR Code). A roll_call/reopen attested by",
+		"witnesses would cause a transition from closed -> opened state"
 	]
 }

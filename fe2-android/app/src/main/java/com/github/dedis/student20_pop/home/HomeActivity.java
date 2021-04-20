@@ -16,8 +16,8 @@ import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.home.fragments.ConnectingFragment;
 import com.github.dedis.student20_pop.home.fragments.HomeFragment;
 import com.github.dedis.student20_pop.home.fragments.LaunchFragment;
-import com.github.dedis.student20_pop.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.student20_pop.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.student20_pop.qrcode.CameraPermissionFragment;
+import com.github.dedis.student20_pop.qrcode.QRCodeScanningFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 

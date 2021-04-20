@@ -10,14 +10,14 @@
 		"update_id": {
 			"type": "string",
 			"contentEncoding": "base64",
-			"$comment": "Hash : SHA256('R'||lao_id||closes||end)"
+			"$comment": "Hash : SHA256('R'||lao_id||closes||closed_at)"
 		},
 		"closes": {
 			"type": "string",
 			"contentEncoding": "base64",
-			"$comment": "The 'update_id' of the latest roll call open, or in its absence, the 'id' field of the roll call creation"
+			"$comment": "The 'update_id' of the latest roll call open"
 		},
-		"end": { "description": "[Timestamp] end time", "type": "integer", "minimum": 0 },
+		"closed_at": { "description": "[Timestamp] end time", "type": "integer", "minimum": 0 },
 		"attendees": {
 			"description": "[Array[Base64String]] list of public keys of attendees",
 			"type": "array",
@@ -26,15 +26,14 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "update_id", "closes", "end", "attendees"],
+	"required": ["object", "action", "update_id", "closes", "closed_at", "attendees"],
 	"note": [
 		"When the organizer scanned all the public keys of the attendees, it closes the event",
-		"and broadcast attendees public keys. The start time corresponds to the time of openening",
-		"of the event. Usually, the event can only be closed once.",
+		"and broadcast attendees public keys. A roll_call/close message attested by witnesses",
+		"leads to a transition from opened -> closed state. Usually, the event can only be closed once.",
 		"In some special case, the event may be reopened (e.g. the organizer forgot to scan the key",
 		"of an attendee, so we reopen 2 minutes later). In this case, we can close the event a",
-		"second (or more) time. The start time then corresponds to the time of the reopening,",
-		"not the original opening time."
+		"second (or more) time. Please see `dataOpenRollCall.json` for more information."
 
 	]
 }

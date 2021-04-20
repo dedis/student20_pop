@@ -14,26 +14,23 @@
 		},
 		"name": { "type": "string" },
 		"creation": { "description": "[Timestamp] creation time", "type": "integer", "minimum": 0 },
-		"start": { "description": "[Timestamp] start time", "type": "integer", "minimum": 0 },
-		"scheduled": { "description": "[Timestamp] scheduled time", "type": "integer", "minimum": 0 },
+		"proposed_start": { "description": "[Timestamp] proposed start time", "type": "integer", "minimum": 0 },
+		"proposed_end": { "description": "[Timestamp] proposed end time", "type": "integer", "minimum": 0 },
 		"location": {
 			"description": "[String] location of the roll-call",
 			"type": "string"
 		},
-		"roll_call_description": {
+		"description": {
 			"description":"An optional description of the meeting",
 			"type": "string",
 			"$comment": "Optional"
 		}
 	},
 	"additionalProperties": false,
-	"required": ["object", "action", "id", "name", "creation", "location"],
-	"oneOf": [
-		{"required": ["start"] },
-		{"required": ["scheduled"] }
-	],
+	"required": ["object", "action", "id", "name", "creation", "location", "proposed_start", "proposed_end"],
 	"note": [
-		"The roll-call can be scheduled in the future. In this case, the scheduled field should be provided",
-		"It can also be started immediately, in which case the start field should be provided"
+		"The roll_call/create message denotes the organizer's intention to create a new roll call",
+		"The proposed_start and proposed_end fields denote the start and end time for the roll call for displaying the event in the UI.",
+		"The roll call may however be only considered started/closed based on its latest state and the attestation of witnesses for the message leading to that state transition."
 	]
 }

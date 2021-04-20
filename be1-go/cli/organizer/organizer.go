@@ -20,9 +20,9 @@ var upgrader = websocket.Upgrader{
 }
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server.
-func Serve(c *cli.Context) error {
-	port := c.Int("port")
-	pk := c.String("public-key")
+func Serve(context *cli.Context) error {
+	port := context.Int("port")
+	pk := context.String("public-key")
 
 	if pk == "" {
 		return xerrors.Errorf("organizer's public key is required")
@@ -48,7 +48,7 @@ func Serve(c *cli.Context) error {
 		serveWs(h, w, r)
 	})
 
-	log.Printf("Starting the WS server at %d", port)
+	log.Printf("Starting the organizer WS server at %d", port)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	if err != nil {
 		return xerrors.Errorf("failed to start the server: %v", err)
@@ -66,14 +66,14 @@ func serveWs(h hub.Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := hub.NewClient(h, conn)
+	client := hub.NewClientSocket(h, conn)
 
 	go client.ReadPump()
 	go client.WritePump()
 
 	// cleanup go routine that removes clients that forgot to unsubscribe
-	go func(c *hub.Client, h hub.Hub) {
+	go func(c *hub.ClientSocket, h hub.Hub) {
 		c.Wait.Wait()
-		h.RemoveClient(c)
+		h.RemoveClientSocket(c)
 	}(client, h)
 }
