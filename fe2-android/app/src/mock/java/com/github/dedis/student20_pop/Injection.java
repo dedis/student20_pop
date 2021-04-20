@@ -32,8 +32,7 @@ import okhttp3.OkHttpClient;
 
 public class Injection {
 
-  private Injection() {
-  }
+  private Injection() {}
 
   @SuppressWarnings("unused")
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)

@@ -16,13 +16,13 @@
     </data>
 
     <LinearLayout
-        android:id="@+id/my_layout"
+        android:id="@+id/election_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/roll_call_layout"
+            android:id="@+id/election_layout"
             android:layout_width="186dp"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -32,8 +32,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                android:gravity="center"
-                android:text="@{ `Election : `+election.name}"
+                android:gravity="left"
+                android:text="Election : Election Name"
                 android:textSize="15dp"
                 android:textStyle="bold" />
 
@@ -42,6 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
+                android:text="start date"
                 android:textSize="15dp" />
 
             <TextView
@@ -49,6 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
+                android:text="end date"
                 tools:textSize="15dp" />
 
 

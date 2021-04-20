@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentSetupElectionEventBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
@@ -38,7 +39,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
     private EditText ballotOption1;
     private EditText ballotOption2;
     private Button submitButton;
-
     private enum votingMethods {Plurality}
     private votingMethods votingMethod;
 
@@ -99,7 +99,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
 
         setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getFragmentManager());
         addDateAndTimeListener(confirmTextWatcher);
-
         Button cancelButton = mSetupElectionFragBinding.electionCancelButton;
 
         ballotOptions = new ArrayList<>();

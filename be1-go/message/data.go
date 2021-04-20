@@ -30,9 +30,6 @@ var (
 
 	// RollCallObject represents a "roll call" message data.
 	RollCallObject DataObject = "roll_call"
-
-	//ElectionObject represents a "election" message data
-	ElectionObject DataObject = "election"
 )
 
 // DataAction represents the type for the "action" key associated with the
@@ -273,6 +270,7 @@ type WitnessMessageData struct {
 	MessageID []byte    `json:"message_id"`
 	Signature Signature `json:"signature"`
 }
+<<<<<<< HEAD
 // ElectionAction represents the action associated with an "election" data message.
 type ElectionAction DataAction
 
@@ -368,6 +366,8 @@ type ElectionResultData struct {
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
 }
 
+=======
+>>>>>>> 8f6810328696e81313f6b4cddf7ab4651d8c102a
 
 // NewCreateLAOData returns an instance of `CreateLAOData`.
 func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witnesses []PublicKey) (*CreateLAOData, error) {

@@ -19,9 +19,7 @@ import com.github.dedis.student20_pop.detail.adapters.EventExpandableListViewAda
 import com.github.dedis.student20_pop.detail.adapters.WitnessListViewAdapter;
 import java.util.ArrayList;
 
-/**
- * Fragment used to display the LAO Detail UI
- */
+/** Fragment used to display the LAO Detail UI */
 public class LaoDetailFragment extends Fragment {
 
   public static final String TAG = LaoDetailFragment.class.getSimpleName();
@@ -30,9 +28,6 @@ public class LaoDetailFragment extends Fragment {
   private LaoDetailViewModel mLaoDetailViewModel;
   private WitnessListViewAdapter mWitnessListViewAdapter;
   private EventExpandableListViewAdapter mEventListViewEventAdapter;
-
-  public LaoDetailFragment() {
-  }
 
   public static LaoDetailFragment newInstance() {
     return new LaoDetailFragment();
@@ -68,8 +63,6 @@ public class LaoDetailFragment extends Fragment {
 
     // TODO: Add witness handler
 
-    //    setupSwipeRefresh();
-
     // Subscribe to "show/hide properties" event
     mLaoDetailViewModel
         .getShowPropertiesEvent()
@@ -94,14 +87,14 @@ public class LaoDetailFragment extends Fragment {
               }
             });
 
-    mLaoDetailViewModel.getLaoEvents()
+    mLaoDetailViewModel
+        .getLaoEvents()
         .observe(
             getActivity(),
             events -> {
               Log.d(TAG, "Got a list update for LAO events");
               mEventListViewEventAdapter.replaceList(events);
-            }
-        );
+            });
   }
 
   private void setupPropertiesButton() {
@@ -112,9 +105,7 @@ public class LaoDetailFragment extends Fragment {
 
   private void setupEditPropertiesButton() {
     mLaoDetailFragBinding.editButton.setOnClickListener(
-        clicked -> {
-          mLaoDetailViewModel.openEditProperties();
-        });
+        clicked -> mLaoDetailViewModel.openEditProperties());
   }
 
   private void setupConfirmEditButton() {
@@ -124,9 +115,7 @@ public class LaoDetailFragment extends Fragment {
 
   private void setupCancelEditButton() {
     mLaoDetailFragBinding.propertiesEditCancel.setOnClickListener(
-        clicked -> {
-          mLaoDetailViewModel.cancelEdit();
-        });
+        clicked -> mLaoDetailViewModel.cancelEdit());
   }
 
   private void setupWitnessListAdapter() {
@@ -161,27 +150,18 @@ public class LaoDetailFragment extends Fragment {
 
   }
 
-  private void setupSwipeRefresh() {
-    //    mLaoDetailFragBinding.swipeRefresh.setOnRefreshListener(
-    //        () -> {
-    //          mWitnessListViewAdapter.notifyDataSetChanged();
-    //          mEventListViewEventAdapter.notifyDataSetChanged();
-    //          if (getFragmentManager() != null) {
-    //            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
-    //          }
-    //          mLaoDetailFragBinding.swipeRefresh.setRefreshing(false);
-    //        });
-  }
-
   private void showHideProperties(Boolean show) {
-    mLaoDetailFragBinding.propertiesLinearLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+    mLaoDetailFragBinding.propertiesLinearLayout.setVisibility(
+        Boolean.TRUE.equals(show) ? View.VISIBLE : View.GONE);
   }
 
   private void editProperties(Boolean edit) {
-    mLaoDetailFragBinding.editPropertiesLinearLayout.setVisibility(edit ? View.VISIBLE : View.GONE);
+    mLaoDetailFragBinding.editPropertiesLinearLayout.setVisibility(
+        Boolean.TRUE.equals(edit) ? View.VISIBLE : View.GONE);
 
     // Hide current LAO name and edit button while editing
-    mLaoDetailFragBinding.editButton.setVisibility(edit ? View.GONE : View.VISIBLE);
-    mLaoDetailFragBinding.organizationName.setVisibility(edit ? View.GONE : View.VISIBLE);
+    final int visibility = Boolean.TRUE.equals(edit) ? View.GONE : View.VISIBLE;
+    mLaoDetailFragBinding.editButton.setVisibility(visibility);
+    mLaoDetailFragBinding.organizationName.setVisibility(visibility);
   }
 }
