@@ -8,7 +8,6 @@ import (
 	"log"
 	"student20_pop"
 	"sync"
-	"log"
 	"student20_pop/message"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
@@ -218,13 +217,9 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	messageID := base64.StdEncoding.EncodeToString(publish.Params.Message.MessageID)
 	laoCh.inbox[messageID] = *publish.Params.Message
 
-<<<<<<< HEAD
 	id := base64.StdEncoding.EncodeToString(data.ID)
 
 	o.channelByID[id] = &laoCh
-=======
-	o.channelByID[encodedID] = &laoCh
->>>>>>> 8f6810328696e81313f6b4cddf7ab4651d8c102a
 
 	return nil
 }
@@ -232,11 +227,6 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 type laoChannel struct {
 	*baseChannel
 }
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 8f6810328696e81313f6b4cddf7ab4651d8c102a
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
@@ -269,10 +259,6 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	return nil
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8f6810328696e81313f6b4cddf7ab4651d8c102a
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
 	msgIDEncoded := base64.StdEncoding.EncodeToString(msg.MessageID)
@@ -504,7 +490,7 @@ func (c *laoChannel) processRollCallObject(data message.Data) error {
 
 	return nil
 }
-<<<<<<< HEAD
+
 func (c *laoChannel) processElectionObject(msg message.Message) error {
 	action := message.ElectionAction(msg.Data.GetAction())
 
@@ -683,11 +669,3 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 
 	return nil
 }
-
-
-
-
-
-
-=======
->>>>>>> 8f6810328696e81313f6b4cddf7ab4651d8c102a
