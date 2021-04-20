@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Election extends Event {
 
+    private String channel;
     private String id;
     private String name;
     private long creation;
@@ -44,6 +45,8 @@ public class Election extends Event {
         return creation;
     }
 
+    public String getChannel(){ return channel; }
+
     public void setCreation(long creation) {
         this.creation = creation;
     }
@@ -75,6 +78,8 @@ public class Election extends Event {
     public boolean getWriteIn() { return writeIn; }
 
     public void setWriteIn(boolean writeIn) {this.writeIn = writeIn; }
+
+    public void setChannel(String channel) {this.channel = channel;}
 
     @Override
     public long getStartTimestamp() {

@@ -117,7 +117,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
       return;
     }
 
-    String channel = lao.getChannel();
+    String channel = election.getChannel();
     CastVote  castVote;
     String laoId = channel.substring(6); // removing /root/ prefix
     castVote = new CastVote(election.getWriteIn(), votes, election.getQuestion(), election.getId(), laoId);

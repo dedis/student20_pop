@@ -8,11 +8,7 @@ import (
 	"log"
 	"student20_pop"
 	"sync"
-<<<<<<< HEAD
 	"log"
-=======
-
->>>>>>> 8f6810328696e81313f6b4cddf7ab4651d8c102a
 	"student20_pop/message"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
