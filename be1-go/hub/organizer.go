@@ -8,7 +8,9 @@ import (
 	"log"
 	"student20_pop"
 	"sync"
+
 	"student20_pop/message"
+
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
@@ -195,12 +197,6 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 	}
 
 	encodedID := base64.StdEncoding.EncodeToString(data.ID)
-	if _, ok := o.channelByID[encodedID]; ok {
-		return &message.Error{
-			Code:        -3,
-			Description: "failed to create lao: another one with the same ID exists",
-		}
-	}
 
 	laoChannelID := "/root/" + encodedID
 
@@ -227,6 +223,8 @@ func (o *organizerHub) createLao(publish message.Publish) error {
 type laoChannel struct {
 	*baseChannel
 }
+
+
 func (c *laoChannel) Publish(publish message.Publish) error {
 	err := c.baseChannel.VerifyPublishMessage(publish)
 	if err != nil {
@@ -248,6 +246,8 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 		err = c.processMessageObject(msg.Sender, data)
 	case message.RollCallObject:
 		err = c.processRollCallObject(data)
+	case message.ElectionObject:
+		err = c.processElectionObject(*msg)
 	}
 
 	if err != nil {
@@ -258,6 +258,7 @@ func (c *laoChannel) Publish(publish message.Publish) error {
 	c.broadcastToAllClients(*msg)
 	return nil
 }
+
 
 func (c *laoChannel) processLaoObject(msg message.Message) error {
 	action := message.LaoDataAction(msg.Data.GetAction())
@@ -490,7 +491,6 @@ func (c *laoChannel) processRollCallObject(data message.Data) error {
 
 	return nil
 }
-
 func (c *laoChannel) processElectionObject(msg message.Message) error {
 	action := message.ElectionAction(msg.Data.GetAction())
 
@@ -516,7 +516,6 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Check the data
 	data, ok := msg.Data.(*message.ElectionSetupData)
-
 	if !ok {
 		return &message.Error{
 			Code:        -4,
@@ -669,3 +668,9 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 
 	return nil
 }
+
+
+
+
+
+

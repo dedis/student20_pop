@@ -173,47 +173,24 @@ func (q *Query) GetID() int {
 	return -1
 }
 
-// GetParams returns params associated with a query
-func (q *Query) GetParams() (Params, bool) {
-	switch {
-	case q.Subscribe != nil:
-		return q.Subscribe.Params, true
-	case q.Unsubscribe != nil:
-		return q.Unsubscribe.Params, true
-	case q.Broadcast != nil:
-		return q.Broadcast.Params, true
-	case q.Publish != nil:
-		return q.Publish.Params, true
-	case q.Catchup != nil:
-		return q.Catchup.Params, true
-	}
-	return Params{}, false
-}
-
 // MarshalJSON implements custom marshaling logic for a query.
 func (q Query) MarshalJSON() ([]byte, error) {
-
 	type internal struct {
-		JSONRpc string  `json:"jsonrpc"`
-		ID      int     `json:"id,omitempty"`
-		Method  string  `json:"method"`
-		Params  *Params `json:"params"`
-	}
-
-	method := q.GetMethod()
-	params, ok := q.GetParams()
-	if !ok {
-		return nil, xerrors.Errorf("failed to get the params of the query of type %s", method)
+		JSONRpc     string `json:"jsonrpc"`
+		Subscribe   *Subscribe
+		Unsubscribe *Unsubscribe
+		Publish     *Publish
+		Catchup     *Catchup
+		Broadcast   *Broadcast
 	}
 
 	tmp := internal{
-		JSONRpc: "2.0",
-		Method:  method,
-		Params:  &params,
-	}
-
-	if method != "broadcast" {
-		tmp.ID = q.GetID()
+		JSONRpc:     "2.0",
+		Subscribe:   q.Subscribe,
+		Unsubscribe: q.Unsubscribe,
+		Publish:     q.Publish,
+		Catchup:     q.Catchup,
+		Broadcast:   q.Broadcast,
 	}
 
 	return json.Marshal(tmp)

@@ -368,6 +368,7 @@ type ElectionResultData struct {
 	WitnessSignatures []PublicKeySignaturePair `json:"witness_signatures"`
 }
 
+
 // NewCreateLAOData returns an instance of `CreateLAOData`.
 func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witnesses []PublicKey) (*CreateLAOData, error) {
 	create := &CreateLAOData{
