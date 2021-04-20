@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +15,12 @@ public class Election extends Event {
     private long creation;
     private long start;
     private long end;
-    private boolean writeIn;
-    private String question;
-    private List<String> ballotOptions;
-
+    List<ElectionQuestion> electionQuestions;
     //votes as attribute ?
 
 
-    public Election() { this.ballotOptions = new ArrayList<>();
-    type = EventType.ELECTION;
+    public Election() {
+        type = EventType.ELECTION;
     }
 
     public String getId() {
@@ -47,6 +45,8 @@ public class Election extends Event {
 
     public String getChannel(){ return channel; }
 
+    public List<ElectionQuestion> getElectionQuestions(){return electionQuestions;}
+
     public void setCreation(long creation) {
         this.creation = creation;
     }
@@ -59,28 +59,11 @@ public class Election extends Event {
         this.end = end;
     }
 
-    public List<String> getBallotOptions() {
-        return ballotOptions;
-    }
 
-    public void setBallotOptions(List<String> ballotOptions) {
-        this.ballotOptions = ballotOptions;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public boolean getWriteIn() { return writeIn; }
-
-    public void setWriteIn(boolean writeIn) {this.writeIn = writeIn; }
 
     public void setChannel(String channel) {this.channel = channel;}
 
+    public void setElectionQuestions(List<ElectionQuestion> electionQuestions){this.electionQuestions = electionQuestions;}
     @Override
     public long getStartTimestamp() {
         return start;

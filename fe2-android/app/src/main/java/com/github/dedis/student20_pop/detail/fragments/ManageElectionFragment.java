@@ -87,7 +87,9 @@ public class ManageElectionFragment extends Fragment {
         endTime.setText(DATE_FORMAT.format(dEnd));
         laoName.setText(laoDetailViewModel.getCurrentLaoName().getValue());
         electionName.setText(laoDetailViewModel.getCurrentElection().getName());
-        question.setText("Election Question : " + laoDetailViewModel.getCurrentElection().getQuestion());
+
+        //todo change when multiple questions
+        question.setText("Election Question : " + laoDetailViewModel.getCurrentElection().getElectionQuestions().get(0).getQuestion());
         mManageElectionFragBinding.setLifecycleOwner(getActivity());
         return mManageElectionFragBinding.getRoot();
 

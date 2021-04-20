@@ -13,6 +13,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+        <include layout="@layout/tab_back"/>
 
 
         <ScrollView

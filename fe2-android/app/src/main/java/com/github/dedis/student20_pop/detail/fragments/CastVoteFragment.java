@@ -107,8 +107,8 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
         //Getting the Lao Name
         laoNameText.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
 
-        //Getting ballot options
-        ballotOptions = election.getBallotOptions();
+        //Getting ballot options todo change when multiple questions
+        ballotOptions = election.getElectionQuestions().get(0).getBallotOptions();
 
         //todo get real election name
         electionNameText.setText(election.getName());

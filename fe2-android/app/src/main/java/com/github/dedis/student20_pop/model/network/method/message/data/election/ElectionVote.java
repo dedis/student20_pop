@@ -19,7 +19,7 @@ import java.util.Optional;
 public class ElectionVote extends Data {
 
     private String id;
-    @SerializedName(value = "question_id")
+    @SerializedName(value = "question")
     private String questionId; // id of the question
     private List<Long> votes;
     private Boolean writeIn;
