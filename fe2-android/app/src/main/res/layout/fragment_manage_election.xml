@@ -7,23 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/manage_election_tab_home"
-            layout="@layout/tab_home"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <include
-            android:id="@+id/manage_election_tab_identity"
-            layout="@layout/tab_identity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <include
-            android:id="@+id/manage_election_tab_back"
-            layout="@layout/tab_back"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
 
 

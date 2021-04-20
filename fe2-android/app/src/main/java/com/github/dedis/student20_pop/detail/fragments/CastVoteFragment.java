@@ -55,8 +55,6 @@ public class CastVoteFragment extends Fragment implements AdapterView.OnItemClic
 
     private View.OnClickListener buttonListener = v -> {
         List<List<Long>> list = Arrays.asList(Arrays.asList(selectedOption));
-        System.out.println("Size is " + list.size());
-        System.out.println(list.get(0).get(0));
         mLaoDetailViewModel.sendVote(election, list );
 
     };

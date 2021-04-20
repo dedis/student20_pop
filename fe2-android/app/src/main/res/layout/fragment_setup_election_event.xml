@@ -7,17 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/election_setup_tab_home"
-            layout="@layout/tab_home"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <include
-            android:id="@+id/election_setup_tab_identity"
-            layout="@layout/tab_identity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/election_setup_guideline_horizontal"

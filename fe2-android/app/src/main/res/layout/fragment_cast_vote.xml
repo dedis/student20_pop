@@ -9,26 +9,6 @@
         android:layout_height="match_parent"
         tools:context=".detail.fragments.CastVoteFragment">
 
-        <include
-            android:id="@+id/include"
-            layout="@layout/tab_home"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.133"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="16dp" />
-
-        <include
-            layout="@layout/tab_identity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
-            app:layout_constraintEnd_toEndOf="@+id/include"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.02" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline3"
@@ -111,7 +91,7 @@
             android:layout_gravity="center_horizontal|center"
             android:gravity="bottom"
             android:text="@string/button_text"
-            app:layout_constraintBottom_toBottomOf="@+id/include"
+            app:layout_constraintBottom_toBottomOf="@+id/fragment_cast_vote"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
