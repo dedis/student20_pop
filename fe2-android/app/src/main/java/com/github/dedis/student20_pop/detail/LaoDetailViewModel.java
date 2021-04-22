@@ -16,6 +16,7 @@ import com.github.dedis.student20_pop.model.event.EventType;
 import com.github.dedis.student20_pop.model.network.answer.Result;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.CastVote;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.student20_pop.model.network.method.message.data.rollcall.CreateRollCall.StartType;
@@ -110,7 +111,7 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public void sendVote(Election election, List<List<Long>> votes) {
     Log.d(TAG, "sending a new vote in election : " + election.getName());
-
+   System.out.println( election.getStartTimestamp());
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.d(TAG, "failed to retrieve current lao");
@@ -118,9 +119,12 @@ public class LaoDetailViewModel extends AndroidViewModel {
     }
 
     String channel = election.getChannel();
+
+    //todo change when multiple questions
+    ElectionQuestion electionQuestion = election.getElectionQuestions().get(0);
     CastVote  castVote;
-    String laoId = channel.substring(6); // removing /root/ prefix
-    castVote = new CastVote(election.getWriteIn(), votes, election.getQuestion(), election.getId(), laoId);
+    String laoId = lao.getChannel().substring(6); // removing /root/ prefix
+    castVote = new CastVote(electionQuestion.getWriteIn(), votes, electionQuestion.getId(), election.getId(), laoId);
 
 
     try {

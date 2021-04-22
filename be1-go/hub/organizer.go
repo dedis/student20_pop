@@ -640,7 +640,8 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 				return xerrors.Errorf("Couldn't cast to castVoteData")
 			}
 			if voteData.CreatedAt > c.end {
-				return xerrors.Errorf("Vote casted too late")
+				return xerrors.Errorf("Vote casted too late, vote casted at ",voteData.CreatedAt, " and election ended at ", c.end)
+
 			}
 			//This should update any previously set vote if the message ids are the same
 			messageID := base64.StdEncoding.EncodeToString(msg.MessageID)

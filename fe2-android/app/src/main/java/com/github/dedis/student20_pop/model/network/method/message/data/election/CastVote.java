@@ -22,21 +22,21 @@ public class CastVote extends Data {
      * Constructor for a data Cast Vote Election Event
      *
      * @param laoId id of the LAO
-     * @param question  id of the question
+     * @param questionId  id of the question
      * @param votes list of vote indexes corresponding to the the ballot_options
      */
     public CastVote(
             boolean writeIn,
             List<List<Long>> votes,
-            String question,
+            String questionId,
             String electionId,
             String laoId) {
-        this.createdAt = Instant.now().toEpochMilli();
+        this.createdAt = Instant.now().getEpochSecond();
         this.votes = new ArrayList<>();
         this.lao = laoId;
         this.election = electionId;
         for (int i = 0; i < votes.size(); i++) {
-            ElectionVote vote = new ElectionVote(question, votes.get(i), writeIn, electionId);
+            ElectionVote vote = new ElectionVote(questionId, votes.get(i), writeIn, electionId);
             this.votes.add(vote);
         }
     }
