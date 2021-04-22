@@ -67,22 +67,23 @@ public final class QRCodeScanningFragment extends Fragment {
                       mQrCodeFragBinding.addAttendeeNumberText.setText(event.toString());
                     }
                   });
-      ((LaoDetailViewModel)mQRCodeScanningViewModel)
+      /*((LaoDetailViewModel)mQRCodeScanningViewModel)
               .getScanWarning()
               .observe(
                       this,
                       stringEvent -> {
                           String event = stringEvent.getContentIfNotHandled();
-                          AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                          builder.setTitle("Warning");
-                          builder.setMessage(event);
-                          mPreview.stop();
-                          builder.setPositiveButton("Ok", (dialog, which) -> {
-                            dialog.dismiss();
-                            startCamera();
-                          });
-                          builder.show();
-                      });
+                          if (event != null) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                            builder.setTitle("Warning");
+                            builder.setMessage(event);
+                            mPreview.stop();
+                            builder.setPositiveButton("Ok", (dialog, which) -> {
+                              dialog.dismiss();
+                              startCamera();
+                            });
+                            builder.show();
+                          } });*/
       setupCloseRollCallButton();
 
       // Subscribe to "close roll call" event

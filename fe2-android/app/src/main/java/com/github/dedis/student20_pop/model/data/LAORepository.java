@@ -370,7 +370,7 @@ public class LAORepository {
     rollCall.setId(updateId);
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
-
+    Log.d(TAG, "nb attendees: "+rollCall.getAttendees().size());
     lao.updateRollCall(closes, rollCall);
     return true;
   }
@@ -486,7 +486,7 @@ public class LAORepository {
     }else{
       //uncomment the following for testing roll calls without receiving broadcast message from backend
       //this is just for testing, to be removed when backend responding fully works:
-      /*
+
       if(message.getData() instanceof CreateRollCall) {
         handleCreateRollCall(channel, (CreateRollCall) message.getData());
       }
@@ -496,7 +496,7 @@ public class LAORepository {
       if(message.getData() instanceof CloseRollCall) {
         handleCloseRollCall(channel, (CloseRollCall) message.getData());
       }
-      */
+
     }
 
     mRemoteDataSource.sendMessage(publish);

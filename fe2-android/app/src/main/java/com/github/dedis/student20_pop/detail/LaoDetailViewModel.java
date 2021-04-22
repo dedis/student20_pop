@@ -310,13 +310,15 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String channel = lao.getChannel();
     String laoId = channel.substring(6); // removing /root/ prefix
     String updateId = Hash.hash("R", laoId, id, Long.toString(openedAt));
-    Optional<RollCall> rollCall = lao.getRollCall(id);
-    if(!rollCall.isPresent()){
+    Optional<RollCall> optRollCall = lao.getRollCall(id);
+    if(!optRollCall.isPresent()){
       Log.d(TAG, "failed to retrieve roll call with id "+id);
       return;
     }
-    OpenRollCall openRollCall = new OpenRollCall(updateId, id, openedAt, rollCall.get().getState());
-
+    RollCall rollCall = optRollCall.get();
+    OpenRollCall openRollCall = new OpenRollCall(updateId, id, openedAt, rollCall.getState());
+    attendees = rollCall.getAttendees();
+    Log.d(TAG, "nb attendees: "+attendees.size());
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
