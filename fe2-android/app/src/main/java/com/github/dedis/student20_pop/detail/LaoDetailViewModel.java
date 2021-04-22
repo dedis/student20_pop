@@ -279,11 +279,14 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                       .subscribe(
                               answer -> {
                                 if (answer instanceof Result) {
-                                  Log.d(TAG, "created a roll call");
+                                  Log.d(TAG, "created a roll call with id: "+createRollCall.getId());
                                   if(!open){
                                     mCreatedRollCallEvent.postValue(new Event<>(true));
                                   }
-                                  mCurrentLao.postValue(lao);
+                                  //mCurrentLao.postValue(lao);
+                                  if(open){
+                                    openConnectRollCall(createRollCall.getId());
+                                  }
                                   //mCreatedRollCallEvent.postValue(new Event<>(true));
                                 } else {
                                   Log.d(TAG, "failed to create a roll call");
@@ -340,7 +343,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                           getApplication().getApplicationContext(), Manifest.permission.CAMERA)
                                           == PackageManager.PERMISSION_GRANTED) {
                                     openQrCodeScanningRollCall();
-                                    mCurrentLao.postValue(lao);
+                                    //mCurrentLao.postValue(lao);
                                   } else {
                                     openCameraPermissionRollCall();
                                   }

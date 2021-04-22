@@ -173,6 +173,7 @@ public class LAORepository {
                 .map(x -> x.getValue().getLao())
                 .collect(Collectors.toList()));
         Log.d(TAG, "createLaoRequest contains this id. posted allLaos to `allLaoSubject`");
+        sendSubscribe(channel);
         sendCatchup(channel);
       }
 
@@ -372,7 +373,7 @@ public class LAORepository {
     rollCall.setState(EventState.CLOSED);
     Log.d(TAG, "nb attendees: "+rollCall.getAttendees().size());
     lao.updateRollCall(closes, rollCall);
-    return true;
+    return false;
   }
 
   private boolean handleWitnessMessage(String channel, String senderPk, WitnessMessage message) {
@@ -532,9 +533,11 @@ public class LAORepository {
         upstream
             .filter(
                 genericMessage -> {
-                  Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+                  if (genericMessage instanceof Answer) {
+                    Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+                  }
                   return genericMessage instanceof Answer
-                      && ((Answer) genericMessage).getId() == id;
+                          && ((Answer) genericMessage).getId() == id;
                 })
             .map(
                 genericMessage -> {

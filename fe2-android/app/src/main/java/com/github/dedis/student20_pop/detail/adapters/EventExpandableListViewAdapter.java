@@ -7,7 +7,6 @@ import static com.github.dedis.student20_pop.model.event.EventCategory.PRESENT;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -312,6 +311,9 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
+    this.eventsMap.get(PAST).clear();
+    this.eventsMap.get(FUTURE).clear();
+    this.eventsMap.get(PRESENT).clear();
     long now = Instant.now().getEpochSecond();
     for (Event event : events) {
       if (event.getEndTimestamp() <= now) {
