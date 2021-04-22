@@ -1,13 +1,9 @@
 package com.github.dedis.student20_pop.detail.fragments;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,17 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentManageElectionBinding;
 import com.github.dedis.student20_pop.detail.LaoDetailActivity;
 import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
-import com.github.dedis.student20_pop.detail.fragments.pickers.DatePickerFragment;
-import com.github.dedis.student20_pop.home.HomeActivity;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

@@ -216,6 +216,7 @@ public class  LAORepository {
     } else if (data instanceof UpdateLao) {
       enqueue = handleUpdateLao(channel, message.getMessageId(), (UpdateLao) data);
     } else if (data instanceof ElectionSetup) {
+      Log.d(TAG," Election Setup message received");
       enqueue = handleElectionSetup(channel, (ElectionSetup) data);
     } else if (data instanceof StateLao) {
       enqueue = handleStateLao(channel, (StateLao) data);
@@ -509,10 +510,11 @@ public class  LAORepository {
     }
     // Uncomment to test display without message from Backend
     else {
-      if(message.getData() instanceof ElectionSetup) {
-        handleElectionSetup(channel,(ElectionSetup) message.getData());
+      if (message.getData() instanceof ElectionSetup) {
+        handleElectionSetup(channel, (ElectionSetup) message.getData());
       }
     }
+
 
 
 

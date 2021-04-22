@@ -283,6 +283,7 @@ EventCategory category = (EventCategory) getGroup(groupPosition);
           Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp())*1000);
           String dateEnd = DATE_FORMAT.format(dEnd);
           electionBinding.electionEndDate.setText("End Date : " + dateEnd);
+          electionBinding.electionTitle.setText("Election Name : " + election.getName());
           if(category == PRESENT) {
            electionBinding.electionActionButton.setText("Cast Vote");
             electionBinding.electionActionButton.setOnClickListener(
