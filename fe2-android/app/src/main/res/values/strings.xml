@@ -79,6 +79,13 @@
     <string name="add_attendee_unsuccessful">Error when adding attendee</string>
     <string name="add_attendees_number">Number of attendees : %1$d</string>
 
+    <!-- Event Buttons -->
+    <string name="open_event">OPEN</string>
+    <string name="reopen_event">REOPEN</string>
+    <string name="scheduled_event">SCHEDULED</string>
+    <string name="enter_event">ENTER</string>
+    <string name="closed_event">CLOSED</string>
+
     <!-- Identity -->
     <string name="identity_name">Name</string>
     <string name="identity_title">Title</string>

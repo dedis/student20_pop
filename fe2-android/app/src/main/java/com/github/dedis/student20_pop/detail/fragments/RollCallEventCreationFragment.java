@@ -47,6 +47,29 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     return new RollCallEventCreationFragment();
   }
 
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+
+        mFragmentCreateRollCallEventBinding =
+                FragmentCreateRollCallEventBinding.inflate(inflater, container, false);
+
+        mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+
+        // TODO: refactor this
+        setDateAndTimeView(mFragmentCreateRollCallEventBinding.getRoot(), this, getFragmentManager());
+        addDateAndTimeListener(confirmTextWatcher);
+        mFragmentCreateRollCallEventBinding.rollCallTitleText.addTextChangedListener(confirmTextWatcher);
+
+        mFragmentCreateRollCallEventBinding.setLifecycleOwner(getActivity());
+
+
+        return mFragmentCreateRollCallEventBinding.getRoot();
+    }
+
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
@@ -85,48 +108,5 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
               v -> {
                   mLaoDetailViewModel.openLaoDetail();
               });
-  }
-
-  @Nullable
-  @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
-
-    mFragmentCreateRollCallEventBinding =
-        FragmentCreateRollCallEventBinding.inflate(inflater, container, false);
-
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
-
-    // TODO: refactor this
-    setDateAndTimeView(mFragmentCreateRollCallEventBinding.getRoot(), this, getFragmentManager());
-    addDateAndTimeListener(confirmTextWatcher);
-
-    /*rollCallTitleEditText = binding.rollCallTitleText;
-    rollCallDescriptionEditText = binding.rollCallEventDescriptionText;
-
-    openButton = binding.rollCallOpen;
-
-    confirmButton = binding.rollCallConfirm;
-       */
-    // TODO: this has to be replaced by a 'scheduled' button
-    //    confirmButton.setOnClickListener(
-    //        v -> {
-    //          computeTimesInSeconds();
-    //
-    //          String title = rollCallTitleEditText.getText().toString();
-    //          String description = rollCallDescriptionEditText.getText().toString();
-    //          long now = Instant.now().getEpochSecond();
-    //          long start = startTimeInSeconds > now ? 0 : startTimeInSeconds;
-    //          long scheduled = startTimeInSeconds >= now ? startTimeInSeconds : 0;
-    //          mLaoDetailViewModel
-    //              .createNewRollCall(title, description, start, scheduled, endTimeInSeconds);
-    //        });
-
-    mFragmentCreateRollCallEventBinding.setLifecycleOwner(getActivity());
-
-
-    return mFragmentCreateRollCallEventBinding.getRoot();
   }
 }

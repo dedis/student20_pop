@@ -255,7 +255,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return "";
+      return null;
     }
     String channel = lao.getChannel();
     CreateRollCall createRollCall;
@@ -280,14 +280,11 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                               answer -> {
                                 if (answer instanceof Result) {
                                   Log.d(TAG, "created a roll call with id: "+createRollCall.getId());
-                                  if(!open){
-                                    mCreatedRollCallEvent.postValue(new Event<>(true));
-                                  }
-                                  //mCurrentLao.postValue(lao);
                                   if(open){
                                     openConnectRollCall(createRollCall.getId());
+                                  }else{
+                                    mCreatedRollCallEvent.postValue(new Event<>(true));
                                   }
-                                  //mCreatedRollCallEvent.postValue(new Event<>(true));
                                 } else {
                                   Log.d(TAG, "failed to create a roll call");
                                 }
@@ -343,7 +340,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                                           getApplication().getApplicationContext(), Manifest.permission.CAMERA)
                                           == PackageManager.PERMISSION_GRANTED) {
                                     openQrCodeScanningRollCall();
-                                    //mCurrentLao.postValue(lao);
                                   } else {
                                     openCameraPermissionRollCall();
                                   }

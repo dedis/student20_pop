@@ -7,15 +7,6 @@
     <variable
         name="event"
         type="com.github.dedis.student20_pop.model.event.Event" />
-    <variable
-      name="rollCall"
-      type="com.github.dedis.student20_pop.model.RollCall" />
-    <variable
-        name="isRollCall"
-        type="boolean" />
-    <variable
-        name="view_model"
-        type="com.github.dedis.student20_pop.detail.LaoDetailViewModel" />
   </data>
 
   <LinearLayout
@@ -25,37 +16,34 @@
       android:orientation="horizontal">
 
     <LinearLayout
-        android:id="@+id/roll_call_layout"
+        android:id="@+id/event_layout"
         android:layout_width="296dp"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
       <TextView
-          android:id="@+id/roll_call_title"
+          android:id="@+id/event_title"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginHorizontal="@dimen/margin_text"
           android:gravity="center"
           android:text=""
           android:textSize="@dimen/size_body"
-          android:textStyle="bold"
-          android:visibility="@{isRollCall ? View.VISIBLE : View.GONE}" />
+          android:textStyle="bold" />
 
       <TextView
-          android:id="@+id/roll_call_time"
+          android:id="@+id/event_time"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginHorizontal="@dimen/margin_text"
-          android:text=""
-          android:visibility="@{isRollCall ? View.VISIBLE : View.GONE}" />
+          android:text="" />
 
       <TextView
-          android:id="@+id/roll_call_location"
+          android:id="@+id/event_location"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginHorizontal="@dimen/margin_text"
-          android:text="@{`Location: `+rollCall.getLocation()}"
-          android:visibility="@{isRollCall ? View.VISIBLE : View.GONE}" />
+          android:text="" />
 
 
     </LinearLayout>
@@ -64,29 +52,29 @@
         android:id="@+id/open_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OPEN" />
+        android:text="@string/open_event" />
     <Button
         android:id="@+id/reopen_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="REOPEN" />
+        android:text="@string/reopen_event" />
     <Button
         android:id="@+id/scheduled_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="false"
-        android:text="SCHEDULED" />
+        android:text="@string/scheduled_event" />
     <Button
         android:id="@+id/enter_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ENTER" />
+        android:text="@string/enter_event" />
     <Button
         android:id="@+id/closed_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="false"
-        android:text="CLOSED" />
+        android:text="@string/closed_event" />
 
   </LinearLayout>
 

@@ -38,7 +38,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
   protected HashMap<EventCategory, List<Event>> eventsMap;
   private final EventCategory[] categories = EventCategory.values();
   protected static final SimpleDateFormat DATE_FORMAT =
-      new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
+      new SimpleDateFormat("HH:mm", Locale.ENGLISH);
   private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
 
@@ -255,25 +255,21 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
-    //Event event = ((Event) getChild(groupPosition, childPosition));
+    binding.openButton.setVisibility(View.GONE);
+    binding.reopenButton.setVisibility(View.GONE);
+    binding.scheduledButton.setVisibility(View.GONE);
+    binding.enterButton.setVisibility(View.GONE);
+    binding.closedButton.setVisibility(View.GONE);
+
     Event event = (Event)getChild(groupPosition, childPosition);
     if(event instanceof RollCall){
       RollCall rollCall = (RollCall)event;
-      binding.setRollCall(rollCall);
-      binding.setIsRollCall(true);
-      SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
-      binding.rollCallTime.setText("Time: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
-
-      binding.rollCallTitle.setText("Roll Call: "+rollCall.getName());
-
-      binding.setViewModel(viewModel);
+      binding.eventTime.setText("Time: "+DATE_FORMAT.format(new Date(1000*rollCall.getStart())));
+      binding.eventTitle.setText("Roll Call: "+rollCall.getName());
+      binding.eventLocation.setText("Location: "+rollCall.getLocation());
 
       boolean isOrganizer = viewModel.isOrganizer().getValue();
-      binding.openButton.setVisibility(View.GONE);
-      binding.reopenButton.setVisibility(View.GONE);
-      binding.scheduledButton.setVisibility(View.GONE);
-      binding.enterButton.setVisibility(View.GONE);
-      binding.closedButton.setVisibility(View.GONE);
+
       if(isOrganizer && rollCall.getState()== EventState.CREATED){
         binding.openButton.setVisibility(View.VISIBLE);
       }else if(isOrganizer && rollCall.getState()== EventState.CLOSED){

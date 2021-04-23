@@ -67,7 +67,7 @@ public final class QRCodeScanningFragment extends Fragment {
                       mQrCodeFragBinding.addAttendeeNumberText.setText(event.toString());
                     }
                   });
-      /*((LaoDetailViewModel)mQRCodeScanningViewModel)
+      ((LaoDetailViewModel)mQRCodeScanningViewModel)
               .getScanWarning()
               .observe(
                       this,
@@ -83,7 +83,7 @@ public final class QRCodeScanningFragment extends Fragment {
                               startCamera();
                             });
                             builder.show();
-                          } });*/
+                          } });
       setupCloseRollCallButton();
 
       // Subscribe to "close roll call" event
