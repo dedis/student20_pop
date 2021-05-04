@@ -2,10 +2,12 @@ package hub
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
+	"sort"
 	"student20_pop"
 	"sync"
 
@@ -628,7 +630,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		case message.CastVoteAction:
 			return c.castVoteHelper(publish)
 		case message.ElectionEndAction:
-			log.Fatal("Not implemented",message.ElectionEndAction)
+			return c.endElectionHelper(publish)
 		case message.ElectionResultAction:
 			log.Fatal("Not implemented",message.ElectionResultAction)
 		}
@@ -692,4 +694,53 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		Code:        -4,
 		Description: "Error in CastVote helper function",
 	}
+}
+func (c *electionChannel) endElectionHelper(publish message.Publish) error {
+	endElectionData, ok := publish.Params.Message.Data.(*message.ElectionEndData)
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: "failed to cast data to ElectionEndData",
+		}
+	}
+	if endElectionData.CreatedAt < c.end{
+		return &message.Error{
+			Code:        -4,
+			Description: "Can't send end election message before the end of the election",
+		}
+	}
+	// since we eliminated (in cast vote) the duplicate votes we are sure that the voter casted one vote for one question
+	for _,question := range c.questions{
+		hashed,err := sortHashVotes(question.validVotes)
+		if err != nil {
+			return &message.Error{
+				Code:        -4,
+				Description: "Error while hashing",
+			}
+		}
+		endElectionData.RegisteredVotes = hashed
+	}
+	return nil
+}
+func sortHashVotes(votes2 map[string]validVote)([]byte,error) {
+	type kv struct {
+		voteTime message.Timestamp
+		sender   string
+	}
+	votes := make(map[int]kv)
+	i := 0
+	for k, v := range votes2 {
+		votes[i] = kv{v.voteTime, k}
+		i += 1
+	}
+	sort.Slice(votes,
+		func(i int, j int) bool { return votes[i].voteTime < votes[j].voteTime })
+	h := sha256.New()
+	for _, v := range votes {
+		if len(v.sender) == 0 {
+			return nil, xerrors.Errorf("empty string to hash()")
+		}
+		h.Write([]byte(fmt.Sprintf("%d%s", len(v.sender), v.sender)))
+	}
+	return h.Sum(nil), nil
 }
