@@ -8,9 +8,9 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type stringer string
+type Stringer string
 
-func (s stringer) String() string {
+func (s Stringer) String() string {
 	return string(s)
 }
 
@@ -104,7 +104,7 @@ func (c *CreateLAOData) GetTimestamp() Timestamp {
 }
 
 func (c *CreateLAOData) setID() error {
-	id, err := hash(stringer("L"), c.Organizer, c.Creation, stringer(c.Name))
+	id, err := Hash(Stringer("L"), c.Organizer, c.Creation, Stringer(c.Name))
 	if err != nil {
 		return xerrors.Errorf("error creating hash: %v", err)
 	}
@@ -390,7 +390,7 @@ func NewCreateLAOData(name string, creation Timestamp, organizer PublicKey, witn
 	return create, nil
 }
 
-func hash(strs ...fmt.Stringer) ([]byte, error) {
+func Hash(strs ...fmt.Stringer) ([]byte, error) {
 	h := sha256.New()
 	for i, str := range strs {
 		s := str.String()
