@@ -3,6 +3,7 @@ package hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"os"
 	"strconv"
 	"student20_pop"
@@ -105,13 +106,14 @@ func createLao(o *organizerHub, oKeypair keypair) (string, *laoChannel, error) {
 	return id, laoChannel, nil
 }
 
-func newElectionSetupData(id []byte, creation, start, end message.Timestamp, name string, questions []message.Question) *message.ElectionSetupData {
-	data := &message.ElectionSetupData{
+func newElectionSetupData(id, laoID []byte, creation, start, end message.Timestamp, name string, questions []message.Question) *message.ElectionSetupData {
+	return &message.ElectionSetupData{
 		GenericData: &message.GenericData{
 			Action: message.DataAction(message.ElectionSetupAction),
 			Object: message.ElectionObject,
 		},
 		ID:        id,
+		LaoID:     laoID,
 		Name:      name,
 		Version:   "1.0.0",
 		CreatedAt: creation,
@@ -119,29 +121,68 @@ func newElectionSetupData(id []byte, creation, start, end message.Timestamp, nam
 		EndTime:   end,
 		Questions: questions,
 	}
-
-	return data
 }
 
-func newQuestion(id []byte, question string, votingMethod string, options []string, writeIn bool) *message.Question {
+func newCorrectElectionSetupData(laoID string, creation, start, end message.Timestamp, questions []message.Question) (*message.ElectionSetupData, error) {
+	name := "My election"
+	id, err := getElectionSetupID(laoID, name, creation)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, question := range questions {
+		questionId, err := getQuestionID(id, question.QuestionAsked)
+		if err != nil {
+			return nil, err
+		}
+		question.ID = questionId
+	}
+
+	byteLaoID, err := base64.StdEncoding.DecodeString(laoID)
+	if err != nil {
+		return nil, err
+	}
+
+	return newElectionSetupData(id, byteLaoID, creation, start, end, name, questions), nil
+}
+
+func getElectionSetupID(laoID, name string, timestamp message.Timestamp) ([]byte, error) {
+	id, err := message.Hash(message.Stringer("Election"), message.Stringer(laoID), timestamp, message.Stringer(name))
+	if err != nil {
+		return nil, err
+	}
+	return id, nil
+}
+
+func getElectionID(data *message.ElectionSetupData) string {
+	return base64.StdEncoding.EncodeToString(data.ID)
+}
+
+func newQuestion(question string, votingMethod string, options []string, writeIn bool) *message.Question {
 	var ballotOptions []message.BallotOption
 	for _, option := range options {
 		ballotOptions = append(ballotOptions, message.BallotOption(option))
 	}
 
-	data := &message.Question{
-		ID:            id,
+	return &message.Question{
 		QuestionAsked: question,
 		VotingMethod:  message.VotingMethod(votingMethod),
 		BallotOptions: ballotOptions,
 		WriteIn:       writeIn,
 	}
 
-	return data
+}
+
+func getQuestionID(electionID []byte, name string) ([]byte, error) {
+	id, err := message.Hash(message.Stringer("Question"), message.Stringer(electionID), message.Stringer(name))
+	if err != nil {
+		return nil, err
+	}
+	return id, nil
 }
 
 func newCastVote(laoID, electionID []byte, creation message.Timestamp, votes []message.Vote, questions []message.Question) *message.CastVoteData {
-	data := &message.CastVoteData{
+	return &message.CastVoteData{
 		GenericData: &message.GenericData{
 			Action: message.DataAction(message.CastVoteAction),
 			Object: message.ElectionObject,
@@ -151,23 +192,19 @@ func newCastVote(laoID, electionID []byte, creation message.Timestamp, votes []m
 		CreatedAt:  creation,
 		Votes:      votes,
 	}
-
-	return data
 }
 
 func newVote(id, questionID []byte, creation message.Timestamp, voteIndexes []int, writeIn string) *message.Vote {
-	vote := &message.Vote{
+	return &message.Vote{
 		ID:          id,
 		QuestionID:  questionID,
 		VoteIndexes: voteIndexes,
 		WriteIn:     writeIn,
 	}
-
-	return vote
 }
 
 func newElectionEndData(laoID, electionID, registeredVotes []byte, creation message.Timestamp, voteIndexes []int) *message.ElectionEndData {
-	data := &message.ElectionEndData{
+	return &message.ElectionEndData{
 		GenericData: &message.GenericData{
 			Action: message.DataAction(message.ElectionEndAction),
 			Object: message.ElectionObject,
@@ -177,12 +214,10 @@ func newElectionEndData(laoID, electionID, registeredVotes []byte, creation mess
 		CreatedAt:       creation,
 		RegisteredVotes: registeredVotes,
 	}
-
-	return data
 }
 
 func newElectionResultData(questionsResults []message.QuestionResult, witnessSignatures []message.PublicKeySignaturePair) *message.ElectionResultData {
-	data := &message.ElectionResultData{
+	return &message.ElectionResultData{
 		GenericData: &message.GenericData{
 			Action: message.DataAction(message.ElectionResultAction),
 			Object: message.ElectionObject,
@@ -190,8 +225,6 @@ func newElectionResultData(questionsResults []message.QuestionResult, witnessSig
 		Questions:         questionsResults,
 		WitnessSignatures: witnessSignatures,
 	}
-
-	return data
 }
 
 func newQuestionResult(id []byte, results []string) *message.QuestionResult {
@@ -200,12 +233,10 @@ func newQuestionResult(id []byte, results []string) *message.QuestionResult {
 		ballotOptions = append(ballotOptions, message.BallotOption(option))
 	}
 
-	questionResult := &message.QuestionResult{
+	return &message.QuestionResult{
 		ID:     id,
 		Result: ballotOptions,
 	}
-
-	return questionResult
 }
 
 func createMessage(data message.Data, publicKey message.PublicKey) message.Message {
@@ -216,6 +247,17 @@ func createMessage(data message.Data, publicKey message.PublicKey) message.Messa
 		Signature:         []byte{1, 2, 3},
 		WitnessSignatures: []message.PublicKeySignaturePair{},
 	}
+}
+
+func requireChannel(t *testing.T, channelID string) {
+	_, ok := oHub.channelByID[channelID]
+	require.True(t, ok, "The channel doesn't exist")
+}
+
+func requireErrorCode(t *testing.T, err error, code int) {
+	msgError := &message.Error{}
+	require.True(t, xerrors.As(err, &msgError), "The error not of the form `message.Error{}`")
+	require.Equal(t, msgError.Code, code, fmt.Sprintf("The error should have the code %v", code))
 }
 
 func TestMain(m *testing.M) {
@@ -232,6 +274,69 @@ func TestMain(m *testing.M) {
 }
 
 func TestOrganizer_CreateLAO(t *testing.T) {
-	_, _, err := createLao(oHub, organizerKeyPair)
+	laoID, _, err := createLao(oHub, organizerKeyPair)
 	require.NoError(t, err)
+	requireChannel(t, laoID)
+}
+
+// Basic test Setup Election
+func TestOrganizer_SetupElection(t *testing.T) {
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair)
+	require.NoError(t, err)
+
+	// Create a question
+	question := newQuestion("Yes or no?", "Plurality", []string{"yes", "no"}, false)
+
+	// Setup election data
+	time := getTime()
+	data, err := newCorrectElectionSetupData(laoID, time, time, time, []message.Question{*question})
+	require.NoError(t, err)
+
+	msg := createMessage(data, organizerKeyPair.publicBuf)
+	err = laoChannel.processElectionObject(msg)
+	require.NoError(t, err)
+
+	electionID := getElectionID(data)
+	requireChannel(t, laoID+"/"+electionID)
+}
+
+// Check that an election with no question is not accepted
+func TestOrganizer_SetupElectionNoQuestion(t *testing.T) {
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair)
+	require.NoError(t, err)
+
+	// Setup election data
+	time := getTime()
+	data, err := newCorrectElectionSetupData(laoID, time, time, time, []message.Question{})
+	require.NoError(t, err)
+
+	msg := createMessage(data, organizerKeyPair.publicBuf)
+	err = laoChannel.processElectionObject(msg)
+	require.Error(t, err, "It should not be possible to create an election with no question")
+	// Check that the error code is "-4 request data is invalid".
+	requireErrorCode(t, err, -4)
+}
+
+// Check that only the organizer is able to setup an election
+func TestOrganizer_SetupElectionWrongSender(t *testing.T) {
+	laoID, laoChannel, err := createLao(oHub, organizerKeyPair)
+	require.NoError(t, err)
+
+	// Generate keypair
+	keypair, err := generateKeyPair()
+	require.NoError(t, err)
+
+	// Create a question
+	question := newQuestion("Yes or no?", "Plurality", []string{"yes", "no"}, false)
+
+	// Setup election data
+	time := getTime()
+	data, err := newCorrectElectionSetupData(laoID, time, time, time, []message.Question{*question})
+	require.NoError(t, err)
+
+	msg := createMessage(data, keypair.publicBuf)
+	err = laoChannel.processElectionObject(msg)
+	require.Error(t, err, "Only the organizer should be able to create an election")
+	// Check that the error code is "-5 access denied".
+	requireErrorCode(t, err, -5)
 }
