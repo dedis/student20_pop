@@ -95,7 +95,7 @@ func createLao(o *organizerHub, oKeypair keypair) (string, *laoChannel, error) {
 		},
 	}
 	o.createLao(publish)
-	id := base64.StdEncoding.EncodeToString(laoID)
+	id := base64.URLEncoding.EncodeToString(laoID)
 
 	channel, ok := oHub.channelByID[id]
 	if !ok {
@@ -138,7 +138,7 @@ func newCorrectElectionSetupData(laoID string, creation, start, end message.Time
 		question.ID = questionId
 	}
 
-	byteLaoID, err := base64.StdEncoding.DecodeString(laoID)
+	byteLaoID, err := base64.URLEncoding.DecodeString(laoID)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +155,7 @@ func getElectionSetupID(laoID, name string, timestamp message.Timestamp) ([]byte
 }
 
 func getElectionID(data *message.ElectionSetupData) string {
-	return base64.StdEncoding.EncodeToString(data.ID)
+	return base64.URLEncoding.EncodeToString(data.ID)
 }
 
 func newQuestion(question string, votingMethod string, options []string, writeIn bool) *message.Question {
