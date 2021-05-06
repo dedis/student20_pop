@@ -44,7 +44,7 @@ public final class Lao {
     rollCalls.put(newId, rollCall);
   }
 
-  public void updateElections(String prevId, Election election) {
+  public void updateElection(String prevId, Election election) {
     if (elections.containsKey(prevId)) {
       elections.remove(prevId);
     }

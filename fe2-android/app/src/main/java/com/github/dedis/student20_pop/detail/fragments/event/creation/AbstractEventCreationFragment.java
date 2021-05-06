@@ -100,10 +100,12 @@ public abstract class AbstractEventCreationFragment extends Fragment {
         });
   }
 
-  public void addDateAndTimeListener(TextWatcher listener) {
+  public void addStartDateAndTimeListener(TextWatcher listener) {
     startTimeEditText.addTextChangedListener(listener);
     startDateEditText.addTextChangedListener(listener);
-    //For election setup only -> refactor ?
+  }
+
+  public void addEndDateAndTimeListener(TextWatcher listener) {
     endTimeEditText.addTextChangedListener(listener);
     endDateEditText.addTextChangedListener(listener);
   }

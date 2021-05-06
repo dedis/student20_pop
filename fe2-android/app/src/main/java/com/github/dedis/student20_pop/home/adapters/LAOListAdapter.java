@@ -20,6 +20,7 @@ public class LAOListAdapter extends BaseAdapter {
 
   private LifecycleOwner lifecycleOwner;
 
+
   public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity) {
     this.homeViewModel = homeViewModel;
     setList(laos);
@@ -63,12 +64,12 @@ public class LAOListAdapter extends BaseAdapter {
     }
 
     LAOItemUserActionsListener userActionsListener =
-        new LAOItemUserActionsListener() {
-          @Override
-          public void onLAOClicked(Lao lao) {
-            homeViewModel.openLAO("/root/" + lao.getId());
-          }
-        };
+            new LAOItemUserActionsListener() {
+              @Override
+              public void onLAOClicked(Lao lao) {
+                homeViewModel.openLAO("/root/" + lao.getId());
+              }
+            };
 
     binding.setLao(laos.get(position));
     binding.setLifecycleOwner(lifecycleOwner);

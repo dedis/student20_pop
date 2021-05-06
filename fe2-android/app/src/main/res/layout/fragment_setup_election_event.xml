@@ -7,7 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/election_setup_guideline_horizontal"
             android:layout_width="match_parent"
@@ -21,7 +20,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:fillViewport="true"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="@dimen/election_setup_scrollview_layout_margin_top"
             app:layout_constraintTop_toBottomOf="@id/election_setup_guideline_horizontal">
 
             <LinearLayout
@@ -35,28 +34,28 @@
                     android:id="@+id/election_setup_lao_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="120dp"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/lao_name"
-                    android:textSize="36sp" />
+                    android:layout_marginStart="@dimen/election_setup_titles_margin_start"
+                    android:layout_marginTop="@dimen/election_setup_titles_margin_top"
+                    android:textSize="@dimen/size_title" />
 
                 <TextView
                     android:id="@+id/election_setup_presentation_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="141dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Election Setup"
-                    android:textSize="18sp"
+                    android:layout_marginStart="@dimen/election_setup_titles_margin_start"
+                    android:layout_marginTop="@dimen/election_setup_titles_margin_top"
+                    android:text="@string/election_setup"
+                    android:textSize="@dimen/size_body"
                     android:textStyle="italic" />
 
 
                 <EditText
-                    android:id="@+id/election_setup_title"
-                    android:layout_width="match_parent"
+                    android:id="@+id/election_setup_name"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/election_setup_margin_text"
                     android:autofillHints="false"
-                    android:hint="Election name"
+                    android:hint="@string/election_setup_name_hint"
                     android:inputType="text"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/election_setup_presentation_title" />
@@ -67,15 +66,17 @@
                     layout="@layout/layout_enter_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/election_setup_margin_text"
                     app:layout_constrainedHeight="true"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/election_setup_title" />
+                    app:layout_constraintTop_toBottomOf="@id/election_setup_name" />
 
                 <include
                     android:id="@+id/election_setup_time"
                     layout="@layout/layout_enter_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/election_setup_margin_text"
                     app:layout_constrainedHeight="true"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/election_setup_date" />
@@ -92,30 +93,32 @@
 
                     <EditText
                         android:id="@+id/election_question"
-                        android:layout_width="370dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/election_setup_margin_text"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
-                        android:ems="10"
-                        android:hint="Question:"
+                        android:hint="@string/election_question_hint"
                         android:inputType="textPersonName" />
 
                     <TextView
                         android:id="@+id/voting_method"
-                        android:layout_width="160dp"
-                        android:layout_height="29dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/election_setup_margin_text"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentBottom="true"
                         android:layout_centerVertical="true"
-                        android:text="Select a voting method"
+                        android:text="@string/voting_method_spinner_text"
                         android:textColor="#7E000000"
                         android:textStyle="bold" />
 
 
                     <Spinner
                         android:id="@+id/election_setup_spinner"
-                        android:layout_width="150dp"
-                        android:layout_height="40dp"
+                        android:layout_width="@dimen/election_setup_spinner_width"
+                        android:layout_height="@dimen/election_setup_spinner_height"
+                        android:layout_marginStart="@dimen/election_setup_margin_text"
                         android:background="@android:drawable/btn_dropdown"
                         android:clickable="true"
                         android:spinnerMode="dropdown"
@@ -125,10 +128,11 @@
 
                     <Switch
                         android:id="@+id/write_in"
-                        android:layout_width="148dp"
+                        android:layout_width="@dimen/election_setup_add_ballot_button_width"
                         android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/election_setup_margin_text"
                         android:clickable="true"
-                        android:text="Allow write in"
+                        android:text="@string/write_in_switch_text"
                         android:textColor="#7E000000"
                         android:textStyle="bold"
                         app:layout_constraintLeft_toLeftOf="parent"
@@ -140,13 +144,12 @@
                         android:id="@+id/add_ballot_option"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="30dp"
-                        android:layout_marginLeft="100dp"
+                        android:layout_marginTop="@dimen/election_setup_add_ballot_button_margin_top"
+                        android:layout_marginStart="@dimen/election_setup_margin_text"
                         android:background="@null"
                         android:clickable="true"
-                        android:contentDescription="@string/todo"
                         android:elevation="0dp"
-                        android:text="Add ballot options"
+                        android:text="@string/add_ballot_options_button_text"
                         app:backgroundTint="@android:color/transparent"
                         app:elevation="0dp"
                         app:fabSize="mini"
@@ -155,6 +158,14 @@
                         app:srcCompat="@drawable/ic_baseline_add_24" />
 
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/election_setup_ballot_options_ll"
+                    android:orientation="vertical"
+                    app:layout_constrainedHeight="true"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/election_setup_fields_ll"/>
             </LinearLayout>
 
         </ScrollView>
@@ -173,7 +184,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:text="CANCEL"
+                android:text="@string/cancel"
                 style="@style/Theme.AppCompat"/>
 
             <Button
@@ -182,7 +193,7 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:enabled="false"
-                android:text="SUBMIT"
+                android:text="@string/submit"
                 style="@style/Theme.AppCompat"/>
         </LinearLayout>
 

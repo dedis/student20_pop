@@ -74,7 +74,7 @@ public final class MeetingEventCreationFragment extends AbstractEventCreationFra
     //    PoPApplication app = (PoPApplication) getActivity().getApplication();
 
     setDateAndTimeView(view, MeetingEventCreationFragment.this, fragmentManager);
-    addDateAndTimeListener(confirmTextWatcher);
+    addStartDateAndTimeListener(confirmTextWatcher);
 
     meetingTitleEditText = view.findViewById(R.id.meeting_title_text);
     meetingLocationEditText = view.findViewById(R.id.meeting_event_location_text);

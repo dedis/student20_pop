@@ -115,15 +115,22 @@
     <string name="todo">TODO</string>
     <string name="ballot_option_2">Ballot option 2</string>
 
-    <!-- E-voting -->
+    <!-- Election Event -->
+    <string name="election_setup_presentation_title_text">Election Setup</string>
+    <string name="add_ballot_options_button_text">Add ballot options</string>
+    <string name="election_setup_name_hint">Election name</string>
+    <string name="election_question_hint">Question :</string>
+    <string name="voting_method_spinner_text">Select a voting method</string>
+    <string name="write_in_switch_text">Allow write in</string>
+    <string name="new_ballot_option_hint">ballot option</string>
     <string name="elections">Elections</string>
     <string name="voting_management">Voting Management</string>
     <string name="terminate_election">Terminate Election</string>
     <string name="displayed_end_time">displayed end time</string>
     <string name="displayed_current_time">displayed current time</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="button_text">Cast Vote</string>
+
+
 
 </resources>

@@ -27,4 +27,15 @@
     <!-- QR code -->
     <dimen name="qr_code_size">200dp</dimen>
 
+    <!-- Election setup dimensions -->
+    <dimen name="election_setup_margin_text">16dp</dimen>
+    <dimen name="election_setup_scrollview_layout_margin_top">40dp</dimen>
+    <dimen name="election_setup_margin_top">16dp</dimen>
+    <dimen name="election_setup_titles_margin_start">140dp</dimen>
+    <dimen name="election_setup_titles_margin_top">16dp</dimen>
+    <dimen name="election_setup_spinner_width">150dp</dimen>
+    <dimen name="election_setup_spinner_height">40dp</dimen>
+    <dimen name="election_setup_add_ballot_button_width">148dp</dimen>
+    <dimen name="election_setup_add_ballot_button_margin_top">30dp</dimen>
+
 </resources>

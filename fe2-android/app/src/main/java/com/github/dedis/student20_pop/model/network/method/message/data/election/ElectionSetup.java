@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.model.network.method.message.data.electio
 
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
 import com.github.dedis.student20_pop.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
@@ -9,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+
 public class ElectionSetup extends Data {
 
     private String id;
@@ -26,7 +28,7 @@ public class ElectionSetup extends Data {
     /**
      * Constructor for a data setup Election Event
      *
-     * @param name name of the Election
+     * @param name  name of the Election
      * @param start of the Election
      * @param laoId id of the LAO
      */
@@ -34,9 +36,9 @@ public class ElectionSetup extends Data {
             String name,
             long start,
             long end,
-            String voting_method,
-            boolean write_in,
-            List<String> ballot_options,
+            String votingMethod,
+            boolean writeIn,
+            List<String> ballotOptions,
             String question,
             String laoId) {
         this.name = name;
@@ -47,7 +49,7 @@ public class ElectionSetup extends Data {
         this.version = "1.0.0";
         this.id = Hash.hash("E", laoId, Long.toString(createdAt), name);
         this.questions = new ArrayList<>();
-        this.questions.add(new ElectionQuestion(question, voting_method, write_in, ballot_options, this.id));
+        this.questions.add(new ElectionQuestion(question, votingMethod, writeIn, ballotOptions, this.id));
     }
 
 
@@ -67,13 +69,21 @@ public class ElectionSetup extends Data {
         return startTime;
     }
 
-    public long getEndTime() { return endTime; }
+    public long getEndTime() {
+        return endTime;
+    }
 
-    public List<ElectionQuestion> getQuestions() { return questions; }
+    public List<ElectionQuestion> getQuestions() {
+        return questions;
+    }
 
-    public String getLao() { return lao; }
+    public String getLao() {
+        return lao;
+    }
 
-    public String getVersion() { return version; }
+    public String getVersion() {
+        return version;
+    }
 
 
     @Override
