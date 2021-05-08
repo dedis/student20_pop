@@ -125,7 +125,7 @@
     <string name="new_ballot_option_hint">ballot option</string>
     <string name="elections">Elections</string>
     <string name="voting_management">Voting Management</string>
-    <string name="terminate_election">Terminate Election</string>
+    <string name="cancel_election">Cancel Election</string>
     <string name="displayed_end_time">displayed end time</string>
     <string name="displayed_current_time">displayed current time</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>

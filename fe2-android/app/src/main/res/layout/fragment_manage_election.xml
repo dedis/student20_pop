@@ -7,7 +7,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/tab_back"/>
+        <include
+            android:id="@+id/manage_election_tab_back"
+            layout="@layout/tab_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/manage_election_guideline_horizontal"
@@ -15,7 +21,6 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
-        <include layout="@layout/tab_back"/>
 
 
         <ScrollView
@@ -206,12 +211,24 @@
                     android:layout_height="wrap_content"
                     android:text="Edit Election End Time" />
 
-
                 <Button
-                    android:id="@+id/terminate_election"
+                    android:id="@+id/edit_start_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/terminate_election" />
+                    android:text="Edit Election Start Date" />
+
+                <Button
+                    android:id="@+id/edit_end_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Edit Election End Date" />
+
+
+                <Button
+                    android:id="@+id/cancel_election"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cancel_election" />
 
 
             </LinearLayout>
