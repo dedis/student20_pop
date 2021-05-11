@@ -33,7 +33,7 @@ const messagesSlice = createSlice({
     addMessages: {
       prepare(laoId: Hash | string, messages: ExtendedMessageState | ExtendedMessageState[]): any {
         const msgs = Array.isArray(messages) ? messages : [messages];
-        return { payload: { laoId: laoId.valueOf(), message: msgs } };
+        return { payload: { laoId: laoId.valueOf(), messages: msgs } };
       },
       reducer(state, action: PayloadAction<{
         laoId: string;
@@ -77,20 +77,19 @@ const messagesSlice = createSlice({
       },
       reducer(state, action: PayloadAction<{
         laoId: string;
-        messageId: string;
+        messageIds: string[];
       }>) {
-        const { laoId, messageId } = action.payload;
-
+        const { laoId, messageIds } = action.payload;
         if (!(laoId in state.byLaoId)) {
           return;
         }
-
-        state.byLaoId[laoId].byId[messageId] = markExtMessageAsProcessed(
-          state.byLaoId[laoId].byId[messageId],
-        );
-
-        state.byLaoId[laoId].unprocessedIds = state.byLaoId[laoId].unprocessedIds
-          .filter((e) => e !== messageId);
+        messageIds.forEach((messageId: string) => {
+          state.byLaoId[laoId].byId[messageId] = markExtMessageAsProcessed(
+            state.byLaoId[laoId].byId[messageId],
+          );
+          state.byLaoId[laoId].unprocessedIds = state.byLaoId[laoId].unprocessedIds
+            .filter((e) => e !== messageId);
+        });
       },
     },
 
@@ -129,11 +128,6 @@ const messagesSlice = createSlice({
 
         msg.witness_signatures.push(witnessSignature);
       },
-    },
-
-    // Empty the list of known Messages ("reset")
-    clearAllMessages: (state) => {
-      state.byLaoId = {};
     },
   },
 });

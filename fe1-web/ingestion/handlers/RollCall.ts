@@ -1,12 +1,16 @@
 import { Message } from 'model/network/method/message';
 import {
-  ActionType, ObjectType, CreateRollCall, OpenRollCall, CloseRollCall,
+  ActionType,
+  CloseRollCall,
+  CreateRollCall,
+  ObjectType,
+  OpenRollCall,
 } from 'model/network/method/message/data';
-import { RollCall } from 'model/objects';
+import { RollCall, RollCallStatus } from 'model/objects';
 import {
-  getStore, dispatch, addEvent, updateEvent, makeCurrentLao,
+  addEvent, dispatch, getStore, makeCurrentLao, updateEvent,
 } from 'store';
-import { hasWitnessSignatureQuorum, getEventFromId } from './Utils';
+import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
 
@@ -28,16 +32,15 @@ function handleRollCallCreateMessage(msg: Message): boolean {
 
   const rcMsgData = msg.messageData as CreateRollCall;
 
-  const ongoing = (!!rcMsgData.scheduled);
-
   const rc = new RollCall({
     id: rcMsgData.id,
     name: rcMsgData.name,
     location: rcMsgData.location,
-    description: rcMsgData.roll_call_description,
+    description: rcMsgData.description,
     creation: rcMsgData.creation,
-    start: ongoing ? rcMsgData.start : rcMsgData.scheduled,
-    ongoing: ongoing,
+    proposed_start: rcMsgData.proposed_start,
+    proposed_end: rcMsgData.proposed_end,
+    status: RollCallStatus.CREATED,
   });
 
   dispatch(addEvent(lao.id, rc.toState()));
@@ -70,8 +73,8 @@ function handleRollCallOpenMessage(msg: Message): boolean {
   const rc = new RollCall({
     ...oldRC,
     idAlias: rcMsgData.update_id,
-    start: rcMsgData.start,
-    ongoing: true,
+    opened_at: rcMsgData.opened_at,
+    status: RollCallStatus.OPENED,
   });
 
   dispatch(updateEvent(lao.id, rc.toState()));
@@ -104,8 +107,8 @@ function handleRollCallCloseMessage(msg: Message): boolean {
   const rc = new RollCall({
     ...oldRC,
     idAlias: rcMsgData.update_id,
-    end: rcMsgData.end,
-    ongoing: false,
+    closed_at: rcMsgData.closed_at,
+    status: RollCallStatus.CLOSED,
     attendees: rcMsgData.attendees,
   });
 

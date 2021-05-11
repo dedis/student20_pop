@@ -68,8 +68,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment impleme
                 public void afterTextChanged(Editable s) {
                     Log.d(TAG, "ballot options is" + ballotOptions.toString());
                     boolean areFieldsFilled =
-                        !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty() &&
-                                !electionQuestionText.getText().toString().trim().isEmpty() && numberBallotOptions >= 2;
+                            !electionNameText.getText().toString().trim().isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty() && !getEndDate().isEmpty() && !getEndTime().isEmpty() &&
+                                    !electionQuestionText.getText().toString().trim().isEmpty() && numberBallotOptions >= 2;
                     submitButton.setEnabled(areFieldsFilled);}
             };
 

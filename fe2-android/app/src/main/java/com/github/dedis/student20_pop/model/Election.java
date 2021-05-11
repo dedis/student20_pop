@@ -2,27 +2,26 @@ package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
-import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Election extends Event {
 
     private String id;
-    private String channel;
     private String name;
     private long creation;
     private long start;
     private long end;
     private boolean writeIn;
     private String question;
-    List<ElectionQuestion> electionQuestions;
     private List<String> ballotOptions;
 
+    //votes as attribute ?
+
+
     public Election() {
-        this.ballotOptions = new ArrayList<>();
         type = EventType.ELECTION;
+        this.ballotOptions = new ArrayList<>();
     }
 
     public String getId() {
@@ -47,8 +46,6 @@ public class Election extends Event {
         return creation;
     }
 
-    public String getChannel(){ return channel; }
-
 
     private void checkTime(long time) {
         if (time < 0) throw new IllegalArgumentException("A time can't be negative");
@@ -69,8 +66,6 @@ public class Election extends Event {
         this.end = end;
     }
 
-    public void setChannel(String channel) {this.channel = channel;}
-
     public List<String> getBallotOptions() {
         return ballotOptions;
     }
@@ -86,8 +81,6 @@ public class Election extends Event {
     public String getQuestion() {
         return question;
     }
-
-    public List<ElectionQuestion> getElectionQuestions(){return electionQuestions;}
 
     public void setQuestion(String question) {
         if (question == null) throw new IllegalArgumentException("question can't be null");

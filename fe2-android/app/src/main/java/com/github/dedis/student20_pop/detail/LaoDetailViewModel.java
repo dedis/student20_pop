@@ -32,11 +32,11 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import com.github.dedis.student20_pop.model.network.answer.Error;
 
 public class LaoDetailViewModel extends AndroidViewModel {
 
@@ -55,8 +55,8 @@ public class LaoDetailViewModel extends AndroidViewModel {
   private final MutableLiveData<Event<Boolean>> mOpenNewRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenElectionResultsEvent = new MutableLiveData<>();
   private final MutableLiveData<Event<Boolean>> mOpenManageElectionEvent = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mElectionCreated = new MutableLiveData<>();
-  private final MutableLiveData<Event<Boolean>> mOpenCastVotes = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mElectionCreatedEvent = new MutableLiveData<>();
+  private final MutableLiveData<Event<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -107,10 +107,9 @@ public class LaoDetailViewModel extends AndroidViewModel {
     disposables.dispose();
   }
 
-
   public void sendVote(Election election, List<List<Long>> votes) {
     Log.d(TAG, "sending a new vote in election : " + election.getName());
-   System.out.println( election.getStartTimestamp());
+    System.out.println( election.getStartTimestamp());
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.d(TAG, "failed to retrieve current lao");
@@ -145,9 +144,9 @@ public class LaoDetailViewModel extends AndroidViewModel {
                       .subscribe(
                               answer -> {
                                 if (answer instanceof Result) {
-                                    Log.d(TAG, "sent a vote successfully");
-                                    // Toast ? + send back to election screen or details screen ?
-                                    openLaoDetail();
+                                  Log.d(TAG, "sent a vote successfully");
+                                  // Toast ? + send back to election screen or details screen ?
+                                  openLaoDetail();
                                 } else {
                                   Log.d(TAG, "failed to send the vote");
                                 }
@@ -162,6 +161,77 @@ public class LaoDetailViewModel extends AndroidViewModel {
       return;
     }
   }
+
+
+
+  /**
+   * Creates new Election event.
+   *
+   * <p>Publish a GeneralMessage containing ElectionSetup data.
+   *
+   * @param name the name of the election
+   * @param start the start time of the election
+   * @param end the end time of the election
+   * @param votingMethod the type of voting method (e.g Plurality)
+   * @param ballotOptions the list of ballot options
+   * @param question the question associated to the election
+   * @return the id of the newly created election event, null if fails to create the event
+   */
+  public String createNewElection(String name, long start, long end, String votingMethod, boolean writeIn, List<String> ballotOptions, String question) {
+    Log.d(TAG,"creating a new election with name " + name);
+
+    Lao lao = getCurrentLao();
+    if (lao == null) {
+      Log.d(TAG, "failed to retrieve current lao");
+      return null;
+    }
+
+    String channel = lao.getChannel();
+    ElectionSetup electionSetup;
+    String laoId = channel.substring(6);
+
+    electionSetup = new ElectionSetup(name, start, end, votingMethod, writeIn, ballotOptions, question, laoId);
+
+    try {
+      // Retrieve identity of who is creating the election
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getDecoder().decode(publicKey);
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
+
+      Log.d(TAG, "sending publish message");
+      Disposable disposable =
+              mLAORepository
+                      .sendPublish(channel, msg)
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .timeout(5, TimeUnit.SECONDS)
+                      .subscribe(
+                              answer -> {
+                                if (answer instanceof Result) {
+                                  Log.d(TAG, "setup an election");
+                                  openLaoDetail();
+                                  mCurrentLao.postValue(lao);
+                                } else if (answer instanceof Error) {
+                                  Log.d(TAG, "failed to setup an election because of the following error : " + ((Error) answer).getError().getDescription());
+                                } else {
+                                  Log.d(TAG, "failed to setup an election");
+                                }
+                              },
+                              throwable ->
+                                      Log.d(TAG, "timed out waiting for result on election/create", throwable)
+                      );
+
+      disposables.add(disposable);
+
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, "failed to retrieve public key", e);
+      return null;
+    }
+    return electionSetup.getId();
+  }
+
 
 
 
@@ -231,61 +301,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
     return createRollCall.getId();
   }
 
-  public void createNewElection(String name, long start, long end, String voting_method, boolean write_in, List<String> ballot_options, String question) {
-    Log.d(TAG,"creating a new election with name " + name);
-
-    Lao lao = getCurrentLao();
-    if (lao == null) {
-      Log.d(TAG, "failed to retrieve current lao");
-      return;
-    }
-
-    String channel = lao.getChannel();
-    ElectionSetup electionSetup;
-    String laoId = channel.substring(6);
-
-    electionSetup = new ElectionSetup(name, start, end, voting_method, write_in, ballot_options, question, laoId);
-
-    try {
-      // Retrieve identity of who is creating the election
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getDecoder().decode(publicKey);
-
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
-
-      Log.d(TAG, "sending publish message");
-      Disposable disposable =
-              mLAORepository
-                      .sendPublish(channel, msg)
-                      .subscribeOn(Schedulers.io())
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .timeout(5, TimeUnit.SECONDS)
-                      .subscribe(
-                              answer -> {
-                                if (answer instanceof Result) {
-                                  Log.d(TAG, "created an election successfully");
-                                  mElectionCreated.postValue(new Event<>(true));
-                                  mCurrentLao.postValue(lao);
-                                }
-                                else {
-                                  Log.d(TAG, "failed to setup an election");
-
-                                }
-                              },
-                              throwable -> {
-                                Log.d(TAG, "timed out waiting for result on election/create", throwable);
-                              });
-
-      disposables.add(disposable);
-
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, "failed to retrieve public key", e);
-    }
-
-  }
-
   /**
    * Opens a roll call event.
    * <p>
@@ -320,11 +335,11 @@ public class LaoDetailViewModel extends AndroidViewModel {
 
   public LiveData<Event<Boolean>> getOpenElectionResultsEvent() { return mOpenElectionResultsEvent; }
 
-  public LiveData<Event<Boolean>> getElectionCreated() {return mElectionCreated;}
+  public LiveData<Event<Boolean>> getElectionCreated() {return mElectionCreatedEvent;}
 
   public LiveData<Event<Boolean>> getOpenManageElectionEvent() { return mOpenManageElectionEvent;}
 
-  public LiveData<Event<Boolean>> getOpenCastVotes() {return mOpenCastVotes;}
+  public LiveData<Event<Boolean>> getOpenCastVotes() {return mOpenCastVotesEvent;}
 
   public LiveData<List<com.github.dedis.student20_pop.model.event.Event>> getLaoEvents() { return mLaoEvents; }
 
@@ -386,11 +401,13 @@ public class LaoDetailViewModel extends AndroidViewModel {
     mOpenHomeEvent.setValue(new Event<>(true));
   }
 
+  public void electionCreated() {  mElectionCreatedEvent.postValue(new Event<>(true));}
+
   public void openLaoDetail() {
     mOpenLaoDetailEvent.postValue(new Event<>(true));
   }
   public void openCastVotes() {
-    mOpenCastVotes.postValue(new Event<>(true));
+    mOpenCastVotesEvent.postValue(new Event<>(true));
   }
 
   public void openIdentity() {
@@ -472,12 +489,6 @@ public class LaoDetailViewModel extends AndroidViewModel {
     closeEditProperties();
   }
 
-  public void setCurrentLaoName(String laoName) {
-    if (laoName != null && !laoName.isEmpty() && !laoName.equals(getCurrentLaoName())) {
-      Log.d(TAG, "New name for current LAO: " + laoName);
-      mLaoName.setValue(laoName);
-    }
-  }
 
   public void subscribeToLao(String laoId) {
     disposables.add(
@@ -506,5 +517,11 @@ public class LaoDetailViewModel extends AndroidViewModel {
                 }));
   }
 
+  public void setCurrentLaoName(String laoName) {
+    if (laoName != null && !laoName.isEmpty() && !laoName.equals(getCurrentLaoName())) {
+      Log.d(TAG, "New name for current LAO: " + laoName);
+      mLaoName.setValue(laoName);
+    }
 
+}
 }

@@ -34,6 +34,13 @@ const STRINGS = {
   organizer_navigation_tab_roll_call: 'Roll-Call',
   organizer_navigation_creation_meeting: 'Create meeting',
   organizer_navigation_creation_roll_call: 'Create roll call',
+  organizer_navigation_creation_election: 'Create election',
+
+  /* --- Wallet Navigation Strings --- */
+  navigation_home_tab_wallet: 'Wallet',
+  navigation_insert_seed_tab_wallet: 'Wallet Setup',
+  navigation_show_seed_wallet: 'New Wallet',
+  navigation_synced_wallet: 'Your Wallet',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
@@ -94,8 +101,23 @@ const STRINGS = {
   discussion_create_name: 'Name*',
   discussion_create_open: 'discussion open',
 
+  /* --- Election creation Strings --- */
+  election_create_setup: 'Election Setup',
+  election_create_name: 'Name*',
+  election_create_start_time: 'Start time: ',
+  election_create_finish_time: 'End time:  ',
+  election_create_question: 'Question*',
+  election_create_voting_method: 'Voting method',
+  election_create_ballot_option: 'Option',
+  election_create_ballot_options: 'Ballot Options',
+  election_voting_method: 'Voting Method',
+  election_method_Plurality: 'Plurality',
+  election_method_Approval: 'Approval',
+  election_version_identifier: '1.0.0',
+
   /* --- Roll-call creation Strings --- */
-  roll_call_create_deadline: 'Deadline:',
+  roll_call_create_proposed_start: 'Proposed Start:',
+  roll_call_create_proposed_end: 'Proposed End:',
   roll_call_create_description: 'Description',
   roll_call_create_location: 'Location*',
   roll_call_create_name: 'Name*',
@@ -118,8 +140,28 @@ const STRINGS = {
   meeting_create_finish_time: 'End time: ',
   meeting_create_location: 'Location',
 
+  /* --- Wallet Strings --- */
+  wallet_private_key_id: 'Private Decryption Key',
+  wallet_public_key_id: 'Public Encryption Key',
+  wallet_private_key: 'private',
+  wallet_public_key: 'public',
+  welcome_to_wallet_display: 'Welcome to your wallet !',
+  info_to_set_wallet: 'You may import your seed if you own one or create a new wallet',
+  caution_information_on_seed: 'ATTENTION: if you create a new wallet remember to write down the given seed '
+    + 'and store it in a secure place, this is the only backup to your PoP tokens',
+  create_new_wallet_button: ' NEW WALLET ',
+  import_seed_button: 'I OWN A SEED',
+  type_seed_info: 'Type the 12 word seed',
+  show_seed_info: 'This is the only backup seed for your PoP tokens - store it securely',
+  type_seed_example: 'example:   grape  sock  height  they  tiny  voyage  kid  young  domain  trumpet  three  patrol',
+  wallet_synced_info: 'Your digital wallet is synced !',
+  setup_wallet: 'SETUP WALLET',
+  back_to_wallet_home: 'BACK TO WALLET HOME',
+  recover_tokens_title: 'RECOVER POP TOKENS',
+
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',
+  add_option: 'Add option',
 
   lorem_ipsum: "Scrollable box containing the critical informations!\nLAO's, organizers' and witnesses' names "
         + 'and hex fingerprint\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae egestas '

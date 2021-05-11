@@ -3,8 +3,9 @@
 
     <!-- Tabs -->
     <dimen name="guideline_horizontal_tab">0.08</dimen>
-    <dimen name="guideline_vertical_tab_home">0.33</dimen>
-    <dimen name="guideline_vertical_tab_connect">0.66</dimen>
+    <dimen name="guideline_vertical_tab_home">0.25</dimen>
+    <dimen name="guideline_vertical_tab_connect">0.50</dimen>
+    <dimen name="guideline_vertical_tab_wallet">0.75</dimen>
 
     <!-- Text -->
     <dimen name="margin_text">32dp</dimen>
@@ -12,6 +13,7 @@
     <dimen name="size_title">24sp</dimen>
     <dimen name="size_body">18sp</dimen>
     <dimen name="size_small">12sp</dimen>
+    <dimen name="lao_name">36sp</dimen>
 
     <!-- Camera preview -->
     <integer name="camera_preview_width">240</integer>
@@ -24,8 +26,19 @@
     <!-- Button -->
     <dimen name="margin_button">16dp</dimen>
 
+
     <!-- QR code -->
     <dimen name="qr_code_size">200dp</dimen>
+
+    <!-- Event -->
+    <dimen name="event_details_width">186dp</dimen>
+    <dimen name="date_text_event">15sp</dimen>
+    <dimen name="event_buttons_height">43dp</dimen>
+    <dimen name="election_fragment_description_margin">140dp</dimen>
+    <dimen name="election_question_height">80dp</dimen>
+    <dimen name="election_question_margin_top">10dp</dimen>
+    <dimen name="election_end_time_margin">90dp</dimen>
+    <dimen name="election_current_time_margin">127dp</dimen>
 
     <!-- Election setup dimensions -->
     <dimen name="election_setup_margin_text">16dp</dimen>

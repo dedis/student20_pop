@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.model.data;
 
 import android.util.Base64;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.github.dedis.student20_pop.model.Election;
@@ -17,6 +18,7 @@ import com.github.dedis.student20_pop.model.network.method.Catchup;
 import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
@@ -36,12 +38,7 @@ import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -52,6 +49,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class  LAORepository {
 
@@ -319,18 +323,25 @@ public class  LAORepository {
     Lao lao = laoById.get(channel).getLao();
     Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
 
+    //In the case (that shouldn't happen) where there is no question, we add a "default" question to prevent a crash
+    if (electionSetup.getQuestions().isEmpty()) {
+      Log.d(TAG, "election should have at least one question");
+      electionSetup.getQuestions().add(new ElectionQuestion("default question", "Plurality", false, new ArrayList<>(), electionSetup.getId()));
+    }
+    ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
+
     Election election = new Election();
     election.setId(electionSetup.getId());
     election.setName(electionSetup.getName());
     election.setCreation(electionSetup.getCreation());
-    election.setChannel(channel + "/" + election.getId());
-    election.setElectionQuestions(electionSetup.getQuestions());
-
+    election.setStart(electionSetup.getStartTime());
+    election.setQuestion(electionQuestion.getQuestion());
     election.setStart(electionSetup.getStartTime());
     election.setEnd(electionSetup.getEndTime());
+    election.setWriteIn(electionQuestion.getWriteIn());
+    election.setBallotOptions(electionQuestion.getBallotOptions());
 
-
-    lao.updateElections(election.getId(), election);
+    lao.updateElection(election.getId(), election);
     return false;
 
   }

@@ -3,7 +3,7 @@ export enum JsonRpcMethod {
   INVALID = '__INVALID_METHOD__',
 
   // actual values
-  BROADCAST = 'message',
+  BROADCAST = 'broadcast',
   PUBLISH = 'publish',
   SUBSCRIBE = 'subscribe',
   UNSUBSCRIBE = 'unsubscribe',

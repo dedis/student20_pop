@@ -18,15 +18,13 @@ export class CreateRollCall implements MessageData {
 
   public readonly creation: Timestamp;
 
-  // only set if the roll call is to be opened immediately
-  public readonly start?: Timestamp;
+  public readonly proposed_start: Timestamp;
 
-  // only set if the roll call *will* be opened in the future
-  public readonly scheduled?: Timestamp;
+  public readonly proposed_end: Timestamp;
 
   public readonly location: string;
 
-  public readonly roll_call_description?: string;
+  public readonly description?: string;
 
   constructor(msg: Partial<CreateRollCall>) {
     if (!msg.name) {
@@ -40,34 +38,32 @@ export class CreateRollCall implements MessageData {
     checkTimestampStaleness(msg.creation);
     this.creation = msg.creation;
 
-    if ((msg.start && msg.scheduled) || (!msg.start && !msg.scheduled)) {
-      // if both are present or neither
-      throw new ProtocolError("The 'CreateRollCall' data should include"
-        + "  either 'start' or 'scheduled' values, but not both");
+    if (!msg.proposed_start) {
+      throw new ProtocolError("Undefined 'proposed_start' parameter encountered during 'CreateRollCall'");
+    } else if (msg.proposed_start < msg.creation) {
+      throw new ProtocolError('Invalid timestamp encountered:'
+          + " 'proposed_start' parameter smaller than 'creation'");
     }
+    checkTimestampStaleness(msg.proposed_start);
+    this.proposed_start = msg.proposed_start;
 
-    if (msg.start) {
-      if (msg.start < msg.creation) {
-        throw new ProtocolError('Invalid timestamp encountered:'
-          + " 'start' parameter smaller than 'creation'");
-      }
-      this.start = msg.start;
+    if (!msg.proposed_end) {
+      throw new ProtocolError("Undefined 'proposed_end' parameter encountered during 'CreateRollCall'");
+    } else if (msg.proposed_end < msg.proposed_start) {
+      throw new ProtocolError('Invalid timestamp encountered:'
+        + " 'proposed_end' parameter smaller than 'proposed_start'");
     }
-
-    if (msg.scheduled) {
-      if (msg.scheduled < msg.creation) {
-        throw new ProtocolError('Invalid timestamp encountered:'
-          + " 'scheduled' parameter smaller than 'creation'");
-      }
-      this.scheduled = msg.scheduled;
-    }
+    checkTimestampStaleness(msg.proposed_end);
+    this.proposed_end = msg.proposed_end;
 
     if (!msg.location) {
       throw new ProtocolError("Undefined 'location' parameter encountered during 'CreateRollCall'");
     }
     this.location = msg.location;
 
-    if (msg.roll_call_description) this.roll_call_description = msg.roll_call_description;
+    if (msg.description) {
+      this.description = msg.description;
+    }
 
     if (!msg.id) {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'CreateRollCall'");
@@ -93,8 +89,8 @@ export class CreateRollCall implements MessageData {
     return new CreateRollCall({
       ...obj,
       creation: new Timestamp(obj.creation),
-      start: (obj.start !== undefined) ? new Timestamp(obj.start) : undefined,
-      scheduled: (obj.scheduled !== undefined) ? new Timestamp(obj.scheduled) : undefined,
+      proposed_start: new Timestamp(obj.proposed_start),
+      proposed_end: new Timestamp(obj.proposed_end),
       id: new Hash(obj.id),
     });
   }

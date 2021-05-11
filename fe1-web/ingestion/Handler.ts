@@ -41,7 +41,7 @@ export function storeMessages(...msgs: Message[]) {
 
     // send it to the store
     const msgStates = otherMsgs.map((m) => m.toState());
-    dispatch(addMessages(laoId, msgStates));
+    dispatch(addMessages(laoId.valueOf(), msgStates));
   } catch (err) {
     console.warn('Messages could not be stored, error:', err, msgs);
   }

@@ -18,6 +18,7 @@ export enum ObjectType {
   MESSAGE = 'message',
   MEETING = 'meeting',
   ROLL_CALL = 'roll_call',
+  ELECTION = 'election',
 }
 
 export enum ActionType {
@@ -25,6 +26,7 @@ export enum ActionType {
   INVALID = '__INVALID_ACTION__',
 
   CREATE = 'create',
+  SETUP = 'setup',
   UPDATE_PROPERTIES = 'update_properties',
   STATE = 'state',
   WITNESS = 'witness',
@@ -65,6 +67,9 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.OPEN]: 'dataOpenRollCall',
     [ActionType.REOPEN]: 'dataOpenRollCall',
     [ActionType.CLOSE]: 'dataCloseRollCall',
+  },
+  [ObjectType.ELECTION]: {
+    [ActionType.SETUP]: 'dataSetupElection',
   },
 };
 

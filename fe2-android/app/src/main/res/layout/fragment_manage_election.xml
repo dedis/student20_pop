@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
+<layout xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,20 +44,21 @@
                     android:id="@+id/manage_election_lao_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="65dp"
+                    android:layout_marginTop="@dimen/margin_text"
                     android:gravity="center|top"
-                    android:text="Lao Name"
-                    android:textSize="36sp"
-                    app:layout_constraintTop_toBottomOf="@+id/manage_election_guideline_horizontal" />
+                    android:text="@string/lao_name"
+                    android:textSize="@dimen/lao_name"
+                    app:layout_constraintTop_toBottomOf="@+id/manage_election_guideline_horizontal"
+                    tools:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/manage_election_presentation_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="141dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="@dimen/election_fragment_description_margin"
+                    android:layout_marginTop="@dimen/margin_button"
                     android:text="@string/voting_management"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/size_body"
                     android:textStyle="italic" />
 
 
@@ -69,15 +70,16 @@
                     app:layout_constraintTop_toBottomOf="@id/manage_election_title">
 
 
-                    <EditText
+                    <TextView
                         android:id="@+id/manage_election_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="@dimen/margin_button"
                         android:gravity="center"
                         android:importantForAutofill="no"
-                        android:inputType="text"
-                        android:text="Election Name"
+                        android:text="@string/election_name"
+                        android:textColor="#050505"
+                        android:textSize="@dimen/size_title"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/manage_election_presentation_title" />
 
@@ -94,17 +96,17 @@
                             android:id="@+id/current_time_text"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="30dp"
+                            android:layout_marginStart="@dimen/margin_text"
                             android:autofillHints="false"
-                            android:text="Current Time :"
-                            android:textSize="18sp"
+                            android:text="@string/current_time"
+                            android:textSize="@dimen/size_body"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/displayed_current_time"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="127dp"
+                            android:layout_marginStart="@dimen/election_current_time_margin"
                             android:autofillHints="false" />
 
                     </LinearLayout>
@@ -122,17 +124,17 @@
                             android:id="@+id/start_time_text"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="30dp"
+                            android:layout_marginStart="@dimen/margin_text"
                             android:autofillHints="false"
-                            android:text="Election Start Time :"
-                            android:textSize="18sp"
+                            android:text="@string/election_start_time"
+                            android:textSize="@dimen/size_body"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/displayed_start_time"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="79dp"
+                            android:layout_marginStart="@dimen/election_question_height"
                             android:autofillHints="false" />
 
                     </LinearLayout>
@@ -150,17 +152,17 @@
                             android:id="@+id/end_time_text"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="30dp"
+                            android:layout_marginStart="@dimen/margin_text"
                             android:autofillHints="false"
-                            android:text="Election End Time :"
-                            android:textSize="18sp"
+                            android:text="@string/election_end_time"
+                            android:textSize="@dimen/size_body"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/displayed_end_time"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="90dp"
+                            android:layout_marginStart="@dimen/election_end_time_margin"
                             android:autofillHints="false" />
 
                     </LinearLayout>
@@ -168,11 +170,11 @@
                     <TextView
                         android:id="@+id/electionQuestion"
                         android:layout_width="match_parent"
-                        android:layout_height="79dp"
-                        android:layout_marginStart="30dp"
-                        android:layout_marginTop="10dp"
-                        android:text="Election Question :  ?"
-                        android:textSize="18sp"
+                        android:layout_height="@dimen/election_question_height"
+                        android:layout_marginStart="@dimen/margin_text"
+                        android:layout_marginTop="@dimen/election_question_margin_top"
+                        android:text="@string/election_question"
+                        android:textSize="@dimen/size_body"
                         android:textStyle="bold"
                         app:layout_constrainedHeight="true"
                         app:layout_constraintLeft_toLeftOf="parent" />
@@ -185,31 +187,31 @@
                     android:id="@+id/edit_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Edit Election Name" />
+                    android:text="@string/edit_election_name" />
 
                 <Button
                     android:id="@+id/edit_question"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Edit Election Question" />
+                    android:text="@string/edit_election_question" />
 
                 <Button
                     android:id="@+id/edit_ballot_options"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Edit Election Ballot Options" />
+                    android:text="@string/edit_election_ballot_options" />
 
                 <Button
                     android:id="@+id/edit_start_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Edit Election Start Time" />
+                    android:text="@string/edit_election_start_time" />
 
                 <Button
                     android:id="@+id/edit_end_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Edit Election End Time" />
+                    android:text="@string/edit_election_end_time" />
 
                 <Button
                     android:id="@+id/edit_start_date"

@@ -17,6 +17,11 @@ const styleEvents = StyleSheet.create({
     flexDirection: 'row',
     zIndex: 3,
   } as ViewStyle,
+  viewVertical: {
+    ...Views.base,
+    flexDirection: 'column',
+    zIndex: 3,
+  } as ViewStyle,
   textInput: {
     ...Typography.base,
     borderBottomWidth: 2,
@@ -28,6 +33,7 @@ const styleEvents = StyleSheet.create({
 enum EventTypes {
   MEETING = 'Meeting',
   ROLL_CALL = 'Roll-Call',
+  ELECTION = 'Election',
 }
 
 /**
@@ -44,6 +50,10 @@ const CreateEvent = () => {
 
       case EventTypes.ROLL_CALL:
         navigation.navigate(STRINGS.organizer_navigation_creation_roll_call, styleEvents);
+        break;
+
+      case EventTypes.ELECTION:
+        navigation.navigate(STRINGS.organizer_navigation_creation_election, styleEvents);
         break;
 
       default:

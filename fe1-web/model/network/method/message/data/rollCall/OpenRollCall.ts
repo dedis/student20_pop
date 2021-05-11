@@ -13,17 +13,17 @@ export class OpenRollCall implements MessageData {
 
   public readonly opens: Hash;
 
-  public readonly start: Timestamp;
+  public readonly opened_at: Timestamp;
 
   constructor(msg: Partial<OpenRollCall>) {
-    if (!msg.start) {
-      throw new ProtocolError("Undefined 'start' parameter encountered during 'OpenRollCall'");
+    if (!msg.opened_at) {
+      throw new ProtocolError("Undefined 'opened_at' parameter encountered during 'OpenRollCall'");
     }
-    checkTimestampStaleness(msg.start);
-    this.start = msg.start;
+    checkTimestampStaleness(msg.opened_at);
+    this.opened_at = msg.opened_at;
 
     if (!msg.update_id) {
-      throw new ProtocolError("Undefined 'update_id' parameter encountered during 'OpenRollCall'");
+      throw new ProtocolError("Undefined 'update_Id' parameter encountered during 'OpenRollCall'");
     }
     this.update_id = msg.update_id;
 
@@ -42,7 +42,7 @@ export class OpenRollCall implements MessageData {
 
     return new OpenRollCall({
       ...obj,
-      start: new Timestamp(obj.start),
+      opened_at: new Timestamp(obj.opened_at),
       update_id: new Hash(obj.update_id),
       opens: new Hash(obj.opens),
     });
