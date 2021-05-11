@@ -657,7 +657,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		case message.ElectionEndAction:
 			log.Fatal("Not implemented", message.ElectionEndAction)
 		case message.ElectionResultAction:
-			log.Fatal("Not implemented", message.ElectionResultAction)
+			return  c.electionResultHelper(publish)
 		}
 	}
 
@@ -730,4 +730,37 @@ func (c *electionChannel) castVoteHelper(publish message.Publish) error {
 		Code:        -4,
 		Description: "Error in CastVote helper function",
 	}
+}
+func (c *electionChannel) electionResultHelper(publish message.Publish) error{
+	msg := publish.Params.Message
+
+	resultData, ok := msg.Data.(*message.ElectionResultData)
+	if !ok {
+		return &message.Error{
+			Code:        -4,
+			Description: "failed to cast data to ElectionResultData",
+		}
+	}
+
+	questions := resultData.Questions
+	for _,q := range questions{
+		// q.iD is the public key of the question, we convert it to string
+		// to retrieve the votes for that question in the election channel
+		question,ok := c.questions[q.ID.String()]
+		if !ok{
+			return &message.Error{
+				Code:        -4,
+				Description: "No question with this questionId was recorded",
+			}
+		}
+
+		votes  := question.validVotes
+		if question.method == message.PluralityMethod{
+			pluralityResultMap := make(map[string]int)
+			pluralityResultMap[q.ID.String()] = len(votes)
+			 option := message.BallotOption(q.ID.String()+":"+string(len(votes)))
+			q.Result = append(q.Result,option)
+		}
+	}
+	return nil
 }
