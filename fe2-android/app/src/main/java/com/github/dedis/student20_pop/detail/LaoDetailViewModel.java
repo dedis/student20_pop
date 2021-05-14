@@ -116,10 +116,10 @@ public class LaoDetailViewModel extends AndroidViewModel {
       return;
     }
 
-    String channel = election.getChannel();
+    String channel = lao.getChannel();
 
     //todo change when multiple questions
-    ElectionQuestion electionQuestion = election.getElectionQuestions().get(0);
+    ElectionQuestion electionQuestion = new ElectionQuestion(election.getQuestion(),"plurality",election.getWriteIn(),election.getBallotOptions(),election.getId());
     CastVote  castVote;
     String laoId = lao.getChannel().substring(6); // removing /root/ prefix
     castVote = new CastVote(electionQuestion.getWriteIn(), votes, electionQuestion.getId(), election.getId(), laoId);

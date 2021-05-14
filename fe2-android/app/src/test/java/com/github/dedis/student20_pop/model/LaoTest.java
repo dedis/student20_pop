@@ -1,37 +1,48 @@
 package com.github.dedis.student20_pop.model;
 
+import com.github.dedis.student20_pop.model.event.Event;
+import org.junit.Test;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class LaoTest {
 
-  //  private static final String LAO_NAME_1 = "LAO name 1";
-  //  private static final String LAO_NAME_2 = "LAO name 2";
-  //
-  //  private static final String ORGANIZER = new Keys().getPublicKey();
-  //
-  //  private static final String WITNESS = "0x3435";
-  //  private static final List<String> WITNESSES = Arrays.asList("0x3434", "0x4747");
-  //  private static final List<String> WITNESSES_WITH_NULL = Arrays.asList("0x3939", null,
-  // "0x4747");
-  //
-  //  private static final URI HOST = URI.create("ws://localhost:8000");
-  //
-  //  private static final Lao LAO_1 = new Lao(LAO_NAME_1, ORGANIZER, HOST);
-  //  private static final Lao LAO_FOR_EVENTS = new Lao(LAO_NAME_2, ORGANIZER, HOST);
-  //
-  //  private static final List<Event> EVENTS =
-  //      Arrays.asList(
-  //          new MeetingEvent("meeting", 0, 0, LAO_FOR_EVENTS.getId(), "loc", "desc"),
-  //          new PollEvent("question", 0, 0, LAO_FOR_EVENTS.getId(), "loc", new ArrayList<>(),
-  // false));
-  //  private static final List<Event> EVENTS_WITH_NULL =
-  //      Arrays.asList(
-  //          new MeetingEvent("meeting", 0, 0, LAO_FOR_EVENTS.getId(), "loc", "desc"),
-  //          null,
-  //          new PollEvent("question", 0, 0, LAO_FOR_EVENTS.getId(), "loc", new ArrayList<>(),
-  // false));
-  //
-  //  private static final List<Lao> LAOS = new ArrayList<>(Arrays.asList(LAO_1, LAO_FOR_EVENTS));
-  //  private static final List<Lao> LAOS_WITH_NULL =
-  //      new ArrayList<>(Arrays.asList(LAO_1, null, LAO_FOR_EVENTS));
+    private static final String LAO_NAME_1 = "LAO name 1";
+    private static final String LAO_NAME_2 = "LAO name 2";
+
+    private static final String ORGANIZER = "0x2365";
+
+    private static final String WITNESS = "0x3435";
+    private static final List<String> WITNESSES = Arrays.asList("0x3434", "0x4747");
+    private static final List<String> WITNESSES_WITH_NULL = Arrays.asList("0x3939", null,
+   "0x4747");
+
+    private static final Lao LAO_1 = new Lao(LAO_NAME_1, ORGANIZER);
+    private static final Lao LAO_2 = new Lao(LAO_NAME_2, ORGANIZER);
+    private static final List<Event> EVENTS =
+        Arrays.asList(
+            new Election(),
+            new RollCall());
+    private static final List<Event> EVENTS_WITH_NULL =
+        Arrays.asList(
+            new Election(),
+            null,
+            new RollCall());
+
+    private static final List<Lao> LAOS = new ArrayList<>(Arrays.asList(LAO_1, LAO_2));
+    private static final List<Lao> LAOS_WITH_NULL =
+        new ArrayList<>(Arrays.asList(LAO_1, null, LAO_2));
+
+    private Map<String,RollCall> rollCalls = new HashMap<>();
+    @Test
+    public void removeElectionTest() {
+        LAO_1.setRollCalls(new HashMap<>());
+
+    }
+
   //
   //  @Test
   //  public void createLaoNullParametersTest() {

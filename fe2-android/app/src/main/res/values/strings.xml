@@ -108,6 +108,7 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+    <string name="button_text">Cast Vote</string>
     <string name="election_name">Election Name</string>
     <string name="lao_name">LAO name</string>
     <string name="election_setup">Election Setup</string>
