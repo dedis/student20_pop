@@ -356,10 +356,20 @@ type ElectionEndData struct {
 	RegisteredVotes []byte    `json:"registered_votes"`
 }
 
+// TODO : check if we need to change the type of Result[]
+
+// BallotOptionCount represents the the number of number of received votes for
+// particular Ballot Option
+type BallotOptionCount struct{
+	Option BallotOption `ballot_option`
+	Count int           `count`
+}
+
 // QuestionResult represents the result of a question in an election.
 type QuestionResult struct {
 	ID     PublicKey      `json:"id"`
 	Result []BallotOption `json:"result"`
+	Result2 []BallotOptionCount `json:"result"`
 }
 
 // ElectionResultData represents the message data for the result of an election.

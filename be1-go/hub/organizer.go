@@ -755,11 +755,30 @@ func (c *electionChannel) electionResultHelper(publish message.Publish) error{
 		}
 
 		votes  := question.validVotes
-		if question.method == message.PluralityMethod{
-			pluralityResultMap := make(map[string]int)
-			pluralityResultMap[q.ID.String()] = len(votes)
-			 option := message.BallotOption(q.ID.String()+":"+string(len(votes)))
-			q.Result = append(q.Result,option)
+		if question.method == message.PluralityMethod {
+			numberOfVotesPerBallotOption := make([]int, len(question.ballotOptions))
+			for _, vote := range votes {
+				for ballotIndex := range vote.indexes {
+					numberOfVotesPerBallotOption[ballotIndex] += 1
+				}
+			}
+
+			// check if we even need questionResults
+			questionResults := make([]message.BallotOption,len(question.ballotOptions))
+			questionResults2 := make([] message.BallotOptionCount, len(question.ballotOptions))
+			for i, option := range question.ballotOptions {
+				questionResults = append(questionResults,message.BallotOption("ballot_option:") + option +
+					message.BallotOption("count:" + string(numberOfVotesPerBallotOption[i])))
+				questionResults2 = append(questionResults2, message.BallotOptionCount{
+					Option: option,
+					Count: numberOfVotesPerBallotOption[i],
+				})
+			}
+			resultData.Questions = append(resultData.Questions,message.QuestionResult{
+				ID :q.ID,
+				Result: questionResults,
+				Result2: questionResults2,
+			})
 		}
 	}
 	return nil
