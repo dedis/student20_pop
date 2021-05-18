@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"path/filepath"
 	"student20_pop"
 	"sync"
 
@@ -37,16 +36,12 @@ const (
 // NewOrganizerHub returns a Organizer Hub.
 func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	// Import the Json schemas defined in the protocol section
-	protocolPath, err := filepath.Abs("../protocol")
-	if err != nil {
-		return nil, xerrors.Errorf("failed to load the path for the json schemas: %v", err)
-	}
-	protocolPath = "file://" + protocolPath
+	url := "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol"
 
 	schemas := make(map[string]*gojsonschema.Schema)
 
 	// Import the schema for generic messages
-	genericMsgLoader := gojsonschema.NewReferenceLoader(protocolPath + "/genericMessage.json")
+	genericMsgLoader := gojsonschema.NewReferenceLoader(url + "/genericMessage.json")
 	genericMsgSchema, err := gojsonschema.NewSchema(genericMsgLoader)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to load the json schema for generic messages: %v", err)
@@ -54,7 +49,7 @@ func NewOrganizerHub(public kyber.Point) (Hub, error) {
 	schemas[GenericMsgSchema] = genericMsgSchema
 
 	// Impot the schema for data
-	dataSchemaLoader := gojsonschema.NewReferenceLoader(protocolPath + "/query/method/message/data/data.json")
+	dataSchemaLoader := gojsonschema.NewReferenceLoader(url + "/query/method/message/data/data.json")
 	dataSchema, err := gojsonschema.NewSchema(dataSchemaLoader)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to load the json schema for data: %v", err)
