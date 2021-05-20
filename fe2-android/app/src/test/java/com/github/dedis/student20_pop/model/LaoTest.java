@@ -7,14 +7,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class LaoTest {
 
     private static final String LAO_NAME_1 = "LAO name 1";
     private static final String LAO_NAME_2 = "LAO name 2";
-
     private static final String ORGANIZER = "0x2365";
-
+    private static final String rollCallId1 = "rollCallId1";
+    private static final String rollCallId2 = "rollCallId2";
+    private static final String rollCallId3 = "rollCallId3";
     private static final String WITNESS = "0x3435";
     private static final List<String> WITNESSES = Arrays.asList("0x3434", "0x4747");
     private static final List<String> WITNESSES_WITH_NULL = Arrays.asList("0x3939", null,
@@ -39,7 +41,14 @@ public class LaoTest {
     private Map<String,RollCall> rollCalls = new HashMap<>();
     @Test
     public void removeElectionTest() {
-        LAO_1.setRollCalls(new HashMap<>());
+        LAO_1.setRollCalls(new HashMap<String,RollCall>() {{
+            put(rollCallId1,new RollCall() );
+            put(rollCallId2, new RollCall());
+            put(rollCallId3, new RollCall());
+        }}
+        );
+        assert(LAO_1.removeRollCall(rollCallId3));
+        assert(LAO_1.getRollCalls().size() == 2);
 
     }
 
