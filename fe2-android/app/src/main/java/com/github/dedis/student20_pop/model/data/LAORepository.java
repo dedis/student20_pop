@@ -3,6 +3,8 @@ package com.github.dedis.student20_pop.model.data;
 import android.util.Base64;
 import android.util.Log;
 import androidx.annotation.NonNull;
+
+import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.Lao;
 import com.github.dedis.student20_pop.model.PendingUpdate;
 import com.github.dedis.student20_pop.model.RollCall;
@@ -15,9 +17,11 @@ import com.github.dedis.student20_pop.model.network.method.Catchup;
 import com.github.dedis.student20_pop.model.network.method.Publish;
 import com.github.dedis.student20_pop.model.network.method.Subscribe;
 import com.github.dedis.student20_pop.model.network.method.Unsubscribe;
+import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.MessageGeneral;
 import com.github.dedis.student20_pop.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
@@ -50,7 +54,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class LAORepository {
+public class  LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
   private static volatile LAORepository INSTANCE = null;
@@ -173,13 +177,14 @@ public class LAORepository {
                 .map(x -> x.getValue().getLao())
                 .collect(Collectors.toList()));
         Log.d(TAG, "createLaoRequest contains this id. posted allLaos to `allLaoSubject`");
+        sendSubscribe(channel);
         sendCatchup(channel);
       }
 
       return;
     }
 
-    Log.d(TAG, "Got a braodcast");
+    Log.d(TAG, "Got a broadcast");
 
     // We've a Broadcast
     Broadcast broadcast = (Broadcast) genericMessage;
@@ -211,6 +216,8 @@ public class LAORepository {
       enqueue = handleCreateLao(channel, (CreateLao) data);
     } else if (data instanceof UpdateLao) {
       enqueue = handleUpdateLao(channel, message.getMessageId(), (UpdateLao) data);
+    } else if (data instanceof ElectionSetup) {
+      enqueue = handleElectionSetup(channel, (ElectionSetup) data);
     } else if (data instanceof StateLao) {
       enqueue = handleStateLao(channel, (StateLao) data);
     } else if (data instanceof CreateRollCall) {
@@ -305,6 +312,34 @@ public class LAORepository {
         .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
 
     return false;
+  }
+
+
+  private boolean handleElectionSetup(String channel, ElectionSetup electionSetup) {
+    Lao lao = laoById.get(channel).getLao();
+    Log.d(TAG, "handleElectionSetup: " + channel + " name " + electionSetup.getName());
+
+    //In the case (that shouldn't happen) where there is no question, we add a "default" question to prevent a crash
+    if (electionSetup.getQuestions().isEmpty()) {
+      Log.d(TAG, "election should have at least one question");
+      electionSetup.getQuestions().add(new ElectionQuestion("default question", "Plurality", false, new ArrayList<>(), electionSetup.getId()));
+    }
+    ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
+
+    Election election = new Election();
+    election.setId(electionSetup.getId());
+    election.setName(electionSetup.getName());
+    election.setCreation(electionSetup.getCreation());
+    election.setStart(electionSetup.getStartTime());
+    election.setQuestion(electionQuestion.getQuestion());
+    election.setStart(electionSetup.getStartTime());
+    election.setEnd(electionSetup.getEndTime());
+    election.setWriteIn(electionQuestion.getWriteIn());
+    election.setBallotOptions(electionQuestion.getBallotOptions());
+
+    lao.updateElection(election.getId(), election);
+    return false;
+
   }
 
   private boolean handleCreateRollCall(String channel, CreateRollCall createRollCall) {
@@ -512,7 +547,9 @@ public class LAORepository {
         upstream
             .filter(
                 genericMessage -> {
-                  Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+                  if (genericMessage instanceof Answer) {
+                    Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
+                  }
                   return genericMessage instanceof Answer
                       && ((Answer) genericMessage).getId() == id;
                 })

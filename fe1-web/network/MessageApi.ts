@@ -5,6 +5,7 @@ import {
   CreateLao,
   CreateMeeting,
   CreateRollCall,
+  SetupElection,
   StateLao,
   UpdateLao,
   WitnessMessage,
@@ -15,6 +16,7 @@ import {
 import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
+import { Question } from 'model/objects/Election';
 import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
@@ -132,18 +134,11 @@ export function requestWitnessMessage(channel: Channel, messageId: Hash): Promis
  *  given location (String). An optional start time (Timestamp), scheduled time (Timestamp) or
  *  description (String) can be specified */
 export function requestCreateRollCall(
-  name: string, location: string, start?: Timestamp, scheduled?: Timestamp, description?: string,
+  name: string, location: string, proposedStart: Timestamp, proposedEnd: Timestamp,
+  description?: string,
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
-
-  if (start === undefined && scheduled === undefined) {
-    throw new Error('RollCall creation failed : neither "start" or "scheduled" field was given');
-  }
-
-  if (start !== undefined && scheduled !== undefined) {
-    throw new Error('RollCall creation failed : both "start" and "scheduled" fields were given');
-  }
 
   const message = new CreateRollCall({
     id: Hash.fromStringArray(
@@ -152,9 +147,9 @@ export function requestCreateRollCall(
     name: name,
     creation: time,
     location: location,
-    start: start,
-    scheduled: scheduled,
-    roll_call_description: description,
+    proposed_start: proposedStart,
+    proposed_end: proposedEnd,
+    description: description,
   });
 
   const laoCh = channelFromId(currentLao.id);
@@ -208,3 +203,33 @@ export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[])
   return publish(channelFromId(laoId), message);
 }
  */
+
+/** Sends a server query asking for creation of an Election with a given name (String),
+ *  an array of questions, a version (String), the current lao (String), the id, and the  creation,
+ *  start and end are also specified as a timestamp */
+export function requestCreateElection(
+  name: string,
+  version: string,
+  start: Timestamp,
+  end: Timestamp,
+  questions: Question[],
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+  const timeBuffer = 60;
+  const message = new SetupElection({
+    lao: currentLao.id,
+    id: Hash.fromStringArray(
+      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), name,
+    ),
+    name: name,
+    version: version,
+    created_at: time,
+    start_time: ((start.before(time)) ? time : start),
+    end_time: ((end.before(start)) ? (start.addSeconds(timeBuffer)) : end),
+    questions: questions,
+  });
+
+  const laoCh = channelFromId(currentLao.id);
+  return publish(laoCh, message);
+}

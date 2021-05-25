@@ -10,13 +10,16 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.ViewModelFactory;
-import com.github.dedis.student20_pop.detail.fragments.RollCallEventCreationFragment;
+
+import com.github.dedis.student20_pop.detail.fragments.event.creation.ElectionSetupFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.RollCallEventCreationFragment;
 import com.github.dedis.student20_pop.home.HomeActivity;
-import com.github.dedis.student20_pop.home.fragments.IdentityFragment;
+import com.github.dedis.student20_pop.detail.fragments.IdentityFragment;
+import com.github.dedis.student20_pop.detail.fragments.LaoDetailFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.MeetingEventCreationFragment;
+import com.github.dedis.student20_pop.detail.fragments.event.creation.PollEventCreationFragment;
+
 import com.github.dedis.student20_pop.model.event.EventType;
-import com.github.dedis.student20_pop.ui.LaoDetailFragment;
-import com.github.dedis.student20_pop.ui.event.creation.MeetingEventCreationFragment;
-import com.github.dedis.student20_pop.ui.event.creation.PollEventCreationFragment;
 import com.github.dedis.student20_pop.utility.ActivityUtils;
 import java.util.Objects;
 
@@ -103,6 +106,9 @@ public class LaoDetailActivity extends AppCompatActivity {
       case POLL:
         setupCreatePollFragment();
         break;
+      case ELECTION:
+        setupCreateElectionSetupFragment();
+        break;
       default:
         Log.d(TAG, "unknown event type: " + eventType.toString());
     }
@@ -186,6 +192,17 @@ public class LaoDetailActivity extends AppCompatActivity {
       pollCreationFragment = PollEventCreationFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
           getSupportFragmentManager(), pollCreationFragment, R.id.fragment_container_lao_detail);
+    }
+  }
+
+  private void setupCreateElectionSetupFragment() {
+    ElectionSetupFragment electionSetupFragment =
+            (ElectionSetupFragment)
+              getSupportFragmentManager().findFragmentById(R.id.fragment_setup_election_event);
+    if (electionSetupFragment == null) {
+      electionSetupFragment = ElectionSetupFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+              getSupportFragmentManager(), electionSetupFragment, R.id.fragment_container_lao_detail);
     }
   }
 }

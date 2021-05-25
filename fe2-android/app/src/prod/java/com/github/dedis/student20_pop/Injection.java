@@ -108,7 +108,7 @@ public class Injection {
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(CreateRollCall.class, new JsonCreateRollCallSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
-        .create();
+            .create();
   }
 
   public static BarcodeDetector provideQRCodeDetector(Context context) {

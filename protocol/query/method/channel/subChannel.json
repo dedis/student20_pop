@@ -4,6 +4,6 @@
 	"description": "Match a sub-channel (not root channel)",
 
 	"type": "string",
-	"pattern": "^\/root\/[^\/]+$",
+	"pattern": "^\/root(\/[^\/]+)+$",
 	"$comment": "Note: always starts with \"/root/\" followed by a non-empty string"
 }

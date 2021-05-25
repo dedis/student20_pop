@@ -3,6 +3,7 @@ import { Hash, Timestamp } from 'model/objects';
 export enum LaoEventType {
   MEETING = 'MEETING',
   ROLL_CALL = 'ROLL_CALL',
+  ELECTION = 'ELECTION',
   // Election, Poll, etc.
 }
 

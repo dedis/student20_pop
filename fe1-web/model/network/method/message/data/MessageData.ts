@@ -7,6 +7,7 @@ export enum ObjectType {
   MESSAGE = 'message',
   MEETING = 'meeting',
   ROLL_CALL = 'roll_call',
+  ELECTION = 'election',
 }
 
 /** Enumeration of all possible "action" field values in MessageData */
@@ -15,6 +16,7 @@ export enum ActionType {
   INVALID = '__INVALID_ACTION__',
 
   CREATE = 'create',
+  SETUP = 'setup',
   UPDATE_PROPERTIES = 'update_properties',
   STATE = 'state',
   WITNESS = 'witness',

@@ -292,12 +292,7 @@ function checkDataCreateRollCall(obj: MessageData) {
   const data: CreateRollCall = obj as CreateRollCall;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'creation', 'location']);
-
-  const startInData = 'start' in data;
-  const scheduledInData = 'scheduled' in data;
-  const xor = !(startInData && scheduledInData) && (startInData || scheduledInData);
-  expect(xor).toBe(true);
+  expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'creation', 'location', 'proposed_start', 'proposed_end']);
 
   expect(data.id).toBeBase64();
 
@@ -307,27 +302,23 @@ function checkDataCreateRollCall(obj: MessageData) {
   expect(data.creation).toBeNumberObject();
   expect(data.creation.valueOf()).toBeGreaterThan(0);
 
-  if ('start' in data) {
-    expect(data.start).toBeNumberObject();
-    // @ts-ignore
-    expect(data.start.valueOf()).toBeGreaterThan(0);
-    // @ts-ignore
-    expect(data.start.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
-  }
+  expect(data.proposed_start).toBeNumberObject();
+  // @ts-ignore
+  expect(data.proposed_start.valueOf()).toBeGreaterThan(0);
+  // @ts-ignore
+  expect(data.proposed_start.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
 
-  if ('scheduled' in data) {
-    expect(data.scheduled).toBeNumberObject();
-    // @ts-ignore
-    expect(data.scheduled.valueOf()).toBeGreaterThan(0);
-    // @ts-ignore
-    expect(data.scheduled.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
-  }
+  expect(data.proposed_end).toBeNumberObject();
+  // @ts-ignore
+  expect(data.proposed_end.valueOf()).toBeGreaterThan(0);
+  // @ts-ignore
+  expect(data.proposed_end.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
 
   expect(data.location).toBeString();
   expect(data.location).toBe(mockLocation);
 
-  if ('roll_call_description' in data) {
-    expect(data.roll_call_description).toBeString();
+  if ('description' in data) {
+    expect(data.description).toBeString();
   }
 
   // check id
@@ -344,12 +335,13 @@ function checkDataOpenRollCall(obj: MessageData) {
   const data: OpenRollCall = obj as OpenRollCall;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'start']);
+  expect(data).toContainKeys([...defaultDataFields, 'update_id', 'opens', 'opened_at']);
 
   expect(data.update_id).toBeBase64();
+  expect(data.opens).toBeBase64();
 
-  expect(data.start).toBeNumberObject();
-  expect(data.start.valueOf()).toBeGreaterThan(0);
+  expect(data.opened_at).toBeNumberObject();
+  expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // check id
   const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
@@ -364,12 +356,12 @@ function checkDataReopenRollCall(obj: MessageData) {
 
   const data: ReopenRollCall = obj as ReopenRollCall;
 
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'start']);
+  expect(data).toContainKeys([...defaultDataFields, 'id', 'opens', 'opened_at']);
 
   expect(data.update_id).toBeBase64();
-
-  expect(data.start).toBeNumberObject();
-  expect(data.start.valueOf()).toBeGreaterThan(0);
+  expect(data.opens).toBeBase64();
+  expect(data.opened_at).toBeNumberObject();
+  expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // check id
   const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), '444', 'r-cName'); // 444 and r-cName are for now hardocded in the APi
@@ -385,12 +377,12 @@ function checkDataCloseRollCall(obj: MessageData) {
   const data: CloseRollCall = obj as CloseRollCall;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'start', 'end', 'attendees']);
+  expect(data).toContainKeys([...defaultDataFields, 'update_id', 'closes', 'closed_at', 'attendees']);
 
   expect(data.update_id).toBeBase64();
 
-  expect(data.end).toBeNumberObject();
-  expect(data.end.valueOf()).toBeGreaterThan(0);
+  expect(data.closed_at).toBeNumberObject();
+  expect(data.closed_at.valueOf()).toBeGreaterThan(0);
 
   expect(data.attendees).toBeBase64Array();
   expect(data.attendees).toBeDistinctArray();
@@ -459,15 +451,10 @@ describe('=== WebsocketApi tests ===', () => {
 
     it('should create the correct request for requestCreateRollCall', async () => {
       setMockCheck(checkDataCreateRollCall);
-      const mockScheduledTime = new Timestamp(mockStartTime.valueOf() + 1);
       const mockDescription = 'random description';
-      await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime);
-      await msApi.requestCreateRollCall(mockEventName, mockLocation, undefined, mockScheduledTime);
+      await msApi.requestCreateRollCall(mockEventName, mockLocation, mockStartTime, mockEndTime);
       await msApi.requestCreateRollCall(
-        mockEventName, mockLocation, mockStartTime, undefined, mockDescription,
-      );
-      await msApi.requestCreateRollCall(
-        mockEventName, mockLocation, undefined, mockScheduledTime, mockDescription,
+        mockEventName, mockLocation, mockStartTime, mockEndTime, mockDescription,
       );
     });
     /*

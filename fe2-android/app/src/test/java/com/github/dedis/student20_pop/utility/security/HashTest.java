@@ -16,8 +16,8 @@ public class HashTest {
   public void hashNullTest() {
     Assert.assertThrows(IllegalArgumentException.class, () -> Hash.hash());
     Assert.assertThrows(IllegalArgumentException.class, () -> Hash.hash((String) null));
-    Assert.assertThrows(IllegalArgumentException.class,
-        () -> Hash.hash((String) null, (String) null));
+    Assert.assertThrows(
+        IllegalArgumentException.class, () -> Hash.hash((String) null, (String) null));
   }
 
   @Test

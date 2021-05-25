@@ -1,62 +1,95 @@
 package com.github.dedis.student20_pop.model;
 
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+
 public class ElectionTest {
 
-  //  private final String name1 = "Election name 1";
-  //  private final String name2 = "Election name 2";
-  //  private final String lao = "0x5932";
-  //  private final ArrayList<String> options = new ArrayList<>(Arrays.asList("0x3434", "0x3333"));
-  //  private final ArrayList<String> optionsWithNull = new ArrayList<>(Arrays.asList("0x3939",
-  // null));
-  //  private final Election election1 = new Election(name1, lao, options);
-  //  private final Election election2 = new Election(name2, lao, options);
-  //
-  //  @Test
-  //  public void createElectionNullParametersTest() {
-  //    assertThrows(IllegalArgumentException.class, () -> new Election(null, lao, options));
-  //    assertThrows(IllegalArgumentException.class, () -> new Election(name1, null, options));
-  //    assertThrows(IllegalArgumentException.class, () -> new Election(name1, lao, null));
-  //    assertThrows(IllegalArgumentException.class, () -> new Election(name1, lao,
-  // optionsWithNull));
-  //  }
-  //
-  //  @Test
-  //  public void getNameTest() {
-  //    assertThat(election1.getName(), is(name1));
-  //  }
-  //
-  //  @Test
-  //  public void getTimeTest() {
-  //    final int LENGTH_UNIX_TIMESTAMP = 10;
-  //    assertThat(Long.toString(election1.getTime()).length(), is(LENGTH_UNIX_TIMESTAMP));
-  //  }
-  //
-  //  //  @Test
-  //  //  public void getIdTest() {
-  //  //    assertThat(
-  //  //        election1.getId(),
-  //  //        is(Hash.hash(election1.getLao(), election1.getTime(), election1.getName())));
-  //  //  }
-  //
-  //  @Test
-  //  public void getLaoTest() {
-  //    assertThat(election1.getLao(), is(lao));
-  //  }
-  //
-  //  @Test
-  //  public void getOptionsTest() {
-  //    assertThat(election1.getOptions(), is(options));
-  //  }
-  //
-  //  @Test
-  //  public void equalsTest() {
-  //    assertEquals(election1, election1);
-  //    assertNotEquals(election1, election2);
-  //  }
-  //
-  //  @Test
-  //  public void hashCodeTest() {
-  //    assertEquals(election1.hashCode(), election1.hashCode());
-  //    assertNotEquals(election1.hashCode(), election2.hashCode());
-  //  }
+    private String name = "my election name";
+    private String id = "my election id";
+    private String question = "my question";
+    private boolean writeIn = false;
+    private long startTime = 0;
+    private long endTime = 1;
+    private long creationTime = 0;
+    private List<String> ballotOptions = Arrays.asList("candidate1", "candidate2");
+    private Election election = new Election();
+
+    @Test
+    public void settingNullParametersThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> election.setName(null));
+        assertThrows(IllegalArgumentException.class, () -> election.setBallotOptions(null));
+        assertThrows(IllegalArgumentException.class, () -> election.setQuestion(null));
+        assertThrows(IllegalArgumentException.class, () -> election.setId(null));
+    }
+
+    @Test
+    public void settingBallotOptionsWithSizeLessThan2ThrowsException() {
+        List<String> brokenBallotOptions = new ArrayList<>();
+        assertThrows(IllegalArgumentException.class, () -> election.setBallotOptions(brokenBallotOptions));
+        brokenBallotOptions.add("candidate1");
+        assertThrows(IllegalArgumentException.class, () -> election.setBallotOptions(brokenBallotOptions));
+    }
+
+    @Test
+    public void settingAndGettingReturnsCorrespondingName() {
+        election.setName(name);
+        assertThat(election.getName(), is(name));
+    }
+
+    @Test
+    public void settingAndGettingReturnsCorrespondingId() {
+        election.setId(id);
+        assertThat(election.getId(), is(id));
+    }
+
+    @Test
+    public void settingAndGettingReturnsCorrespondingQuestion() {
+        election.setQuestion(question);
+        assertThat(election.getQuestion(), is(question));
+    }
+
+    @Test
+    public void settingAndGettingReturnsCorrespondingBallotOptions() {
+        election.setBallotOptions(ballotOptions);
+        assertThat(election.getBallotOptions(), is(ballotOptions));
+    }
+
+    @Test
+    public void settingAndGettingReturnsCorrespondingWriteIn() {
+        election.setWriteIn(writeIn);
+        assertThat(election.getWriteIn(), is(writeIn));
+    }
+
+    @Test
+    public void settingNegativeTimesThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> election.setStart(-1));
+        assertThrows(IllegalArgumentException.class, () -> election.setEnd(-1));
+        assertThrows(IllegalArgumentException.class, () -> election.setCreation(-1));
+    }
+
+    @Test
+    public void settingAndGettingReturnsCorrespondingStartTime() {
+        election.setStart(startTime);
+        assertThat(election.getStartTimestamp(), is(startTime));
+    }
+
+    @Test
+    public void settingAndGettingReturnsCorrespondingEndTime() {
+        election.setEnd(endTime);
+        assertThat(election.getEndTimestamp(), is(endTime));
+    }
+
+    @Test
+    public void settingAndGettingReturnsCorrespondingCreationTime() {
+        election.setStart(creationTime);
+        assertThat(election.getCreation(), is(creationTime));
+    }
 }

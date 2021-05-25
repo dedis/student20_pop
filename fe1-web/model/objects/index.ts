@@ -12,3 +12,5 @@ export * from './RollCall';
 export * from './Meeting';
 export * from './LaoEvent';
 export * from './LaoEventBuilder';
+export * from './Election';
+export * from './HDWallet';

@@ -10,7 +10,7 @@
             android:layout_height="wrap_content"
             android:focusableInTouchMode="false"
             android:hint="@string/start_time_required"
-            android:autofillHints="false"/>
+            android:autofillHints="false" />
 
     <EditText
             android:id="@+id/end_time_edit_text"
@@ -18,6 +18,6 @@
             android:layout_height="wrap_content"
             android:focusableInTouchMode="false"
             android:hint="@string/end_time_optional"
-            android:autofillHints="false"/>
+            android:autofillHints="false" />
 
 </LinearLayout>

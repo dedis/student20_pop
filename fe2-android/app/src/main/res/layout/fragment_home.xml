@@ -20,56 +20,57 @@
                 app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab"/>
 
         <LinearLayout
-                android:id="@+id/welcome_screen"
+            android:id="@+id/welcome_screen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
+
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:visibility="visible"
-                app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/margin_text"
-                    android:gravity="center"
-                    android:text="@string/text_title_welcome"
-                    android:textSize="@dimen/size_title"
-                    android:textStyle="bold"/>
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_text"
+                android:gravity="center"
+                android:text="@string/text_title_welcome"
+                android:textSize="@dimen/size_title"
+                android:textStyle="bold" />
 
 
             <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/margin_text"
-                    android:gravity="center"
-                    android:text="@string/text_body_welcome"
-                    android:textSize="@dimen/size_body"
-                    android:textStyle="bold"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_text"
+                android:gravity="center"
+                android:text="@string/text_body_welcome"
+                android:textSize="@dimen/size_body"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/list_screen"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layout_constraintTop_toTopOf="@id/guideline_horizontal_tab">
+            android:id="@+id/list_screen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@id/guideline_horizontal_tab">
 
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/swipe_refresh">
+                android:id="@+id/swipe_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
                 <ListView
-                        android:id="@+id/lao_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/margin_button"
-                        android:layout_marginRight="@dimen/margin_button"
-                        android:divider="@color/white"
-                        android:dividerHeight="@dimen/margin_top"/>
+                    android:id="@+id/lao_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/margin_button"
+                    android:layout_marginRight="@dimen/margin_button"
+                    android:divider="@color/white"
+                    android:dividerHeight="@dimen/margin_top" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </LinearLayout>
 

@@ -15,9 +15,7 @@ import { LaoEvent, Timestamp } from 'model/objects';
 */
 const Organizer = () => {
   const eventList = makeEventsList();
-
   const events = useSelector(eventList);
-
   const now = Timestamp.EpochNow();
   const pastEvents: LaoEvent[] = [];
   const currentEvents: LaoEvent[] = [];

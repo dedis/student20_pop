@@ -39,6 +39,7 @@ public final class MessageGeneral {
   public MessageGeneral(byte[] sender, Data data, PublicKeySign signer, Gson gson) {
     this.sender = sender;
     this.data = data;
+    Log.d(TAG, gson.toJson(data, Data.class));
     this.dataBuf = gson.toJson(data, Data.class).getBytes();
     this.verifier = new Ed25519Verify(sender);
 

@@ -7,10 +7,13 @@ import { Spacing } from 'styles';
 import ParagraphBlock from 'components/ParagraphBlock';
 import styleEventView from 'styles/stylesheets/eventView';
 import TextBlock from 'components/TextBlock';
-import { Hash, RollCall, Timestamp } from 'model/objects';
+import {
+  Election, Hash, RollCall, Timestamp,
+} from 'model/objects';
 import { Meeting } from 'model/objects/Meeting';
 import EventMeeting from './EventMeeting';
 import EventRollCall from './EventRollCall';
+import EventElection from './EventElection';
 import ListCollapsibleIcon from '../ListCollapsibleIcon';
 
 /**
@@ -59,7 +62,13 @@ const Event = (props: IPropTypes) => {
         />
       );
     }
-
+    if (event instanceof Election) {
+      return (
+        <EventElection
+          event={event}
+        />
+      );
+    }
     return <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />;
   };
 

@@ -3,8 +3,9 @@
 
     <!-- Tabs -->
     <dimen name="guideline_horizontal_tab">0.08</dimen>
-    <dimen name="guideline_vertical_tab_home">0.33</dimen>
-    <dimen name="guideline_vertical_tab_connect">0.66</dimen>
+    <dimen name="guideline_vertical_tab_home">0.25</dimen>
+    <dimen name="guideline_vertical_tab_connect">0.50</dimen>
+    <dimen name="guideline_vertical_tab_wallet">0.75</dimen>
 
     <!-- Text -->
     <dimen name="margin_text">32dp</dimen>
@@ -24,7 +25,19 @@
     <!-- Button -->
     <dimen name="margin_button">16dp</dimen>
 
+
     <!-- QR code -->
     <dimen name="qr_code_size">200dp</dimen>
+
+    <!-- Election setup dimensions -->
+    <dimen name="election_setup_margin_text">16dp</dimen>
+    <dimen name="election_setup_scrollview_layout_margin_top">40dp</dimen>
+    <dimen name="election_setup_margin_top">16dp</dimen>
+    <dimen name="election_setup_titles_margin_start">140dp</dimen>
+    <dimen name="election_setup_titles_margin_top">16dp</dimen>
+    <dimen name="election_setup_spinner_width">150dp</dimen>
+    <dimen name="election_setup_spinner_height">40dp</dimen>
+    <dimen name="election_setup_add_ballot_button_width">148dp</dimen>
+    <dimen name="election_setup_add_ballot_button_margin_top">30dp</dimen>
 
 </resources>

@@ -16,16 +16,16 @@ export class CloseRollCall implements MessageData {
 
   public readonly closes: Hash;
 
-  public readonly end: Timestamp;
+  public readonly closed_at: Timestamp;
 
   public readonly attendees: PublicKey[];
 
   constructor(msg: Partial<CloseRollCall>) {
-    if (!msg.end) {
-      throw new ProtocolError("Undefined 'end' parameter encountered during 'CloseRollCall'");
+    if (!msg.closed_at) {
+      throw new ProtocolError("Undefined 'closed_at' parameter encountered during 'CloseRollCall'");
     }
-    checkTimestampStaleness(msg.end);
-    this.end = msg.end;
+    checkTimestampStaleness(msg.closed_at);
+    this.closed_at = msg.closed_at;
 
     if (!msg.attendees) {
       throw new ProtocolError("Undefined 'attendees' parameter encountered during 'CloseRollCall'");
@@ -65,7 +65,7 @@ export class CloseRollCall implements MessageData {
 
     return new CloseRollCall({
       ...obj,
-      end: new Timestamp(obj.end),
+      closed_at: new Timestamp(obj.closed_at),
       attendees: obj.attendees.map((key: string) => new PublicKey(key)),
       update_id: new Hash(obj.update_id),
       closes: new Hash(obj.closes),

@@ -7,6 +7,7 @@ import java.util.List;
 /** Enumerates all possible messages actions */
 public enum Action {
   CREATE("create"),
+  SETUP("setup"),
   UPDATE("update_properties"),
   STATE("state"),
   WITNESS("witness"),

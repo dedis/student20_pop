@@ -16,7 +16,7 @@
 				"channel": {
 					"description": "[String] name of the channel", 
 					"type": "string",
-					"pattern": "^\/root(\/[^\/]+)?$",
+					"pattern": "^\/root(\/[^\/]+)*$",
 					"$comment": "Note: the regex matches a \"/root\" or a \"/root/<channel>\""
 				},
 				"message": {

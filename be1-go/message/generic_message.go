@@ -47,3 +47,18 @@ func (m *GenericMessage) UnmarshalJSON(data []byte) error {
 	m.Query = query
 	return nil
 }
+
+// Unmarshal the ID of a message
+func (m *GenericMessage) UnmarshalID(data []byte) (int, bool) {
+	type idStruct struct {
+		ID *int `json:"id"`
+	}
+
+	tmp := &idStruct{}
+	json.Unmarshal(data, tmp)
+	if tmp.ID != nil {
+		return *tmp.ID, true
+	}
+
+	return -1, false
+}

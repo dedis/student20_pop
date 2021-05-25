@@ -192,13 +192,14 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
                 new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
 
             arrayAdapter.add("Roll-Call Event");
+            arrayAdapter.add("Election Event");
 
             builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
             builder.setAdapter(
                 arrayAdapter,
                 ((dialog, which) -> {
                   dialog.dismiss();
-                  viewModel.addEvent(EventType.values()[which]);
+                  viewModel.chooseEventType(EventType.values()[which]);
                 }));
             builder.show();
           }
@@ -209,6 +210,8 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     binding.setLifecycleOwner(lifecycleOwner);
     binding.setAddEventListener(addEventOnClickListener);
     binding.executePendingBindings();
+
+    binding.addFutureEventButton.setFocusable(false);
 
     return binding.getRoot();
   }
@@ -262,7 +265,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
-    eventsMap = new HashMap<>();
+
     long now = Instant.now().getEpochSecond();
     for (Event event : events) {
       if (event.getEndTimestamp() < now) {

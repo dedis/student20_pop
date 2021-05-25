@@ -5,6 +5,7 @@
     <string name="tab_home">Home</string>
     <string name="tab_connect">Connect</string>
     <string name="tab_launch">Launch</string>
+    <string name="tab_wallet">Wallet</string>
     <string name="tab_identity">Identity</string>
     <string name="tab_properties">Show/Hide Properties</string>
 
@@ -106,5 +107,34 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+    <string name="election_name">Election Name</string>
+    <string name="lao_name">LAO name</string>
+    <string name="election_setup">Election Setup</string>
+    <string name="select_a_voting_method">Select a voting method</string>
+    <string name="submit">Submit</string>
+    <string name="todo">TODO</string>
+    <string name="ballot_option_2">Ballot option 2</string>
 
+    <!-- Election Event -->
+    <string name="election_setup_presentation_title_text">Election Setup</string>
+    <string name="add_ballot_options_button_text">Add ballot options</string>
+    <string name="election_setup_name_hint">Election name</string>
+    <string name="election_question_hint">Question :</string>
+    <string name="voting_method_spinner_text">Select a voting method</string>
+    <string name="write_in_switch_text">Allow write in</string>
+    <string name="new_ballot_option_hint">ballot option</string>
+
+
+
+
+    <!-- Wallet -->
+    <string name="button_own_seed">I own a seed</string>
+    <string name="button_new_wallet">New wallet</string>
+    <string name="text_title_wallet">Welcome to your wallet !</string>
+    <string name="text_help_wallet">You may import your seed if you own one or create a new wallet.</string>
+    <string name="text_help_new_wallet">ATTENTION: if you create a new wallet remember to write down
+        the given seed and store it secure place, this is the only backup to your PoP tokens.</string>
+    <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely</string>
+    <string name="confirm_button">Confirm</string>
+    <string name="content_title">Tokens</string>
 </resources>

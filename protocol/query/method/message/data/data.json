@@ -1,0 +1,22 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/data.json",
+	"description": "Match one type of data",
+	"type": "object",
+	
+	"oneOf": [
+		{ "$ref": "dataCastVote.json" },
+		{ "$ref": "dataCloseRollCall.json" },
+		{ "$ref": "dataCreateLao.json" },
+		{ "$ref": "dataCreateMeeting.json" },
+		{ "$ref": "dataCreateRollCall.json" },
+		{ "$ref": "dataElectionEnd.json" },
+		{ "$ref": "dataElectionResult.json" },
+		{ "$ref": "dataElectionSetup.json" },
+		{ "$ref": "dataOpenRollCall.json" },
+		{ "$ref": "dataStateLao.json" },
+		{ "$ref": "dataStateMeeting.json" },
+		{ "$ref": "dataUpdateLao.json" },
+		{ "$ref": "dataWitnessMessage.json" }
+	]
+}
