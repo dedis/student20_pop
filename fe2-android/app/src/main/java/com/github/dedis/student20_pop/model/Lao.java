@@ -160,6 +160,8 @@ public final class Lao {
     return rollCalls;
   }
 
+  public void setElections(Map<String,Election>elections) { this.elections = elections;}
+
   public void setRollCalls(Map<String, RollCall> rollCalls) {
     this.rollCalls = rollCalls;
   }
