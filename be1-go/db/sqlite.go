@@ -191,7 +191,7 @@ func (s *sqlite) AddWitnessToMessage(messageID string, keyAndSignature message.P
 
 // AddMessage adds a new message to the channel specified by `channelID`
 func (s *sqlite) AddMessage(channelID string, msg message.Message, timestamp message.Timestamp) error {
-	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
+	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
 	msgBuf, err := json.Marshal(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal message: %v", err)

@@ -23,7 +23,7 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("organizer's public key is required")
 	}
 
-	pkBuf, err := base64.StdEncoding.DecodeString(pk)
+	pkBuf, err := base64.URLEncoding.DecodeString(pk)
 	if err != nil {
 		return xerrors.Errorf("failed to base64 decode public key: %v", err)
 	}

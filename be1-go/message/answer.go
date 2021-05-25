@@ -36,7 +36,7 @@ type Signature []byte
 
 // String returns the base64 encoded representation of the public key.
 func (p PublicKey) String() string {
-	return base64.StdEncoding.EncodeToString(p)
+	return base64.URLEncoding.EncodeToString(p)
 }
 
 // PublicKeySignaturePair represents a witness' public key and it's signature.

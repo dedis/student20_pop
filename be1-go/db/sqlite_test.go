@@ -140,7 +140,7 @@ func TestSQLite_AddWitnessToMessage(t *testing.T) {
 	msg, err := createMessage(1, timestamp)
 	require.NoError(t, err)
 
-	messageID := base64.StdEncoding.EncodeToString(msg.MessageID)
+	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
 
 	err = repo.AddMessage(channelID, msg, timestamp)
 	require.NoError(t, err)

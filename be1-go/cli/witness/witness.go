@@ -3,14 +3,15 @@ package witness
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 	"log"
 	"net/http"
 	"net/url"
 	"student20_pop"
 	"student20_pop/hub"
+
+	"github.com/gorilla/websocket"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 var upgrader = websocket.Upgrader{
@@ -29,7 +30,7 @@ func Serve(context *cli.Context) error {
 		return xerrors.Errorf("witness' public key is required")
 	}
 
-	pkBuf, err := base64.StdEncoding.DecodeString(pk)
+	pkBuf, err := base64.URLEncoding.DecodeString(pk)
 	if err != nil {
 		return xerrors.Errorf("failed to base64 decode public key: %v", err)
 	}
