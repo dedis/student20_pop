@@ -30,11 +30,14 @@ func CreateAndServeWs(hubType HubType, socketType SocketType, h Hub, port int) e
 }
 
 func serveWs(socketType SocketType, h Hub, w http.ResponseWriter, r *http.Request) {
+	log.Printf("upgrading connection")
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("failed to upgrade connection: %v", err)
 		return
 	}
+
+	log.Printf("choosing socket types")
 
 	switch socketType {
 	case ClientSocketType:
@@ -52,6 +55,8 @@ func serveWs(socketType SocketType, h Hub, w http.ResponseWriter, r *http.Reques
 		}(client, h)
 	case WitnessSocketType:
 		witness := NewWitnessSocket(h, conn)
+
+		log.Printf("about to read from witness socket")
 
 		go witness.ReadPump()
 		go witness.WritePump()
