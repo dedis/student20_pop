@@ -62,14 +62,14 @@ func (h *baseHub) Recv(msg IncomingMessage) {
 func (h *baseHub) Start(done chan struct{}) {
 	log.Printf("started hub...")
 	for {
-		select {
-		case incomingMessage := <-h.messageChan:
-			log.Printf("handling incoming messages...")
-			h.handleIncomingMessage(&incomingMessage)
-		case <-done:
+		//select {
+		//case incomingMessage := <-h.messageChan:
+		//	log.Printf("handling incoming messages...")
+		//	h.handleIncomingMessage(&incomingMessage)
+		//case <-done:
 			log.Printf("being done returning shouldn't happen...")
 			return
-		}
+		//}
 	}
 }
 
@@ -78,7 +78,7 @@ func (h *baseHub) handleMessageFromClient(incomingMessage *IncomingMessage) {
 		incomingMessage.Socket,
 	}
 	byteMessage := incomingMessage.Message
-
+	log.Printf("handling messages from client...")
 	// Check if the GenericMessage has a field "id"
 	genericMsg := &message.GenericMessage{}
 	id, ok := genericMsg.UnmarshalID(byteMessage)
