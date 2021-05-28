@@ -40,6 +40,8 @@ func serveWs(socketType SocketType, h Hub, w http.ResponseWriter, r *http.Reques
 	case ClientSocketType:
 		client := NewClientSocket(h, conn)
 
+		log.Printf("about to read from client socket")
+
 		go client.ReadPump()
 		go client.WritePump()
 
