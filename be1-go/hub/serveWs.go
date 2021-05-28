@@ -15,8 +15,11 @@ var upgrader = websocket.Upgrader{
 }
 
 func CreateAndServeWs(hubType HubType, socketType SocketType, h Hub, port int) error {
+	log.Printf("handling http function")
 	http.HandleFunc("/"+string(hubType)+"/"+string(socketType)+"/", func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("about to serveWs")
 		serveWs(socketType, h, w, r)
+		log.Printf("servedWs")
 	})
 
 	log.Printf("Starting the %s WS server (for %s) at %d", hubType, socketType, port)
