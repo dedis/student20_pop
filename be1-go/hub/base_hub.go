@@ -63,6 +63,7 @@ func (h *baseHub) Start(done chan struct{}) {
 	log.Printf("started hub...")
 	for {
 		select {
+		log.Printf("handling incoming messages...")
 		case incomingMessage := <-h.messageChan:
 			h.handleIncomingMessage(&incomingMessage)
 		case <-done:
