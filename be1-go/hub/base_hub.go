@@ -62,14 +62,14 @@ func (h *baseHub) Recv(msg IncomingMessage) {
 func (h *baseHub) Start(done chan struct{}) {
 	log.Printf("started hub...")
 	for {
-		//select {
-		//case incomingMessage := <-h.messageChan:
-		//	log.Printf("handling incoming messages...")
-		//	h.handleIncomingMessage(&incomingMessage)
-		//case <-done:
+		select {
+		case incomingMessage := <-h.messageChan:
+			log.Printf("handling incoming messages...")
+			h.handleIncomingMessage(&incomingMessage)
+		case <-done:
 			log.Printf("being done returning shouldn't happen...")
 			return
-		//}
+		}
 	}
 }
 

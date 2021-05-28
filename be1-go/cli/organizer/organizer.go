@@ -2,6 +2,7 @@ package organizer
 
 import (
 	"encoding/base64"
+	"log"
 	"student20_pop"
 	"student20_pop/hub"
 	"student20_pop/validation"
@@ -44,6 +45,8 @@ func Serve(context *cli.Context) error {
 
 	done := make(chan struct{})
 	go h.Start(done)
+
+	log.Printf("Start is done")
 
 	go hub.CreateAndServeWs(hub.OrganizerHubType, hub.WitnessSocketType, h, witnessPort)
 	hub.CreateAndServeWs(hub.OrganizerHubType, hub.ClientSocketType, h, clientPort)
