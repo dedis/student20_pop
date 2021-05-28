@@ -70,6 +70,7 @@ func (h *baseHub) Start(done chan struct{}) {
 			log.Printf("being done returning shouldn't happen...")
 			return
 		}
+		log.Printf("Waiting for messages")
 	}
 }
 
