@@ -22,6 +22,7 @@ func CreateAndServeWs(hubType HubType, socketType SocketType, h Hub, port int) e
 	log.Printf("Starting the %s WS server (for %s) at %d", hubType, socketType, port)
 	var err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	if err != nil {
+		log.Printf("Error while starting the server")
 		return xerrors.Errorf("failed to start the %s server: %v", hubType, err)
 	}
 
