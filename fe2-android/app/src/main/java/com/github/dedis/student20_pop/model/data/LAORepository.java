@@ -140,6 +140,7 @@ public class LAORepository {
   }
 
   private void handleGenericMessage(GenericMessage genericMessage) {
+    Log.d(TAG, "Received Generic Message ");
     if (genericMessage instanceof Error) {
       Error err = (Error) genericMessage;
       int id = err.getId();

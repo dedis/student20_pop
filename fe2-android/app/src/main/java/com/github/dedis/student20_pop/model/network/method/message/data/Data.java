@@ -1,5 +1,6 @@
 package com.github.dedis.student20_pop.model.network.method.message.data;
 
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.student20_pop.model.network.method.message.data.lao.UpdateLao;
@@ -19,9 +20,11 @@ import static com.github.dedis.student20_pop.model.network.method.message.data.A
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.CREATE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.OPEN;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.REOPEN;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Action.SETUP;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.STATE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.UPDATE;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Action.WITNESS;
+import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.ELECTION;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.LAO;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MEETING;
 import static com.github.dedis.student20_pop.model.network.method.message.data.Objects.MESSAGE;
@@ -69,6 +72,10 @@ public abstract class Data {
     messagesMap.put(pair(ROLL_CALL, OPEN), OpenRollCall.class);
     messagesMap.put(pair(ROLL_CALL, REOPEN), OpenRollCall.class);
     messagesMap.put(pair(ROLL_CALL, CLOSE), CloseRollCall.class);
+
+    // Election
+    messagesMap.put(pair(ELECTION,SETUP), ElectionSetup.class);
+
 
     return Collections.unmodifiableMap(messagesMap);
   }

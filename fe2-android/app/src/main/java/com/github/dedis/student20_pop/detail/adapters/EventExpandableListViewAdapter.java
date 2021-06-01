@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.detail.adapters;
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.github.dedis.student20_pop.detail.LaoDetailViewModel;
 import com.github.dedis.student20_pop.detail.listeners.AddEventListener;
 import com.github.dedis.student20_pop.model.Election;
 import com.github.dedis.student20_pop.model.RollCall;
+import com.github.dedis.student20_pop.model.data.LAORepository;
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventCategory;
 import com.github.dedis.student20_pop.model.event.EventState;
@@ -46,7 +48,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     private final LifecycleOwner lifecycleOwner;
     private final LaoDetailViewModel viewModel;
     protected HashMap<EventCategory, List<Event>> eventsMap;
-
+    private static final String TAG = EventExpandableListViewAdapter.class.getSimpleName();
     /**
      * Constructor for the expandable list view adapter to display the events in the attendee UI
      *
@@ -250,9 +252,20 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             ViewGroup parent) {
 
         Event event = ((Event) getChild(groupPosition, childPosition));
+        Log.d(TAG,"Retrieving Event Type " + event.getType().name());
         EventCategory category = (EventCategory) getGroup(groupPosition);
         if (event.getType() == EventType.ELECTION) {
-            return setupElectionElement(parent, convertView, (Election) event, category);
+            try{ return setupElectionElement(parent, convertView, (Election) event, category); }
+            catch(Exception e) {
+                Log.d(TAG," Exception " + event.getType().name()) ;
+                e.printStackTrace();
+                try {
+                    Thread.sleep(1000000000);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+                return convertView;
+            }
         } else if (event.getType() == EventType.ROLL_CALL) {
             return setupRollCallElement(parent, convertView, (RollCall) event);
         }
