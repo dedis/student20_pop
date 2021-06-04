@@ -1,0 +1,16 @@
+# scala
+target
+*.class
+
+# sbt
+
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
+out
+
+# Test
+database_test

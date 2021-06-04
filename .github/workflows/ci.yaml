@@ -226,3 +226,39 @@ jobs:
         disable-animations: true
         working-directory: ./fe2-android
         script: ./gradlew connectedCheck
+
+  be2-scala:
+    name: Be2-Scala
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./be2-scala
+
+    steps:
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Setup repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
+
+      - name: Run unit tests
+        run: sbt clean coverage test
+
+      - name: Report coverage
+        run: sbt coverageReport
+
+      - name: Run static analysis (ScapeGoat)
+        run: sbt scapegoat
+
+      - name: Run Sonar scanner
+        env:
+          SONAR_HOST_URL: https://sonarcloud.io
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BE2 }}
+        run: sbt sonarScan
