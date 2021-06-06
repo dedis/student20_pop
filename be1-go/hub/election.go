@@ -141,7 +141,7 @@ func (c *electionChannel) Publish(publish message.Publish) error {
 		}
 	}
 
-	if err != nil{
+	if err != nil{ 
 		action := message.ElectionAction(data.GetAction())
 		errorDescription := fmt.Sprintf("failed to process %s action", action)
 		return message.NewError(errorDescription, err)
