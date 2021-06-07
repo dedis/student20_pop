@@ -91,9 +91,9 @@ func (c *laoChannel) createElection(msg message.Message) error {
 
 	// Add the SetupElection message to the new election channel
 	messageID := base64.URLEncoding.EncodeToString(msg.MessageID)
-	electionCh.inboxMu.Lock()
-	electionCh.inbox[messageID] = msg
-	electionCh.inboxMu.Unlock()
+	c.inboxMu.Lock()
+	c.inbox[messageID] = msg
+	c.inboxMu.Unlock()
 
 	// Add the new election channel to the organizerHub
 	organizerHub.channelByID[encodedID] = &electionCh
