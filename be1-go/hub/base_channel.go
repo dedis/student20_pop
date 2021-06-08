@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"log"
 	"student20_pop/message"
+	"student20_pop/validation"
 	"sync"
 )
 
 // baseChannel represent a generic channel and contains all the fields that are
 // used in all channels
 type baseChannel struct {
-	hub *organizerHub
+	hub *baseHub
 
 	clientsMu sync.RWMutex
 	clients   map[*ClientSocket]struct{}
@@ -28,7 +29,7 @@ type baseChannel struct {
 }
 
 // CreateBaseChannel return an instance of a `baseChannel`
-func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
+func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
@@ -104,7 +105,7 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	msg := publish.Params.Message
 
 	// Verify the data
-	err := c.hub.verifyJson(msg.RawData, DataSchema)
+	err := c.hub.schemaValidator.VerifyJson(msg.RawData, validation.DataSchema)
 	if err != nil {
 		return message.NewError("failed to validate the data", err)
 	}

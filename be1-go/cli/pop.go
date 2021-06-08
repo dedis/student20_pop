@@ -29,6 +29,11 @@ func main() {
 						Name:  "serve",
 						Usage: "start the organizer server",
 						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:    "protocol-path",
+								Aliases: []string{"proto"},
+								Usage:   "path to the protocol, if it is not set the github URL of the protocol is used instead",
+							},
 							&cli.IntFlag{
 								Name:    "client-port",
 								Aliases: []string{"cp"},
@@ -61,6 +66,11 @@ func main() {
 						Name:  "serve",
 						Usage: "start the organizer server",
 						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:    "protocol-path",
+								Aliases: []string{"proto"},
+								Usage:   "path to the protocol, if it is not set the github URL of the protocol is used instead",
+							},
 							&cli.StringFlag{
 								Name:    "organizer-address",
 								Aliases: []string{"org"},
