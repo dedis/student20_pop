@@ -92,7 +92,10 @@ jobs:
 
   be1-go:
     name: Be1-Go
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest]
+    runs-on: ${{matrix.platform}}
 
     defaults:
       run:
@@ -155,7 +158,7 @@ jobs:
         go test -race -v ./...
 
     - name: Run code analysis
-      if: ${{ always() }}  # execute even if previous steps failed
+      if: ${{ matrix.platform == 'ubuntu-latest' }}  # execute even if previous steps failed
       uses: SonarSource/sonarcloud-github-action@master
       with:
         projectBaseDir: be1-go
