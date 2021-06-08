@@ -24,8 +24,5 @@
 *.db
 *.lock
 
-# Go backend executable
-be1-go/pop
-
 .DS_Store
 **/.DS_Store
