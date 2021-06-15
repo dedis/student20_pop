@@ -32,7 +32,7 @@ public final class MessageGeneral {
 
   private byte[] signature;
 
-  private byte[] messageId;
+  private String messageId;
 
   private List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
 
@@ -67,7 +67,7 @@ public final class MessageGeneral {
           byte[] messageId,
           List<PublicKeySignaturePair> witnessSignatures) {
     this.sender = sender;
-    this.messageId = messageId;
+    this.messageId = Base64.getUrlEncoder().encodeToString(messageId);
     this.dataBuf = dataBuf;
     this.signature = signature;
     this.witnessSignatures = witnessSignatures;
@@ -84,12 +84,11 @@ public final class MessageGeneral {
   }
 
   private void generateId() {
-    this.messageId =
-            Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature)).getBytes();
+    this.messageId = Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf), Base64.getUrlEncoder().encodeToString(this.signature));
   }
 
   public String getMessageId() {
-    return Base64.getUrlEncoder().encodeToString(messageId);
+    return this.messageId;
   }
 
   public String getSender() {
