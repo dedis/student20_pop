@@ -1,18 +1,20 @@
 package com.github.dedis.student20_pop.model;
 
+import android.content.Context;
 import android.util.Log;
-
 import androidx.core.util.Pair;
-
 import com.github.dedis.student20_pop.model.stellar.SLIP10;
-
-import net.i2p.crypto.eddsa.Utils;
-
-import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
-import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
-
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import com.google.crypto.tink.Aead;
+import com.google.crypto.tink.aead.AeadConfig;
+import com.google.crypto.tink.aead.AesGcmKeyManager;
+import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import io.github.novacrypto.bip39.MnemonicGenerator;
+import io.github.novacrypto.bip39.MnemonicValidator;
+import io.github.novacrypto.bip39.SeedCalculator;
+import io.github.novacrypto.bip39.Words;
+import io.github.novacrypto.bip39.wordlists.English;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,14 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-
-import javax.crypto.ShortBufferException;
-
-import io.github.novacrypto.bip39.MnemonicGenerator;
-import io.github.novacrypto.bip39.MnemonicValidator;
-import io.github.novacrypto.bip39.SeedCalculator;
-import io.github.novacrypto.bip39.Words;
-import io.github.novacrypto.bip39.wordlists.English;
+import net.i2p.crypto.eddsa.Utils;
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
 /**
  * This class represent a wallet that will enable users to store their PoP tokens with reasonable,
@@ -40,8 +37,11 @@ public class Wallet {
   private static final int PURPOSE =  888;
   private static final int ACCOUNT =  0;
   private byte[] seed;
+  private Aead aead;
+  private boolean isSetup = false;
 
   private static final Wallet instance = new Wallet();
+
   public static Wallet getInstance() {
     return instance;
   }
@@ -50,10 +50,7 @@ public class Wallet {
    * Class constructor, initialize the wallet with a new random seed.
    */
   public Wallet() {
-    SecureRandom random = new SecureRandom();
-    byte[] bytes = random.generateSeed(64);
-    seed = bytes;
-    Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(seed));
+    setRandomSeed();
   }
 
   /**
@@ -66,7 +63,25 @@ public class Wallet {
       throw new IllegalArgumentException("Unable to init seed from a null param!");
     }
     this.seed = Utils.hexToBytes(seed);
+    isSetup = true;
     Log.d(TAG, "New seed initialized: " + Utils.bytesToHex(this.seed));
+  }
+  /**
+   * Method to init the AndroidKeysetManager
+   *
+   * @param applicationContext
+   */
+  public void initKeysManager(Context applicationContext)
+      throws IOException, GeneralSecurityException {
+    AesGcmKeyManager.register(true);
+    AeadConfig.register();
+    AndroidKeysetManager keysetManager =
+        new AndroidKeysetManager.Builder()
+            .withSharedPref(applicationContext, "POP_KEYSET_2",  "POP_KEYSET_SP_2")
+            .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
+            .withMasterKeyUri("android-keystore://POP_MASTER_KEY_2")
+            .build();
+    aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
   }
 
   /**
@@ -74,12 +89,10 @@ public class Wallet {
    *
    * @param path a String path of the form: m/i/j/k/... where i,j,k,.. are 31-bit integer.
    * @return a Pair<byte[], byte[]> representing the keys pair: first=private_key; second=public_key.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> generateKeyFromPath(String path)
-      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+      throws GeneralSecurityException {
     if (path == null) {
       throw new IllegalArgumentException("Unable to find keys from a null path!");
     }
@@ -96,7 +109,7 @@ public class Wallet {
         .mapToInt(Integer::intValue).toArray();
 
     // derive private and public key
-    byte[] privateKey = SLIP10.deriveEd25519PrivateKey(seed, pathValueInt);
+    byte[] privateKey = SLIP10.deriveEd25519PrivateKey(aead.decrypt(seed, new byte[0]), pathValueInt);
     Ed25519PrivateKeyParameters prK = new Ed25519PrivateKeyParameters(privateKey, 0);
     Ed25519PublicKeyParameters puK = prK.generatePublicKey();
     byte[] publicKey = puK.getEncoded();
@@ -110,12 +123,10 @@ public class Wallet {
    * @param laoID a String.
    * @param rollCallID a String.
    * @return a Pair<byte[], byte[]> representing the keys pair.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> findKeyPair(String laoID, String rollCallID)
-      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+      throws GeneralSecurityException {
     if (laoID == null || rollCallID == null) {
       throw new IllegalArgumentException("Unable to find keys from a null param");
     }
@@ -142,19 +153,23 @@ public class Wallet {
   private String convertStringToPath(String string){
     // extract byte form string
     byte[] byteString = Base64.getUrlDecoder().decode(string);
+    int remainder = byteString.length % 3;
 
     // create 31-bit index path
     StringJoiner joiner = new StringJoiner("/");
-    int i = 0;
-    while(i < byteString.length){
-      int res = 0;
-      for(int j=i; j<i+3 && j< byteString.length; j++){
-        int buffer =  byteString[j];
-        buffer = buffer & 0xFF; // "extract" the first 8 bit
-        res = (buffer << j%3*8) | res;
-      }
-      i+= 3;
-      joiner.add(Integer.toString(res));
+    int i;
+    for (i = 0; i + 3 <= byteString.length; i += 3) {
+      String path = Integer.toString(byteString[i] & 0xFF)
+          .concat(Integer.toString(byteString[i+1] & 0xFF))
+          .concat(Integer.toString(byteString[i+2] & 0xFF));
+
+      joiner.add(path);
+    }
+    if (remainder == 1) {
+      joiner.add(Integer.toString(byteString[i] & 0xFF));
+    } else if (remainder == 2) {
+      joiner.add(Integer.toString(byteString[i] & 0xFF)
+          .concat(Integer.toString(byteString[i+1] & 0xFF)));
     }
     return joiner.toString();
   }
@@ -168,13 +183,11 @@ public class Wallet {
    *                         on roll-call’s results.
    * @return the key pair Pair<byte[], byte[]> (PoP token) if the user as in that roll-call
    * participated else null.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Pair<byte[], byte[]> recoverKey(String laoID, String rollCallID,
       List<byte[]> rollCallTokens)
-      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+      throws GeneralSecurityException {
 
     if (laoID == null || rollCallID == null) {
       throw new IllegalArgumentException("Unable to find keys from a null param");
@@ -199,13 +212,11 @@ public class Wallet {
    *                              present on roll-call’s results.
    * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs
    * associated to each Lao and roll-call IDs.
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws ShortBufferException
+   * @throws GeneralSecurityException
    */
   public Map<Pair<String, String>, Pair<byte[], byte[]>> recoverAllKeys(String seed,
       Map<Pair<String, String>, List<byte[]>>  knowsLaosRollCalls)
-      throws NoSuchAlgorithmException, InvalidKeyException, ShortBufferException {
+      throws GeneralSecurityException {
     if (knowsLaosRollCalls == null) {
       throw new IllegalArgumentException("Unable to find recover keys from a null param");
     }
@@ -228,26 +239,34 @@ public class Wallet {
    * Method that encode the seed into a form that is easier for humans to securely back-up
    * and retrieve.
    *
-   * @return an array of words: mnemonic sentence representing the seed for the wallet.
+   * @return an array of words: mnemonic sentence representing the seed for the wallet in case that
+   * the key set manager is not init return a empty array.
+   * @throws GeneralSecurityException
    */
-  public String[] exportSeed(){
+  public String[] exportSeed() throws GeneralSecurityException {
+    if(aead != null) {
+      SecureRandom random = new SecureRandom();
+      byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
 
-    SecureRandom random = new SecureRandom();
-    byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
+      StringBuilder sb = new StringBuilder();
+      MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
+      generator.createMnemonic(entropy, sb::append);
 
-    StringBuilder sb = new StringBuilder();
-    MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
-    generator.createMnemonic(entropy, sb::append);
+      String[] words = sb.toString().split(" ");
+      Log.d(TAG, "the array of word generated:" + Arrays.toString(words));
 
-    String[] words = sb.toString().split(" ");
-    Log.d(TAG,"the array of word generated:" + Arrays.toString(words));
+      StringJoiner joiner = new StringJoiner(" ");
+      for (String i : words)
+        joiner.add(i);
+      seed = aead.encrypt(new SeedCalculator().calculateSeed(joiner.toString(), ""),
+          new byte[0]);
+      Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(seed));
 
-    StringJoiner joiner = new StringJoiner(" ");
-    for(String i: words) joiner.add(i);
-    seed = new SeedCalculator().calculateSeed(joiner.toString(), "");
-    Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(seed));
-
-    return words;
+      return words;
+    } else {
+      Log.d(TAG, "key set manager not init!");
+      return new String[0];
+    }
   }
 
   /**
@@ -261,22 +280,51 @@ public class Wallet {
    *         associated to each Lao and roll-call IDs or null in case of error.
    */
   public Map<Pair<String, String>, Pair<byte[], byte[]>> importSeed(String words,
-      Map<Pair<String, String>, List<byte[]>>  knowsLaosRollCalls) {
+      Map<Pair<String, String>, List<byte[]>>  knowsLaosRollCalls){
     if (words == null) {
       throw new IllegalArgumentException("Unable to find recover tokens from a null param");
     }
-    try {
-      MnemonicValidator
-          .ofWordList(English.INSTANCE)
-          .validate(words);
-      seed = new SeedCalculator().calculateSeed(words, "");
-      Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
-      return recoverAllKeys(Utils.bytesToHex(seed), knowsLaosRollCalls);
+    if(aead != null) {
+      try {
+        MnemonicValidator
+            .ofWordList(English.INSTANCE)
+            .validate(words);
+        seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
+        Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
+        return recoverAllKeys(Utils.bytesToHex(seed), knowsLaosRollCalls);
 
-    } catch (Exception e) {
-      Log.d(TAG,"Unable to import words:" + e.getMessage());
+      } catch (Exception e) {
+        Log.d(TAG, "Unable to import words:" + e.getMessage());
+        return null;
+      }
+    } else {
       return null;
     }
   }
 
+  /**
+   * Determine whether wallet has been initialized
+   * @return true if wallet has been set up, false otherwise
+   */
+  public boolean isSetUp(){
+    return isSetup;
+  }
+
+  /**
+   * Logout the wallet by replacing the seed by a random one
+   */
+  public void logout(){
+    setRandomSeed();
+  }
+
+  /**
+   * Utility function to initialize the wallet with a new random seed.
+   */
+  private void setRandomSeed(){
+    SecureRandom random = new SecureRandom();
+    byte[] bytes = random.generateSeed(64);
+    seed = bytes;
+    isSetup = false;
+    Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(seed));
+  }
 }

@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.model.network.method.message.data.meeting
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class StateMeeting extends Data {
   /**
    * Constructor for a data State Meeting Event
    *
+   * @param laoId of the LAO
    * @param id of the state Meeting message, Hash("M"||laoId||creation||name)
    * @param name name of the Meeting
    * @param creation time of creation
@@ -39,8 +41,10 @@ public class StateMeeting extends Data {
    * @param end of the Meeting
    * @param modificationId id of the modification (either creation/update)
    * @param modificationSignatures signatures of the witnesses on the modification message
+   * @throws IllegalArgumentException if the id is not valid
    */
   public StateMeeting(
+      String laoId,
       String id,
       String name,
       long creation,
@@ -50,6 +54,9 @@ public class StateMeeting extends Data {
       long end,
       String modificationId,
       List<String> modificationSignatures) {
+    if(!id.equals(IdGenerator.generateCreateMeetingId(laoId, creation, name))) {
+      throw new IllegalArgumentException("StateMeeting id must be Hash(\"M\"||laoId||creation||name)");
+    }
     this.id = id;
     this.name = name;
     this.creation = creation;

@@ -92,7 +92,10 @@ jobs:
 
   be1-go:
     name: Be1-Go
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest]
+    runs-on: ${{matrix.platform}}
 
     defaults:
       run:
@@ -102,7 +105,7 @@ jobs:
     - name: Setup Go 1.x
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.15
+        go-version: ^1.16
 
     - name: Setup repo
       uses: actions/checkout@v2
@@ -125,37 +128,21 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-    - name: Setup dependencies
+    - name: Run check target
       run: |
-        go mod download
-        go get -v honnef.co/go/tools/cmd/staticcheck
+        make check
 
     - name: Run go vet
       run: |
-        go vet ./...
-
-    - name: Run staticcheck
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        staticcheck ./...
+        make vet
 
     - name: Build
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
-        go build -v ./...
-
-    - name: Test
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        go test -v ./...
-
-    - name: Test with race detector
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        go test -race -v ./...
+        make build
 
     - name: Run code analysis
-      if: ${{ always() }}  # execute even if previous steps failed
+      if: ${{ matrix.platform == 'ubuntu-latest' }}  # execute even if previous steps failed
       uses: SonarSource/sonarcloud-github-action@master
       with:
         projectBaseDir: be1-go

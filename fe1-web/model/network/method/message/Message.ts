@@ -63,7 +63,7 @@ export class Message {
     }
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
     if (!expectedHash.equals(msg.message_id)) {
-      throw new ProtocolError("Invalid 'message_id' parameter encountered during 'CreateLao': unexpected id value");
+      throw new ProtocolError("Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value");
     }
     if (!msg.witness_signatures) {
       throw new ProtocolError("Undefined 'witness_signatures' parameter encountered during 'Message' creation");

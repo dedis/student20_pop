@@ -106,6 +106,7 @@ public class Injection {
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
+            .disableHtmlEscaping()
         .create();
   }
 

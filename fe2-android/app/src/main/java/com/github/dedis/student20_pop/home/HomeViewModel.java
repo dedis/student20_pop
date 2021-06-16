@@ -3,7 +3,6 @@ package com.github.dedis.student20_pop.home;
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
-import java.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -33,6 +32,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -114,7 +114,7 @@ public class HomeViewModel extends AndroidViewModel
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    String channel = barcode.rawValue;
+    String channel = "/root/"+barcode.rawValue;
     mLAORepository
           .sendSubscribe(channel)
           .observeOn(AndroidSchedulers.mainThread())
@@ -203,7 +203,7 @@ public class HomeViewModel extends AndroidViewModel
         openWallet();
         return true;
       }
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -335,4 +335,10 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void setIsWalletSetUp(Boolean isSetUp) { this.mIsWalletSetUp.setValue(isSetUp); }
+
+  public void logoutWallet(){
+    Wallet.getInstance().logout();
+    setIsWalletSetUp(false);
+    openWallet();
+  }
 }

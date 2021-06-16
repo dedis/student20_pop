@@ -1,10 +1,9 @@
 package com.github.dedis.student20_pop.model.network.method.message.data.election;
 
-import com.github.dedis.student20_pop.model.network.method.message.ElectionQuestion;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
@@ -13,17 +12,17 @@ import java.util.List;
 
 public class ElectionSetup extends Data {
 
-    private String id;
-    private String name;
-    private String lao;
+    private final String id;
+    private final String name;
+    private final String lao;
     @SerializedName(value = "created_at")
-    private long createdAt;
+    private final long createdAt;
     @SerializedName(value = "start_time")
-    private long startTime;
+    private final long startTime;
     @SerializedName(value = "end_time")
-    private long endTime;
-    private String version;
-    private List<ElectionQuestion> questions;
+    private final long endTime;
+    private final String version;
+    private final List<ElectionQuestion> questions;
 
     /**
      * Constructor for a data setup Election Event
@@ -42,12 +41,12 @@ public class ElectionSetup extends Data {
             String question,
             String laoId) {
         this.name = name;
-        this.createdAt = Instant.now().toEpochMilli();
+        this.createdAt = Instant.now().getEpochSecond();
         this.startTime = start;
         this.endTime = end;
         this.lao = laoId;
         this.version = "1.0.0";
-        this.id = Hash.hash("E", laoId, Long.toString(createdAt), name);
+        this.id = IdGenerator.generateElectionSetupId(laoId, createdAt, name);
         this.questions = new ArrayList<>();
         this.questions.add(new ElectionQuestion(question, votingMethod, writeIn, ballotOptions, this.id));
     }

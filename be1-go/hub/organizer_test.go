@@ -190,10 +190,13 @@ func createMessage(data message.Data, publicKey message.PublicKey) message.Messa
 func TestMain(m *testing.M) {
 	organizerKeyPair, _ = generateKeyPair()
 
+	baseHub, err := NewBaseHub(organizerKeyPair.public)
+	if err != nil {
+		panic(err)
+	}
+
 	oHub = &organizerHub{
-		messageChan: make(chan IncomingMessage),
-		channelByID: make(map[string]Channel),
-		public:      organizerKeyPair.public,
+		baseHub: baseHub,
 	}
 
 	res := m.Run()
@@ -245,8 +248,9 @@ func TestOrganizer_RollCall(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, laoChannel.rollCall.state, Closed)
 	require.Equal(t, laoChannel.rollCall.id, string(dataClose1.UpdateID))
+
 	for _, attendee := range attendees[:8] {
-		_, ok := laoChannel.attendees[string(attendee)]
+		ok := laoChannel.attendees.IsPresent(attendee.String())
 		require.True(t, ok)
 	}
 
@@ -267,8 +271,9 @@ func TestOrganizer_RollCall(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, laoChannel.rollCall.state, Closed)
 	require.Equal(t, laoChannel.rollCall.id, string(dataClose2.UpdateID))
+
 	for _, attendee := range attendees {
-		_, ok := laoChannel.attendees[string(attendee)]
+		ok := laoChannel.attendees.IsPresent(attendee.String())
 		require.True(t, ok)
 	}
 }
@@ -338,5 +343,28 @@ func TestOrganizer_RollCallWrongInstructions(t *testing.T) {
 		require.NoError(t, err)
 
 	}
+}
 
+func TestOrganizer_RollCallProposedStartEnd(t *testing.T) {
+	_, laoChannel, err := createLao(oHub, organizerKeyPair, "lao roll call proposed start")
+	require.NoError(t, err)
+
+	creation := timestamp()
+
+	// create CreatRollCall data with ProposedStart > ProposedEnd
+	dataCreate := &message.CreateRollCallData{
+		GenericData: &message.GenericData{
+			Action: message.DataAction(message.CreateRollCallAction),
+			Object: message.RollCallObject,
+		},
+		ID:            []byte{1},
+		Name:          "my roll call",
+		Creation:      creation,
+		ProposedStart: creation + 10,
+		ProposedEnd:   creation,
+		Location:      "EPFL",
+	}
+	msg := createMessage(dataCreate, organizerKeyPair.publicBuf)
+	err = laoChannel.processRollCallObject(msg)
+	require.Error(t, err)
 }

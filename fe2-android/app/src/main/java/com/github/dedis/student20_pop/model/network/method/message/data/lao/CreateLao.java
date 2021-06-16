@@ -3,7 +3,7 @@ package com.github.dedis.student20_pop.model.network.method.message.data.lao;
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
-import com.github.dedis.student20_pop.utility.security.Hash;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,9 +26,13 @@ public class CreateLao extends Data {
    * @param creation time of creation
    * @param organizer id of the LAO's organizer
    * @param witnesses list of witnesses of the LAO
+   * @throws IllegalArgumentException if the id is not valid
    */
   public CreateLao(
       String id, String name, long creation, String organizer, List<String> witnesses) {
+    if(!id.equals(IdGenerator.generateLaoId(organizer, creation, name))) {
+      throw new IllegalArgumentException("CreateLao id must be Hash(organizer||creation||name)");
+    }
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -39,8 +43,8 @@ public class CreateLao extends Data {
   public CreateLao(String name, String organizer) {
     this.name = name;
     this.organizer = organizer;
-    this.creation = Instant.now().toEpochMilli();
-    this.id = Hash.hash(organizer, Long.toString(creation), name);
+    this.creation = Instant.now().getEpochSecond();
+    this.id = IdGenerator.generateLaoId(organizer, creation, name);
     this.witnesses = new ArrayList<>();
   }
 

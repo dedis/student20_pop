@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Student 20 PoP</string>
+    <string name="app_name">Student 21 PoP</string>
 
     <!-- Top Tabs -->
     <string name="tab_home">Home</string>
@@ -105,7 +105,7 @@
     <string name="event_description">Event Description</string>
     <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
     <string name="close_roll_call">Close Roll-Call</string>
-    <string name="scan_all_attendees_question">Are you sure you have scan all attendees ?</string>
+    <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>
     <string name="roll_call_title_required">Roll-Call Title required</string>
     <string name="show_qrcode_to_organizer">Please show the QR code to the organizer</string>
 
@@ -119,6 +119,10 @@
     <!-- Properties -->
     <string name="test_organization_name">Test Organization Name</string>
     <string name="edit_lao_name">Edit Lao Name</string>
+
+
+    <string name="button_text">Cast Vote</string>
+
     <string name="total">Total:</string>
     <string name="election_name">Election Name</string>
     <string name="lao_name">LAO name</string>
@@ -170,5 +174,8 @@
     <string name="wallet_empty">Your wallet is empty</string>
     <string name="tokens_introduction">If you would like to receive tokens, please connect to a LAO and participate in a roll call.\n
         If you are an organizer, you can look at the attendees\' public tokens of the roll calls you organize.</string>
-
+    <string name="token_button">TOKEN</string>
+    <string name="logout_button">LOGOUT</string>
+    <string name="logout_title">Log out</string>
+    <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
 </resources>

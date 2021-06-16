@@ -19,6 +19,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -34,8 +35,7 @@ public class JsonMessageGeneralSerializer
           throws JsonParseException {
     JsonObject root = json.getAsJsonObject();
 
-
-    byte[] messageId = Base64.getUrlDecoder().decode(root.get("message_id").getAsString());
+    byte[] messageId = root.get("message_id").getAsString().getBytes(StandardCharsets.UTF_8);
     byte[] dataBuf = Base64.getUrlDecoder().decode(root.get("data").getAsString());
     byte[] sender = Base64.getUrlDecoder().decode(root.get("sender").getAsString());
     byte[] signature = Base64.getUrlDecoder().decode(root.get(SIG).getAsString());

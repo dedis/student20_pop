@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"student20_pop/message"
@@ -41,7 +42,7 @@ type baseSocket struct {
 
 	send chan []byte
 
-	Wait sync.WaitGroup
+	Wait *sync.WaitGroup
 }
 
 func (s *baseSocket) Type() SocketType {
@@ -49,7 +50,7 @@ func (s *baseSocket) Type() SocketType {
 }
 
 // ReadPump starts the reader loop for the socket.
-func (s *baseSocket) ReadPump() {
+func (s *baseSocket) ReadPump(ctx context.Context) {
 	defer func() {
 		s.conn.Close()
 		s.Wait.Done()
@@ -67,6 +68,8 @@ func (s *baseSocket) ReadPump() {
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("connection dropped unexpectedly: %v", err)
+			} else {
+				log.Printf("closing the read pump")
 			}
 			break
 		}
@@ -80,11 +83,16 @@ func (s *baseSocket) ReadPump() {
 		}
 
 		s.hub.Recv(msg)
+
+		if ctx.Err() != nil {
+			log.Println("closing the read pump")
+			return
+		}
 	}
 }
 
 // WritePump starts the writer loop for the socket.
-func (s *baseSocket) WritePump() {
+func (s *baseSocket) WritePump(ctx context.Context) {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -121,6 +129,9 @@ func (s *baseSocket) WritePump() {
 				log.Printf("failed to send ping: %v", err)
 				return
 			}
+		case <-ctx.Done():
+			log.Println("closing the write pump")
+			return
 		}
 	}
 }

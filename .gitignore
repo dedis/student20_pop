@@ -26,6 +26,7 @@
 
 # Go backend executable
 be1-go/pop
+be1-go/validation/protocol
 
 .DS_Store
 **/.DS_Store

@@ -4,6 +4,7 @@ import com.github.dedis.student20_pop.model.network.method.message.PublicKeySign
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashSet;
@@ -35,6 +36,7 @@ public class StateLao extends Data {
    * @param lastModified time of last modification
    * @param organizer id of the LAO's organizer
    * @param witnesses list of witnesses of the LAO
+   * @throws IllegalArgumentException if the id is not valid
    */
   public StateLao(
       String id,
@@ -45,6 +47,9 @@ public class StateLao extends Data {
       String modificationId,
       Set<String> witnesses,
       List<PublicKeySignaturePair> modificationSignatures) {
+    if(!id.equals(IdGenerator.generateLaoId(organizer, creation, name))) {
+      throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
+    }
     this.id = id;
     this.name = name;
     this.creation = creation;

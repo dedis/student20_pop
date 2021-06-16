@@ -213,6 +213,18 @@
                     android:layout_height="wrap_content"
                     android:text="@string/edit_election_end_time" />
 
+                <Button
+                    android:id="@+id/edit_start_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Edit Election Start Date" />
+
+                <Button
+                    android:id="@+id/edit_end_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Edit Election End Date" />
+
 
                 <Button
                     android:id="@+id/terminate_election"

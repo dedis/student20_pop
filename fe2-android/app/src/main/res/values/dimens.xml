@@ -44,6 +44,7 @@
 
     <!-- Event -->
     <dimen name="event_details_width">186dp</dimen>
+    <dimen name="event_buttons_width">110dp</dimen>
     <dimen name="event_buttons_height">43dp</dimen>
     <dimen name="election_fragment_description_margin">140dp</dimen>
     <dimen name="election_question_height">80dp</dimen>
@@ -65,9 +66,21 @@
     <dimen name="election_setup_add_ballot_button_width">148dp</dimen>
     <dimen name="election_setup_add_ballot_button_margin_top">30dp</dimen>
 
+    <!-- Cast vote dimensions -->
+    <dimen name="cast_vote_dynamic_height">0dp</dimen>
+    <dimen name="cast_vote_scrollbar_size">6dp</dimen>
+    <dimen name="guideline_tab">60dp</dimen>
+    <dimen name="guideline_titles">140dp</dimen>
+    <dimen name="swipe_indicator_height">25dp</dimen>
+
     <!-- Wallet dimensions -->
     <dimen name="wallet_divider_height">1dp</dimen>
     <dimen name="wallet_qr_code_size">100dp</dimen>
     <dimen name="wallet_attendee_width">300dp</dimen>
+    <dimen name="wallet_buttons_height">38dp</dimen>
+    <dimen name="wallet_buttons_text_size">12dp</dimen>
+    <dimen name="wallet_sk_width">350dp</dimen>
+    <dimen name="wallet_pk_width">200dp</dimen>
+    <dimen name="wallet_qr_token_size">130dp</dimen>
 
 </resources>

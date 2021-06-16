@@ -83,6 +83,13 @@
             android:dividerHeight="@dimen/margin_top" />
       </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
-
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/logout_button"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

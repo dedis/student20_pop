@@ -9,12 +9,15 @@ import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.student20_pop.R;
 import com.github.dedis.student20_pop.databinding.FragmentContentWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
 import com.github.dedis.student20_pop.home.adapters.LAOListAdapter;
+import com.github.dedis.student20_pop.model.Wallet;
 
 import java.util.ArrayList;
 
@@ -28,6 +31,7 @@ public class ContentWalletFragment extends Fragment {
   private FragmentContentWalletBinding mContentWalletBinding;
   private HomeViewModel mHomeViewModel;
   private LAOListAdapter mListAdapter;
+  private AlertDialog logoutAlert;
 
   @Nullable
   @Override
@@ -51,6 +55,24 @@ public class ContentWalletFragment extends Fragment {
 
     setupListAdapter();
     setupListUpdates();
+
+    if(Wallet.getInstance().isSetUp()){
+      mContentWalletBinding.logoutButton.setVisibility(View.VISIBLE);
+      mContentWalletBinding.logoutButton.setOnClickListener(clicked -> {
+        if(logoutAlert!=null && logoutAlert.isShowing()) {
+          logoutAlert.dismiss();
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.logout_title);
+        builder.setMessage(R.string.logout_message);
+        builder.setPositiveButton(R.string.confirm, (dialog, which) ->
+          mHomeViewModel.logoutWallet()
+        );
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+        logoutAlert = builder.create();
+        logoutAlert.show();
+      });
+    }
   }
 
   private void setupListUpdates() {

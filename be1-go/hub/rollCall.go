@@ -8,7 +8,17 @@ import (
 )
 
 func (c *laoChannel) processCreateRollCall(data message.Data) error {
+
 	rollCallData := data.(*message.CreateRollCallData)
+
+	// Check that the ProposedEnd is greater than the ProposedStart
+	if rollCallData.ProposedStart > rollCallData.ProposedEnd {
+		return &message.Error{
+			Code:        -4,
+			Description: "The field `proposed_start` is greater than the field `proposed_end`",
+		}
+	}
+
 	if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
 		return &message.Error{
 			Code:        -4,
@@ -90,9 +100,9 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Closed
-	c.attendees = map[string]struct{}{}
-	for i := 0; i < len(rollCallData.Attendees); i += 1 {
-		c.attendees[string(rollCallData.Attendees[i])] = struct{}{}
+
+	for _, attendee := range rollCallData.Attendees {
+		c.attendees.Add(attendee.String())
 	}
 
 	return nil

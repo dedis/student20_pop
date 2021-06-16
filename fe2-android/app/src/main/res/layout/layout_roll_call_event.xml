@@ -49,42 +49,57 @@
 
         <Button
             android:id="@+id/rollcall_open_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/event_buttons_width"
+            android:layout_height="@dimen/event_buttons_height"
             android:visibility="gone"
             android:text="@string/open_rollcall" />
         <Button
             android:id="@+id/rollcall_reopen_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/event_buttons_width"
+            android:layout_height="@dimen/event_buttons_height"
             android:visibility="gone"
             android:text="@string/reopen_rollcall" />
         <Button
             android:id="@+id/rollcall_scheduled_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/event_buttons_width"
+            android:layout_height="@dimen/event_buttons_height"
             android:visibility="gone"
             android:enabled="false"
             android:text="@string/scheduled_rollcall" />
         <Button
             android:id="@+id/rollcall_enter_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/event_buttons_width"
+            android:layout_height="@dimen/event_buttons_height"
             android:visibility="gone"
             android:text="@string/enter_rollcall" />
         <Button
             android:id="@+id/rollcall_closed_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/event_buttons_width"
+            android:layout_height="@dimen/event_buttons_height"
             android:visibility="gone"
             android:enabled="false"
             android:text="@string/closed_rollcall" />
-        <Button
-            android:id="@+id/rollcall_attendees_list_button"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:layout_width="@dimen/event_buttons_width"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="@string/attendees_list_rollcall" />
+            android:orientation="vertical">
+                <Button
+                    android:id="@+id/rollcall_token_button"
+                    android:layout_width="@dimen/event_buttons_width"
+                    android:layout_height="@dimen/wallet_buttons_height"
+                    android:textSize="@dimen/wallet_buttons_text_size"
+                    android:visibility="gone"
+                    android:text="@string/token_button" />
+
+                <Button
+                    android:id="@+id/rollcall_attendees_list_button"
+                    android:layout_width="@dimen/event_buttons_width"
+                    android:layout_height="@dimen/wallet_buttons_height"
+                    android:textSize="@dimen/wallet_buttons_text_size"
+                    android:visibility="gone"
+                    android:text="@string/attendees_list_rollcall" />
+        </LinearLayout>
 
     </LinearLayout>
 

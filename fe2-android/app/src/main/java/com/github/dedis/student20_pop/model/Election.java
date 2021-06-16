@@ -2,6 +2,8 @@ package com.github.dedis.student20_pop.model;
 
 import com.github.dedis.student20_pop.model.event.Event;
 import com.github.dedis.student20_pop.model.event.EventType;
+import com.github.dedis.student20_pop.model.network.method.message.data.election.ElectionQuestion;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +14,10 @@ public class Election extends Event {
     private long creation;
     private long start;
     private long end;
-    private boolean writeIn;
-    private String question;
-    private List<String> ballotOptions;
 
-    //votes as attribute ?
-
-
+    private List<ElectionQuestion> electionQuestions;
     public Election() {
-        this.ballotOptions = new ArrayList<>();
+      this.electionQuestions = new ArrayList<>();
     }
 
     public String getId() {
@@ -65,33 +62,14 @@ public class Election extends Event {
         this.end = end;
     }
 
-    public List<String> getBallotOptions() {
-        return ballotOptions;
+
+    public List<ElectionQuestion> getElectionQuestions() {
+        return electionQuestions;
     }
 
-    public void setBallotOptions(List<String> ballotOptions) {
-        if (ballotOptions == null)
-            throw new IllegalArgumentException("ballot options can't be null");
-        if (ballotOptions.size() < 2)
-            throw new IllegalArgumentException("ballot must have at least two options");
-        this.ballotOptions = ballotOptions;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        if (question == null) throw new IllegalArgumentException("question can't be null");
-        this.question = question;
-    }
-
-    public boolean getWriteIn() {
-        return writeIn;
-    }
-
-    public void setWriteIn(boolean writeIn) {
-        this.writeIn = writeIn;
+    public void setElectionQuestions(List<ElectionQuestion> electionQuestions) {
+        if(electionQuestions == null) throw new IllegalArgumentException();
+        this.electionQuestions = electionQuestions;
     }
 
     @Override

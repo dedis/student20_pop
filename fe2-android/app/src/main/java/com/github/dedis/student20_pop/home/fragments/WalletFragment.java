@@ -2,6 +2,7 @@ package com.github.dedis.student20_pop.home.fragments;
 
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,9 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.student20_pop.databinding.FragmentWalletBinding;
 import com.github.dedis.student20_pop.home.HomeActivity;
 import com.github.dedis.student20_pop.home.HomeViewModel;
+import com.github.dedis.student20_pop.model.Wallet;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 /** Fragment used to display the wallet UI */
 public class WalletFragment extends Fragment {
@@ -27,7 +31,7 @@ public class WalletFragment extends Fragment {
   public static WalletFragment newInstance() {
     return new WalletFragment();
   }
-
+  private AlertDialog seedAlert;
 
   @Nullable
   @Override
@@ -43,7 +47,14 @@ public class WalletFragment extends Fragment {
     } else {
       throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
     }
-
+    try {
+      Wallet.getInstance().initKeysManager(getContext().getApplicationContext());
+    } catch (IOException | GeneralSecurityException e) {
+      Toast.makeText(getContext().getApplicationContext(),
+          "Error import key, try again",
+          Toast.LENGTH_LONG).show();
+      Log.d(TAG, e.getMessage());
+    }
     mWalletFragBinding.setViewModel(mHomeViewModel);
     mWalletFragBinding.setLifecycleOwner(activity);
 
@@ -61,6 +72,9 @@ public class WalletFragment extends Fragment {
   private void setupOwnSeedButton() {
     String defaultSeed = "elbow six card empty next sight turn quality capital please vocal indoor";
     mWalletFragBinding.buttonOwnSeed.setOnClickListener(v ->{
+      if(seedAlert!=null && seedAlert.isShowing()) {
+        seedAlert.dismiss();
+      }
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
       builder.setTitle("Type the 12 word seed:");
 
@@ -88,8 +102,9 @@ public class WalletFragment extends Fragment {
         }
       );
       builder.setNegativeButton("Cancel",  (dialog,which) -> dialog.cancel());
-      builder.show();
-    } );
+      seedAlert = builder.create();
+      seedAlert.show();
+    });
   }
 
   private void setupNewWalletButton() {

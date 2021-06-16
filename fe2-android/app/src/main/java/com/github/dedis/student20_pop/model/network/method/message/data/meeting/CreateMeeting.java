@@ -3,6 +3,7 @@ package com.github.dedis.student20_pop.model.network.method.message.data.meeting
 import com.github.dedis.student20_pop.model.network.method.message.data.Action;
 import com.github.dedis.student20_pop.model.network.method.message.data.Data;
 import com.github.dedis.student20_pop.model.network.method.message.data.Objects;
+import com.github.dedis.student20_pop.utility.network.IdGenerator;
 
 /** Data sent to create a new meeting */
 public class CreateMeeting extends Data {
@@ -13,20 +14,24 @@ public class CreateMeeting extends Data {
   private final String location;
   private final long start;
   private final long end;
-  // private final Extra extra;
 
   /**
    * Constructor for a data Create Meeting Event
    *
+   * @param laoId id of the LAO
    * @param id of the Meeting creation message, Hash("M"||laoId||creation||name)
    * @param name name of the Meeting
    * @param creation time of creation
    * @param location location of the Meeting
    * @param start of the Meeting
    * @param end of the Meeting
+   * @throws IllegalArgumentException if the id is invalid
    */
   public CreateMeeting(
-      String id, String name, long creation, String location, long start, long end) {
+      String laoId, String id, String name, long creation, String location, long start, long end) {
+    if(!id.equals(IdGenerator.generateCreateMeetingId(laoId, creation, name))) {
+      throw new IllegalArgumentException("CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
+    }
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -34,7 +39,16 @@ public class CreateMeeting extends Data {
     this.start = start;
     this.end = end;
   }
-  // private Extra extra;
+
+  public CreateMeeting(
+          String laoId, String name, long creation, String location, long start, long end) {
+    this.id = IdGenerator.generateCreateMeetingId(laoId, creation, name);
+    this.name = name;
+    this.creation = creation;
+    this.location = location;
+    this.start = start;
+    this.end = end;
+  }
 
   public String getId() {
     return id;

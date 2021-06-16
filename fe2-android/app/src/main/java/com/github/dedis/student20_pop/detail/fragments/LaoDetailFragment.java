@@ -112,7 +112,7 @@ public class LaoDetailFragment extends Fragment {
           .observe(
               getActivity(),
               lao -> {
-                Bitmap myBitmap = QRCode.from(lao.getChannel()).bitmap();
+                Bitmap myBitmap = QRCode.from(lao.getChannel().substring(6)).bitmap();
                 mLaoDetailFragBinding.channelQrCode.setImageBitmap(myBitmap);
               });
   }

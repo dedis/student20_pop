@@ -324,19 +324,27 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp()) * 1000);
         String dateEnd = DATE_FORMAT.format(dEnd);
         electionBinding.electionEndDate.setText("End Date : " + dateEnd);
+        viewModel.setCurrentElection(election);
         if (category == PRESENT) {
             electionBinding.electionActionButton.setOnClickListener(
-                    clicked -> viewModel.openCastVotes());
+                    clicked -> {
+                        viewModel.setCurrentElection(election);
+                        viewModel.openCastVotes();
+                    });
         } else if (category == PAST) {
             electionBinding.electionActionButton.setOnClickListener(
-                    clicked -> viewModel.openElectionResults(true));
+                    clicked -> {
+                        viewModel.setCurrentElection(election);
+                        viewModel.openElectionResults(true);
+                    });
 
         }
 
         electionBinding.electionEditButton.setOnClickListener(clicked -> {
             viewModel.setCurrentElection(election);
             viewModel.openManageElection(true);
-        });
+                }
+        );
         electionBinding.setEventCategory(category);
         electionBinding.setViewModel(viewModel);
         electionBinding.setLifecycleOwner(lifecycleOwner);

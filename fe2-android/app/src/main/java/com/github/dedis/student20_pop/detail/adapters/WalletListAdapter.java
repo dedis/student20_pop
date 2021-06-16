@@ -77,10 +77,17 @@ public class WalletListAdapter extends BaseAdapter {
         binding.rollcallClosedButton.setVisibility(View.GONE);
 
         binding.rollcallAttendeesListButton.setVisibility(View.VISIBLE);
-
         binding.rollcallAttendeesListButton.setOnClickListener(
                 clicked -> viewModel.openAttendeesList(rollCall.getId())
         );
+
+        Boolean isOrganizer = viewModel.isOrganizer().getValue();
+        if(isOrganizer!=null && !isOrganizer){
+            binding.rollcallTokenButton.setVisibility(View.VISIBLE);
+            binding.rollcallTokenButton.setOnClickListener(
+                    clicked -> viewModel.openRollCallToken(rollCall.getId())
+            );
+        }
 
         binding.setLifecycleOwner(lifecycleOwner);
         binding.executePendingBindings();

@@ -339,7 +339,7 @@ func (m *Message) parseLAOData(action LaoDataAction, data Base64URLBytes) error 
 	}
 
 }
-func (m *Message) parseElectionData(action ElectionAction, data []byte) error {
+func (m *Message) parseElectionData(action ElectionAction, data Base64URLBytes) error {
 	switch action {
 	case ElectionSetupAction:
 		setup := &ElectionSetupData{}

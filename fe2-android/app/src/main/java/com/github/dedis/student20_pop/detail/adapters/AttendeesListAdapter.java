@@ -24,10 +24,6 @@ public class AttendeesListAdapter extends BaseAdapter {
         lifecycleOwner = activity;
     }
 
-    public void replaceList(List<String> attendees) {
-        setList(attendees);
-    }
-
     private void setList(List<String> attendees) {
         this.attendees = attendees;
         notifyDataSetChanged();
@@ -62,7 +58,7 @@ public class AttendeesListAdapter extends BaseAdapter {
 
         String attendee = attendees.get(position);
 
-        binding.publicKey.setText("Public key: "+attendee);
+        binding.publicKey.setText("Public key:\n"+attendee);
 
         Bitmap myBitmap = QRCode.from(attendee).bitmap();
         binding.pkQrCode.setImageBitmap(myBitmap);

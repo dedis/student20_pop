@@ -1,24 +1,24 @@
 package hub
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
+	"sort"
 	"student20_pop/message"
+	"student20_pop/validation"
 	"sync"
 )
 
 // baseChannel represent a generic channel and contains all the fields that are
 // used in all channels
 type baseChannel struct {
-	hub *organizerHub
+	hub *baseHub
 
 	clientsMu sync.RWMutex
 	clients   map[*ClientSocket]struct{}
 
-	inboxMu sync.RWMutex
-	inbox   map[string]message.Message
+	inbox *inbox
 
 	// /root/<ID>
 	channelID string
@@ -27,13 +27,18 @@ type baseChannel struct {
 	witnesses []message.PublicKey
 }
 
+type messageInfo struct {
+	message    *message.Message
+	storedTime message.Timestamp
+}
+
 // CreateBaseChannel return an instance of a `baseChannel`
-func createBaseChannel(h *organizerHub, channelID string) *baseChannel {
+func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
 		hub:       h,
 		channelID: channelID,
 		clients:   make(map[*ClientSocket]struct{}),
-		inbox:     make(map[string]message.Message),
+		inbox:     createInbox(),
 	}
 }
 
@@ -67,12 +72,26 @@ func (c *baseChannel) Unsubscribe(client *ClientSocket, msg message.Unsubscribe)
 func (c *baseChannel) Catchup(catchup message.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
-	c.inboxMu.RLock()
-	defer c.inboxMu.RUnlock()
+	c.inbox.mutex.RLock()
+	defer c.inbox.mutex.RUnlock()
 
-	result := make([]message.Message, 0, len(c.inbox))
-	for _, msg := range c.inbox {
-		result = append(result, msg)
+	messages := make([]messageInfo, 0, len(c.inbox.msgs))
+	// iterate over map and collect all the values (messageInfo instances)
+	for _, msgInfo := range c.inbox.msgs {
+		messages = append(messages, *msgInfo)
+	}
+
+	// sort.Slice on messages based on the timestamp
+	sort.Slice(messages, func(i, j int) bool {
+		return messages[i].storedTime < messages[j].storedTime
+	})
+
+	result := make([]message.Message, 0, len(c.inbox.msgs))
+
+	// iterate and extract the messages[i].message field and
+	// append it to the result slice
+	for _, msgInfo := range messages {
+		result = append(result, *msgInfo.message)
 	}
 
 	return result
@@ -104,7 +123,7 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 	msg := publish.Params.Message
 
 	// Verify the data
-	err := c.hub.verifyJson(msg.RawData, DataSchema)
+	err := c.hub.schemaValidator.VerifyJson(msg.RawData, validation.Data)
 	if err != nil {
 		return message.NewError("failed to validate the data", err)
 	}
@@ -119,18 +138,13 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 		}
 	}
 
-	msgIDEncoded := base64.URLEncoding.EncodeToString(msg.MessageID)
-
 	// Check if the message already exists
-	c.inboxMu.RLock()
-	if _, ok := c.inbox[msgIDEncoded]; ok {
-		c.inboxMu.RUnlock()
+	if _, ok := c.inbox.getMessage(msg.MessageID); ok {
 		return &message.Error{
 			Code:        -3,
 			Description: "message already exists",
 		}
 	}
-	c.inboxMu.RUnlock()
 
 	return nil
 }

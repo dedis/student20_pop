@@ -48,7 +48,7 @@ public class AttendeesListFragment extends Fragment {
         mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
         String id = this.getArguments().getString(EXTRA_ID);
-        Optional<RollCall> optRollCall = mLaoDetailViewModel.getCurrentLao().getValue().getRollCall(id);
+        Optional<RollCall> optRollCall = mLaoDetailViewModel.getCurrentLaoValue().getRollCall(id);
         if(!optRollCall.isPresent()){
             Log.d(TAG, "failed to retrieve roll call with id "+id);
             mLaoDetailViewModel.openLaoWallet();

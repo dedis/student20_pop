@@ -10,7 +10,7 @@ import java.util.Set;
 public class RollCall extends Event {
 
   private String id;
-  private String persistentId;
+  private final String persistentId;
   private String name;
   private long creation;
   private long start;
@@ -21,7 +21,9 @@ public class RollCall extends Event {
   private String location;
   private String description;
 
-  public RollCall() {
+  public RollCall(String id) {
+    this.id = id;
+    this.persistentId = id;
     this.attendees = new HashSet<>();
   }
 
@@ -35,10 +37,6 @@ public class RollCall extends Event {
 
   public String getPersistentId() {
     return persistentId;
-  }
-
-  public void setPersistentId(String persistentId) {
-    this.persistentId = persistentId;
   }
 
   public String getName() {
