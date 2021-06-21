@@ -7,7 +7,7 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Launch from 'parts/Launch';
 import ConnectNavigation from 'navigation/bars/ConnectNavigation';
-import WalletNavigation from './WalletNavigation';
+import WalletNavigation from './wallet/WalletNavigation';
 
 /**
  * The main tab navigation component

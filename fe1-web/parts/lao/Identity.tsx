@@ -6,12 +6,13 @@ import { Colors, Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import QRCode from 'components/QRCode';
 import TextBlock from 'components/TextBlock';
+import { KeyPairStore } from 'store/stores';
 
 /**
  * Manage the Identity screen. A user may decide to participate anonymously to a
  * LAO or share personal information
  *
-*/
+ */
 
 const placeholderBasic: string[] = [
   STRINGS.identity_name_placeholder,
@@ -56,7 +57,7 @@ const Identity = () => {
       { buildEmailTextInput(STRINGS.identity_email_placeholder) }
       { buildPhoneTextInput(STRINGS.identity_phone_placeholder) }
       <TextBlock text={STRINGS.identity_qrcode_description} visibility={!toggleAnonymity} />
-      <QRCode visibility={!toggleAnonymity} />
+      <QRCode value={KeyPairStore.getPublicKey().toString()} visibility={!toggleAnonymity} />
     </>
   );
 };

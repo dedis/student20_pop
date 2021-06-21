@@ -18,7 +18,7 @@ describe('=== Wallet Cryptography Handler tests ===', () => {
     it('should correctly encrypt and decrypt the generated seed', async () => {
       /* this is the MOCK crypto manager, it uses the mock SubtleCrypto library */
 
-      let mockCryptoManager : WalletCryptographyHandler | null = new WalletCryptographyHandler();
+      let mockCryptoManager: WalletCryptographyHandler | null = new WalletCryptographyHandler();
 
       /* seed to encrypt */
       const seed = sign.keyPair().secretKey;

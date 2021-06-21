@@ -8,6 +8,7 @@ import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
+import { WalletStore } from 'store/stores/WalletStore';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -40,7 +41,13 @@ const WalletHome = ({ navigation }: IPropTypes) => {
         <WideButtonView
           title={STRINGS.import_seed_button}
           onPress={() => {
-            navigation.navigate(STRINGS.navigation_insert_seed_tab_wallet);
+            WalletStore.get().then((encryptedSeed) => {
+              if (encryptedSeed === undefined) {
+                navigation.navigate(STRINGS.navigation_insert_seed_tab_wallet);
+              } else {
+                navigation.navigate(STRINGS.navigation_synced_wallet);
+              }
+            });
           }}
         />
       </View>

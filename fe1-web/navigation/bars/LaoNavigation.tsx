@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Platform, StyleSheet,
 } from 'react-native';
@@ -12,8 +12,11 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
+import WalletSyncedSeed from 'parts/wallet/WalletSyncedSeed';
+import { WalletStore } from 'store/stores/WalletStore';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
+import WalletNavigation from './wallet/WalletNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -25,7 +28,7 @@ const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
  *  - Lao tab (corresponding to user role)
  *  - Identity
  *  - name of the connected lao (fake link)
-*/
+ */
 const styles = StyleSheet.create({
   navigator: {
     ...Platform.select({
@@ -69,6 +72,24 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
   );
 }
 
+function displaySyncedWallet() {
+  return (
+    <OrganizationTopTabNavigator.Screen
+      name={STRINGS.navigation_synced_wallet}
+      component={WalletSyncedSeed}
+    />
+  );
+}
+
+function displayHomeWallet() {
+  return (
+    <OrganizationTopTabNavigator.Screen
+      name={STRINGS.navigation_home_tab_wallet}
+      component={WalletNavigation}
+    />
+  );
+}
+
 // Cannot omit the "component" attribute in Screen
 // Moreover, cannot use a lambda in "component"
 const DummyComponent = () => null;
@@ -79,6 +100,9 @@ function LaoNavigation() {
 
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
   const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
+
+  const [walletIsInitialized, setWalletIsInitialized] = useState(false);
+  WalletStore.get().then((encryptedSeed) => setWalletIsInitialized(encryptedSeed !== undefined));
 
   const isOrganizer = !!(lao && publicKey && (publicKey.equals(lao.organizer)));
   const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
@@ -103,6 +127,9 @@ function LaoNavigation() {
         name={STRINGS.organization_navigation_tab_identity}
         component={Identity}
       />
+
+      { !walletIsInitialized && displayHomeWallet() }
+      { walletIsInitialized && displaySyncedWallet() }
 
       <OrganizationTopTabNavigator.Screen
         name={laoName}

@@ -11,13 +11,19 @@ import styleContainer from 'styles/stylesheets/container';
  * ConnectEnableCamera pane asks for the user to enable camera access in order to scan QR codes
  *
  * TODO ask the user for the camera permission when click on the permission button
-*/
+ */
 const ConnectEnableCamera = ({ navigation }: IPropTypes) => (
   <View style={styleContainer.flex}>
     <TextBlock text={STRINGS.connect_description} />
     <WideButtonView
       title={STRINGS.connect_button_camera}
       onPress={() => { navigation.navigate(STRINGS.connect_scanning_title); }}
+    />
+    <WideButtonView
+      title={STRINGS.connect_connecting_validate}
+      onPress={() => {
+        navigation.navigate(STRINGS.connect_confirm_title);
+      }}
     />
   </View>
 );

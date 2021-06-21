@@ -1,6 +1,6 @@
 import { get, set, update } from 'idb-keyval';
 import STRINGS from 'res/strings';
-import { getCrypto } from '../../utils/Crypto';
+import { getCrypto } from 'utils/Crypto';
 
 /* wallet cryptography key interface */
 export interface WalletCryptoKey {
@@ -45,7 +45,6 @@ export class WalletCryptographyHandler {
       await this.handleWalletInitialization();
       console.log('Wallet cryptography was not initialized');
     }
-    console.log('Wallet cryptography storage ready');
   }
 
   /**
@@ -111,25 +110,13 @@ export class WalletCryptographyHandler {
   }
 
   /**
-   * This method should solve the problems of wallet storage initialisation.
-   * If the wallet storage is not correctly initialised the reason could be two:
-   * 1. it never was initialised
-   * 2. it was initialised but then cleared for some reason (e.g. clear browser data)
-   *
-   * In the first case the wallet is initialised by generating an RSA key and creating the
-   * wallet storage. In the second case a solution still has to be found, se issue on github.
+   * This method solves the problem of wallet storage initialisation
+   * in case of missing encryption/decryption key.
    * @private
    */
   private async handleWalletInitialization() {
-    /* if (storage has never been initialised) { */
     const key: WalletCryptoKey = await this.generateRSAKey();
     await this.putKeyInDatabase(key);
-
-    /* } else if (the IndexedDB was cleared for some reason) {
-      TODO: find a way to fix this and retrieve the keys
-      https://github.com/dedis/student_21_pop/issues/297
-      }
-    */
   }
 
   /**

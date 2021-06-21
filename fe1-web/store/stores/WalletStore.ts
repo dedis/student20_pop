@@ -1,5 +1,5 @@
 import { dispatch, getStore } from '../Storage';
-import { getWalletState, setWalletState } from '../reducers';
+import { getWalletState, setWalletState, clearWalletState } from '../reducers';
 
 /**
  * This file represents the storage slice for the wallet state.
@@ -15,14 +15,20 @@ export namespace WalletStore {
   }
 
   /**
+   * This function dispatches action to clear the wallet state.
+   */
+  export function clear(): void {
+    dispatch(clearWalletState());
+  }
+
+  /**
    * returns the wallet state: the encrypted wallet seed or throws
    * an error if the state was never initialized.
    */
-  export async function get(): Promise<string> {
+  export async function get(): Promise<string | undefined> {
     const { walletState } = getWalletState(getStore().getState());
-
     if (!walletState) {
-      throw new Error('the wallet state is not initialized: null seed in redux store');
+      console.log('No wallet in redux storage, insert 12-word mneonic to backup your wallet.');
     }
 
     return walletState;

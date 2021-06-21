@@ -26,8 +26,6 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const wallet: HDWallet = new HDWallet();
-
 /**
  * wallet screen to set an already existing mnemonic
  * @constructor
@@ -37,10 +35,11 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
   const [seed, setSeed] = useState('');
 
   const initWallet = () => {
+    const wallet: HDWallet = new HDWallet();
     wallet.initialize(seed)
       .then((seedIsValid) => ((seedIsValid)
         ? navigation.navigate(STRINGS.navigation_synced_wallet)
-        : navigation.navigate(STRINGS.navigation_home_tab_wallet)));
+        : navigation.navigate(STRINGS.navigation_wallet_error)));
   };
 
   function getInsertSeedWalletDisplay() {
