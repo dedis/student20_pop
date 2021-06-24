@@ -15,13 +15,16 @@ export enum ActionType {
   // uninitialized placeholder
   INVALID = '__INVALID_ACTION__',
 
+  CAST_VOTE = 'cast_vote',
   CREATE = 'create',
+  END = 'end',
   SETUP = 'setup',
   UPDATE_PROPERTIES = 'update_properties',
   STATE = 'state',
   WITNESS = 'witness',
   OPEN = 'open',
   REOPEN = 'reopen',
+  RESULT = 'result',
   CLOSE = 'close',
 }
 

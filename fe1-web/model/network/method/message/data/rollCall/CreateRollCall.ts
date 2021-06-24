@@ -49,11 +49,14 @@ export class CreateRollCall implements MessageData {
 
     if (!msg.proposed_end) {
       throw new ProtocolError("Undefined 'proposed_end' parameter encountered during 'CreateRollCall'");
-    } else if (msg.proposed_end < msg.proposed_start) {
+    } else if (msg.proposed_end < msg.proposed_start && msg.proposed_end.valueOf() !== 0) {
+      // Java FE uses 0 as a default value when nothing is specified in RC proposed en
       throw new ProtocolError('Invalid timestamp encountered:'
         + " 'proposed_end' parameter smaller than 'proposed_start'");
     }
-    checkTimestampStaleness(msg.proposed_end);
+    if (msg.proposed_end.valueOf() !== 0) {
+      checkTimestampStaleness(msg.proposed_end);
+    }
     this.proposed_end = msg.proposed_end;
 
     if (!msg.location) {
@@ -68,14 +71,16 @@ export class CreateRollCall implements MessageData {
     if (!msg.id) {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'CreateRollCall'");
     }
-    const lao: Lao = OpenedLaoStore.get();
-    const expectedHash = Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), msg.creation.toString(), msg.name,
-    );
-    if (!expectedHash.equals(msg.id)) {
-      throw new ProtocolError("Invalid 'id' parameter encountered during 'CreateRollCall':"
-        + ' re-computing the value yields a different result');
-    }
+    // This is removed as when handling the catchup messages, the lao is not available and this
+    // leads to an error
+    // const lao: Lao = OpenedLaoStore.get();
+    // const expectedHash = Hash.fromStringArray(
+    //   EventTags.ROLL_CALL, lao.id.toString(), msg.creation.toString(), msg.name,
+    // );
+    // if (!expectedHash.equals(msg.id)) {
+    //   throw new ProtocolError("Invalid 'id' parameter encountered during 'CreateRollCall':"
+    //     + ' re-computing the value yields a different result');
+    // }
     this.id = msg.id;
   }
 

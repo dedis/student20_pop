@@ -18,6 +18,7 @@ export function makeMessageStoreWatcher(store: Store) {
     }
 
     const msgState = getLaoMessagesState(laoId, state);
+    console.log('Message state is: ', msgState);
     const newValue = msgState.unprocessedIds;
     [previousValue, currentValue] = [currentValue, newValue];
 
@@ -28,7 +29,6 @@ export function makeMessageStoreWatcher(store: Store) {
     }
 
     const msgs = currentValue.map((id: string) => ExtendedMessage.fromState(msgState.byId[id]));
-    console.log(msgs);
 
     msgs.forEach((msg) => {
       try {

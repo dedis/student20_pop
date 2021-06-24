@@ -5,7 +5,6 @@ import STRINGS from 'res/strings';
 
 import ConnectEnableCamera from 'parts/connect/ConnectEnableCamera';
 import ConnectOpenScan from 'parts/connect/ConnectOpenScan';
-import ConnectConnecting from 'parts/connect/ConnectConnecting';
 import ConnectConfirm from 'parts/connect/ConnectConfirm';
 
 /**
@@ -34,10 +33,6 @@ export default function ConnectNavigation() {
       <Stack.Screen
         name={STRINGS.connect_scanning_title}
         component={ConnectOpenScan}
-      />
-      <Stack.Screen
-        name={STRINGS.connect_connecting_title}
-        component={ConnectConnecting}
       />
       <Stack.Screen
         name={STRINGS.connect_confirm_title}

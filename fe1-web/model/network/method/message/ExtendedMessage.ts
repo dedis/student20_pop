@@ -1,5 +1,5 @@
 import {
-  Hash, PublicKey, Base64UrlData, WitnessSignature, Signature, Timestamp,
+  Hash, PublicKey, Base64UrlData, WitnessSignature, Signature, Timestamp, Channel,
 } from 'model/objects';
 import { Message, MessageState } from 'model/network/method/message/Message';
 
@@ -45,6 +45,7 @@ export class ExtendedMessage extends Message {
       sender: new PublicKey(state.sender),
       signature: new Signature(state.signature),
       message_id: new Hash(state.message_id),
+      channel: state.channel,
       witness_signatures: state.witness_signatures.map(
         (ws: any) => new WitnessSignature({
           witness: new PublicKey(ws.witness),

@@ -123,7 +123,7 @@ function handleRollCallCloseMessage(msg: Message): boolean {
 }
 
 export function handleRollCallMessage(msg: Message) {
-  if (msg.messageData.object !== ObjectType.LAO) {
+  if (msg.messageData.object !== ObjectType.ROLL_CALL) {
     console.warn('handleRollCallMessage was called to process an unsupported message', msg);
     return false;
   }

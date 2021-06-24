@@ -5,18 +5,21 @@ import {
   CreateLao,
   CreateMeeting,
   CreateRollCall,
+  OpenRollCall,
   SetupElection,
   StateLao,
   UpdateLao,
   WitnessMessage,
+  CastVote,
 } from 'model/network/method/message/data';
 import {
-  Channel, channelFromId, ROOT_CHANNEL,
+  Channel, channelFromId, channelFromIds, ROOT_CHANNEL,
 } from 'model/objects/Channel';
 import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
-import { Question } from 'model/objects/Election';
+import { Question, Vote } from 'model/objects/Election';
+import { EndElection } from 'model/network/method/message/data/election/EndElection';
 import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
@@ -158,21 +161,25 @@ export function requestCreateRollCall(
 
 /** Send a server query asking for the opening of a roll call given its id (Number) and an
  * optional start time (Timestamp). If the start time is not specified, then the current time
- * will be used instead *
-export function requestOpenRollCall(rollCallId: Number, start?: Timestamp): Promise<void> {
-    const rollCall = { creation: 1609455600, name: 'r-cName' }; // FIXME: hardcoded
-    const laoId = get().params.message.data.id;
-    const startTime = (start === undefined) ? Timestamp.EpochNow() : start;
+ * will be used instead
+ */
+export function requestOpenRollCall(
+  prevUpdateId: Hash,
+  laoId: Hash,
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  // update_id = SHA256('R'||lao_id||opens||opened_at)"
+  // opens = id of roll call creation event
+  const message = new OpenRollCall({
+    update_id: Hash.fromStringArray(
+      EventTags.ROLL_CALL, laoId.valueOf(), prevUpdateId.valueOf(), time.toString(),
+    ),
+    opens: prevUpdateId,
+    opened_at: time,
+  });
 
-    let message = new OpenRollCall({
-      action: ActionType.OPEN,
-      id: Hash.fromStringArray(
-        EventTags.ROLL_CALL, toString64(laoId), rollCall.creation.toString(), rollCall.name
-      ),
-      start: startTime,
-    });
-
-    return publish(channelFromId(laoId), message);
+  const laoCh = channelFromId(laoId);
+  return publish(laoCh, message);
 }
 
 /** Send a server query asking for the reopening of a roll call given its id (Number) and an
@@ -209,27 +216,62 @@ export function requestCloseRollCall(rollCallId: Number, attendees: PublicKey[])
  *  start and end are also specified as a timestamp */
 export function requestCreateElection(
   name: string,
+  id: Hash,
   version: string,
+  createdAt: Timestamp,
   start: Timestamp,
   end: Timestamp,
   questions: Question[],
 ): Promise<void> {
-  const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
   const timeBuffer = 60;
   const message = new SetupElection({
     lao: currentLao.id,
-    id: Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), name,
-    ),
+    id: id,
     name: name,
     version: version,
-    created_at: time,
-    start_time: ((start.before(time)) ? time : start),
+    created_at: createdAt,
+    start_time: ((start.before(createdAt)) ? createdAt : start),
     end_time: ((end.before(start)) ? (start.addSeconds(timeBuffer)) : end),
     questions: questions,
   });
 
   const laoCh = channelFromId(currentLao.id);
   return publish(laoCh, message);
+}
+
+/** Sends a server query which creates a Vote in an ongoing election */
+export function castVote(
+  election_id: Hash,
+  votes: Vote[],
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+  const message = new CastVote({
+    lao: currentLao.id,
+    election: election_id,
+    created_at: time,
+    votes: votes,
+  });
+
+  const elecCh = channelFromIds(currentLao.id, election_id);
+  return publish(elecCh, message);
+}
+
+/** Sends a server query which creates a Vote in an ongoing election */
+export function terminateElection(
+  electionId: Hash,
+  registeredVotes: Hash,
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+  const message = new EndElection({
+    lao: currentLao.id,
+    election: electionId,
+    created_at: time,
+    registered_votes: registeredVotes,
+  });
+
+  const elecCh = channelFromIds(currentLao.id, electionId);
+  return publish(elecCh, message);
 }

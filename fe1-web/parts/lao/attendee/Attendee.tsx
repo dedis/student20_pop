@@ -39,16 +39,16 @@ const Attendee = () => {
 
   const DATA_EXAMPLE = [
     {
-      title: 'Past',
-      data: pastEvents,
+      title: 'Future',
+      data: futureEvents,
     },
     {
       title: 'Present',
       data: currentEvents,
     },
     {
-      title: 'Future',
-      data: futureEvents,
+      title: 'Past',
+      data: pastEvents,
     },
   ];
 

@@ -19,6 +19,12 @@ const ConnectEnableCamera = ({ navigation }: IPropTypes) => (
       title={STRINGS.connect_button_camera}
       onPress={() => { navigation.navigate(STRINGS.connect_scanning_title); }}
     />
+    <WideButtonView
+      title={STRINGS.connect_connecting_validate}
+      onPress={() => {
+        navigation.navigate(STRINGS.connect_confirm_title);
+      }}
+    />
   </View>
 );
 

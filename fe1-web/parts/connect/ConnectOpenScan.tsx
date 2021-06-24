@@ -1,12 +1,14 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 
+// @ts-ignore
+import QrReader from 'react-qr-reader';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
-import TextBlock from 'components/TextBlock';
-import CameraButton from 'components/CameraButton';
 import styleContainer from 'styles/stylesheets/container';
+import { Colors } from 'styles';
+import WideButtonView from 'components/WideButtonView';
 
 /**
  * Starts a QR code scan
@@ -16,20 +18,41 @@ import styleContainer from 'styles/stylesheets/container';
 const ConnectOpenScan = ({ navigation }: IPropTypes) => {
   // Remove the user to go back to the ConnectEnableCamera as he has already given
   // his permission to use the camera
-  // Note : useEffect = componentDidMount + componentDidUpdate + componentWillUnmount together
-  React.useEffect(
-    () => navigation.addListener('beforeRemove', (e: any) => {
-      e.preventDefault();
-    }),
-    [navigation],
-  );
+  const [QrWasScanned, setQrWasScanned] = useState(false);
 
-  return (
-    <View style={styleContainer.anchoredCenter}>
-      <TextBlock text={STRINGS.connect_scanning_camera_view} />
-      <CameraButton action={() => { navigation.navigate(STRINGS.connect_connecting_title); }} />
-    </View>
-  );
+  const handleError = (err: string) => {
+    console.error(err);
+  };
+
+  const handleScan = (data: string) => {
+    console.log(data);
+    if (data) {
+      setQrWasScanned(true);
+      navigation.navigate(STRINGS.connect_confirm_title, { laoIdIn: data });
+    }
+  };
+
+  return QrWasScanned
+    ? (
+      <View style={styleContainer.centered} />
+    ) : (
+      <View style={styleContainer.centered}>
+        <QrReader
+          delay={300}
+          onError={handleError}
+          onScan={handleScan}
+          style={{ width: '30%' }}
+        />
+        <ActivityIndicator size="large" color={Colors.blue} />
+        <WideButtonView
+          title={STRINGS.general_button_cancel}
+          onPress={() => {
+            setQrWasScanned(true);
+            navigation.navigate(STRINGS.connect_unapproved_title);
+          }}
+        />
+      </View>
+    );
 };
 
 const propTypes = {

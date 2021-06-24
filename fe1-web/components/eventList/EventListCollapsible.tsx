@@ -60,7 +60,7 @@ const EventListCollapsible = (props: IPropTypes) => {
   const { isOrganizer } = props;
 
   const renderItemFn = (
-    ({ item }: any) => <Event event={item} renderItemFn={renderItemFn} />
+    ({ item }: any) => <Event isOrganizer={!isOrganizer} event={item} renderItemFn={renderItemFn} />
   );
 
   return (

@@ -39,6 +39,9 @@ class NetworkManager {
    */
   public connect(host: string, port: number = 9000, path: string = 'organizer/client/'): NetworkConnection {
     const address: string = NetworkManager.buildAddress(host, port, path);
+    // Here the demo url is hardcoded which was used during the final demo of the spring semester 21
+    // const address = 'wss://popdemo.dedis.ch/demo';
+
     const existingConnection = this.getConnectionByAddress(address);
 
     if (existingConnection !== undefined) {

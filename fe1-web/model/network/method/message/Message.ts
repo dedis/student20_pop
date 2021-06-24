@@ -1,10 +1,16 @@
 import {
-  Base64UrlData, Hash, PublicKey, Signature, WitnessSignature, WitnessSignatureState,
+  Base64UrlData,
+  Channel,
+  Hash,
+  PublicKey,
+  Signature,
+  WitnessSignature,
+  WitnessSignatureState,
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import {
-  MessageData, buildMessageData, encodeMessageData,
+  buildMessageData, encodeMessageData, MessageData,
 } from './data';
 
 /**
@@ -21,6 +27,8 @@ export interface MessageState {
   message_id: string;
 
   witness_signatures: WitnessSignatureState[];
+
+  channel?: Channel;
 }
 
 /**
@@ -45,25 +53,35 @@ export class Message {
     return this.#messageData;
   }
 
+  // The channel field gets assigned for all incoming messages in JsonRpcWithMessage.ts
+  // In order to use it when handling the messages, such as the election result msg
+  public channel?: Channel;
+
   constructor(msg: Partial<Message>) {
     if (!msg.data) {
       throw new ProtocolError("Undefined 'data' parameter encountered during 'Message' creation");
     }
+    this.data = msg.data;
     if (!msg.sender) {
       throw new ProtocolError("Undefined 'sender' parameter encountered during 'Message' creation");
     }
     if (!msg.signature) {
       throw new ProtocolError("Undefined 'signature' parameter encountered during 'Message' creation");
     }
-    if (!msg.signature.verify(msg.sender, msg.data)) {
-      throw new ProtocolError("Invalid 'signature' parameter encountered during 'Message' creation: unexpected message_id value");
+
+    if (!msg.signature.verify(msg.sender, msg.data) && !this.isElectionResultMessage()) {
+      throw new ProtocolError("Invalid 'signature' parameter encountered during 'Message' creation");
     }
     if (!msg.message_id) {
       throw new ProtocolError("Undefined 'message_id' parameter encountered during 'Message' creation");
     }
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
-    if (!expectedHash.equals(msg.message_id)) {
-      throw new ProtocolError("Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value");
+    if (!expectedHash.equals(msg.message_id) && !this.isElectionResultMessage()) {
+      console.log('Expected Hash was: ', expectedHash);
+
+      throw new ProtocolError(`Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value \n
+      received message_id was: ${msg.message_id}\n
+      Expected message_id is: ${expectedHash}`);
     }
     if (!msg.witness_signatures) {
       throw new ProtocolError("Undefined 'witness_signatures' parameter encountered during 'Message' creation");
@@ -74,7 +92,10 @@ export class Message {
       }
     });
 
-    this.data = msg.data;
+    if (msg.channel) {
+      this.channel = msg.channel;
+    }
+
     this.sender = msg.sender;
     this.signature = msg.signature;
     this.message_id = msg.message_id;
@@ -94,18 +115,23 @@ export class Message {
       witness_signatures: obj.witness_signatures.map(
         (ws: WitnessSignatureState) => WitnessSignature.fromJson(ws),
       ),
+      channel: obj.channel,
     });
   }
 
   /**
    * Creates a Message object from a given MessageData and signatures
+   * We don't add the channel property here as we don't want to send that over the network
+   * It signs the messages with the most recent pop token if it exists. Otherwise it uses the
+   * public key
    *
    * @param data The MessageData to be signed and hashed
    * @param witnessSignatures The signatures of the witnesses
    *
-   * ATTENTION: This may need updating as part of the Digital Wallet project -- 2021-03-03
    */
-  public static fromData(data: MessageData, witnessSignatures?: WitnessSignature[]): Message {
+  public static fromData(
+    data: MessageData, witnessSignatures?: WitnessSignature[],
+  ): Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     const signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
 
@@ -117,4 +143,62 @@ export class Message {
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
     });
   }
+
+  // This function disables the checks of signature and messageID for eleciton result messages
+  // Because the message comes from the back-end and it can't sign the messages since it hasn't
+  // access to the private key
+  // This method is only a temporary solution for the demo and should be removed once a better
+  // solution is found
+  private isElectionResultMessage():boolean {
+    if (this.data.decode().includes('"result":')) {
+      return true;
+    }
+    return false;
+  }
 }
+
+/*
+public static async fromData(
+    data: MessageData, witnessSignatures?: WitnessSignature[],
+  ): Promise<Message> {
+    const encodedDataJson: Base64UrlData = encodeMessageData(data);
+
+    let signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
+    let keyPair: KeyPair | undefined;
+
+    WalletStore.get().then((encryptedSeed) => {
+      if (encryptedSeed !== undefined) {
+        HDWallet.fromState(encryptedSeed)
+          .then((wallet) => {
+            keyPair = wallet.recoverLastGeneratedPoPToken();
+            console.log('Pop token in message is: ', keyPair);
+            signature = (keyPair) ? keyPair?.privateKey.sign(encodedDataJson) : signature;
+          });
+      }
+    }).catch((e) => {
+      console.debug('error when getting last pop token from wallet: ', e);
+    });
+
+    return new Message({
+      data: encodedDataJson,
+      sender: (keyPair) ? keyPair.publicKey : KeyPairStore.getPublicKey(),
+      signature,
+      message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+      witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+    });
+  }
+
+  // This function disables the checks of signature and messageID for eleciton result messages
+  // Because the message comes from the back-end and it can't sign the messages since it hasn't
+  // access to the private key
+  // This method is only a temporary solution for the demo and should be removed once a better
+  // solution is found
+  private isElectionResultMessage():boolean {
+    if (this.data.decode().includes('"result":')) {
+      return true;
+    }
+    return false;
+  }
+}
+
+*/

@@ -32,11 +32,17 @@ const walletSlice = createSlice({
       state.walletState = action.payload;
       console.log('Wallet storage was updated with new state');
     },
+
+    clearWalletState: (state) => {
+      state.walletState = undefined;
+      console.log('Wallet storage was cleared');
+    },
   },
 });
 
 export const {
   setWalletState,
+  clearWalletState,
 } = walletSlice.actions;
 
 export default {

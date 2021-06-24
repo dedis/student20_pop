@@ -39,7 +39,7 @@ export class CloseRollCall implements MessageData {
 
     // FIXME: implementation not finished, get event from storage,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const lao: Lao = OpenedLaoStore.get();
+    // const lao: Lao = OpenedLaoStore.get();
     /*
     const expectedHash = Hash.fromStringArray(
       EventTags.ROLL_CALL, lao.id.toString(), lao.creation.toString(), lao.name

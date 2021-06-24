@@ -2,8 +2,11 @@ import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { makeLaosList } from 'store';
-import { Lao } from 'model/objects';
+import { KeyPairStore, makeLaosList } from 'store';
+import {
+  Base64UrlData,
+  KeyPair, Lao, PrivateKey, PublicKey,
+} from 'model/objects';
 
 import { Spacing } from 'styles';
 import styleContainer from 'styles/stylesheets/container';
@@ -11,6 +14,10 @@ import STRINGS from 'res/strings';
 
 import LAOItem from 'components/LAOItem';
 import TextBlock from 'components/TextBlock';
+
+import { sign } from 'tweetnacl';
+import { encodeBase64 } from 'tweetnacl-util';
+import WideButtonView from 'components/WideButtonView';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -39,12 +46,34 @@ function getConnectedLaosDisplay(laos: Lao[]) {
   );
 }
 
+const storeKeyPair = () => {
+  const pair = sign.keyPair();
+
+  const keyPair: KeyPair = new KeyPair({
+    publicKey: new PublicKey(Base64UrlData.fromBase64(encodeBase64(pair.publicKey)).valueOf()),
+    privateKey: new PrivateKey(Base64UrlData.fromBase64(encodeBase64(pair.secretKey)).valueOf()),
+  });
+
+  KeyPairStore.store(keyPair);
+  console.log('New keypair stored');
+};
+
+const setOrganizerKeyPair = () => {
+  const keyPair: KeyPair = new KeyPair({
+    publicKey: new PublicKey('Wto5aKBnfU0fIX2x1c_KB_-fVaW5COfOu-jLWkOIaWE='),
+    privateKey: new PrivateKey('OCvBuCljq8vXcfxi0iZQmBELCSE54EHGoqafHVyVsr1a2jlooGd9TR8hfbHVz8oH_59VpbkI58676MtaQ4hpYQ=='),
+  });
+  KeyPairStore.store(keyPair);
+};
+
 function getWelcomeMessageDisplay() {
   return (
     <View style={styleContainer.centered}>
       <TextBlock bold text={STRINGS.home_welcome} />
       <TextBlock bold text={STRINGS.home_connect_lao} />
       <TextBlock bold text={STRINGS.home_launch_lao} />
+      <WideButtonView onPress={storeKeyPair} title="Set Random Keypair" />
+      <WideButtonView onPress={setOrganizerKeyPair} title="Set Organizer Keypair" />
     </View>
   );
 }

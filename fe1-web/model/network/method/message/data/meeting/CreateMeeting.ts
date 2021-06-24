@@ -49,7 +49,7 @@ export class CreateMeeting implements MessageData {
 
     // FIXME: implementation not finished, get event from storage,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const lao: Lao = OpenedLaoStore.get();
+    // const lao: Lao = OpenedLaoStore.get();
     /*
     const expectedHash = Hash.fromStringArray(
       EventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME,

@@ -7,6 +7,7 @@ export enum EventTags {
   ROLL_CALL = 'R',
   ELECTION = 'Election',
   QUESTION = 'Question',
+  VOTE = 'Vote',
 }
 
 export class Hash extends Base64UrlData {

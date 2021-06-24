@@ -34,19 +34,20 @@ const Organizer = () => {
     currentEvents.push(e);
   });
   // TODO: nesting logic
+  // Todo: Automatically move the events to the correct array with useEffect
 
   const DATA_EXAMPLE = [
     {
-      title: 'Past',
-      data: pastEvents,
+      title: 'Future',
+      data: futureEvents,
     },
     {
       title: 'Present',
       data: currentEvents,
     },
     {
-      title: 'Future',
-      data: futureEvents,
+      title: 'Past',
+      data: pastEvents,
     },
   ];
 

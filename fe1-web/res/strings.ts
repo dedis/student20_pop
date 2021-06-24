@@ -40,7 +40,8 @@ const STRINGS = {
   navigation_home_tab_wallet: 'Wallet',
   navigation_insert_seed_tab_wallet: 'Wallet Setup',
   navigation_show_seed_wallet: 'New Wallet',
-  navigation_synced_wallet: 'Your Wallet',
+  navigation_synced_wallet: 'My Wallet',
+  navigation_wallet_error: 'Error',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
@@ -115,6 +116,9 @@ const STRINGS = {
   election_method_Approval: 'Approval',
   election_version_identifier: '1.0.0',
 
+  /* --- Cast Vote Strings --- */
+  cast_vote: 'Cast Vote',
+
   /* --- Roll-call creation Strings --- */
   roll_call_create_proposed_start: 'Proposed Start:',
   roll_call_create_proposed_end: 'Proposed End:',
@@ -140,6 +144,10 @@ const STRINGS = {
   meeting_create_finish_time: 'End time: ',
   meeting_create_location: 'Location',
 
+  /* --- Time Display Strings --- */
+  time_display_start: 'Start: ',
+  time_display_end: 'End: ',
+
   /* --- Wallet Strings --- */
   wallet_private_key_id: 'Private Decryption Key',
   wallet_public_key_id: 'Public Encryption Key',
@@ -157,7 +165,17 @@ const STRINGS = {
   wallet_synced_info: 'Your digital wallet is synced !',
   setup_wallet: 'SETUP WALLET',
   back_to_wallet_home: 'BACK TO WALLET HOME',
-  recover_tokens_title: 'RECOVER POP TOKENS',
+  logout_from_wallet: 'LOGOUT',
+  show_tokens_title: 'SHOW POP TOKENS',
+  show_public_keys: 'SHOW PUBLIC KEYS',
+  hide_public_keys: 'HIDE PUBLIC KEYS',
+  show_qr_public_keys: 'SHOW QR KEYS',
+  hide_qr_public_keys: 'HIDE QR KEYS',
+  your_tokens_title: 'Your PoP Tokens',
+  wallet_error: 'A synchronization error with your wallet occurred',
+  no_tokens_in_wallet: 'No token is yet associated with your wallet seed, once you participate in a roll call event your PoP tokens will be shows here',
+  lao_id: 'LAO ID',
+  roll_call_name: 'Roll Call name',
 
   /* --- General creation Strings --- */
   create_description: 'Choose the type of event you want to create',

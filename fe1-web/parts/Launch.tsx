@@ -18,7 +18,7 @@ import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
-import { establishLaoConnection } from 'network/CommunicationApi';
+import { subscribeToChannel } from 'network/CommunicationApi';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -54,7 +54,7 @@ const Launch = ({ navigation }: IPropTypes) => {
 
     getNetworkManager().connect('127.0.0.1');
     requestCreateLao(laoName)
-      .then((channel: Channel) => establishLaoConnection(channel)
+      .then((channel: Channel) => subscribeToChannel(channel)
         .then(() => {
           // navigate to the newly created LAO
           navigation.navigate(STRINGS.app_navigation_tab_organizer, {});

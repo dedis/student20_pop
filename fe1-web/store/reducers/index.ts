@@ -7,3 +7,5 @@ export * from './LaoReducer';
 export * from './KeyPairReducer';
 export * from './MessageReducer';
 export * from './WalletReducer';
+export * from './LastPoPTokenReducer'
+export * from './LastPoPTokenReducer'
