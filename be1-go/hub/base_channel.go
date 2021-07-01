@@ -21,7 +21,8 @@ type baseChannel struct {
 	inbox *inbox
 
 	// /root/<ID>
-	channelID string
+	channelID   string
+	idValidator *validation.IdValidatior
 
 	witnessMu sync.Mutex
 	witnesses []message.PublicKey
@@ -35,10 +36,11 @@ type messageInfo struct {
 // CreateBaseChannel return an instance of a `baseChannel`
 func createBaseChannel(h *baseHub, channelID string) *baseChannel {
 	return &baseChannel{
-		hub:       h,
-		channelID: channelID,
-		clients:   make(map[*ClientSocket]struct{}),
-		inbox:     createInbox(),
+		hub:         h,
+		channelID:   channelID,
+		idValidator: validation.NewIdValidator(channelID),
+		clients:     make(map[*ClientSocket]struct{}),
+		inbox:       createInbox(),
 	}
 }
 
@@ -136,6 +138,12 @@ func (c *baseChannel) VerifyPublishMessage(publish message.Publish) error {
 			Code:        -4,
 			Description: fmt.Sprintf("failed to verify and unmarshal data: %v", err),
 		}
+	}
+
+	// Verify all the IDs in the data are correct
+	err = c.idValidator.VerifyIDs(msg)
+	if err != nil {
+		return message.NewError("failed to verify the ID of the provided data", err)
 	}
 
 	// Check if the message already exists

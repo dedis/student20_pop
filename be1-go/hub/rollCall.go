@@ -1,9 +1,6 @@
 package hub
 
 import (
-	"bytes"
-	"encoding/base64"
-	"fmt"
 	"student20_pop/message"
 )
 
@@ -16,13 +13,6 @@ func (c *laoChannel) processCreateRollCall(data message.Data) error {
 		return &message.Error{
 			Code:        -4,
 			Description: "The field `proposed_start` is greater than the field `proposed_end`",
-		}
-	}
-
-	if !c.checkRollCallID(rollCallData.Creation, message.Stringer(rollCallData.Name), rollCallData.ID) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||creation||name)",
 		}
 	}
 
@@ -61,14 +51,6 @@ func (c *laoChannel) processOpenRollCall(data message.Data, action message.RollC
 		}
 	}
 
-	opens := base64.URLEncoding.EncodeToString(rollCallData.Opens)
-	if !c.checkRollCallID(message.Stringer(opens), rollCallData.OpenedAt, rollCallData.UpdateID) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||opens||opened_at)",
-		}
-	}
-
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Open
 	return nil
@@ -90,14 +72,6 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 		}
 	}
 
-	closes := base64.URLEncoding.EncodeToString(rollCallData.Closes)
-	if !c.checkRollCallID(message.Stringer(closes), rollCallData.ClosedAt, rollCallData.UpdateID) {
-		return &message.Error{
-			Code:        -4,
-			Description: "The id of the roll call does not correspond to SHA256(‘R’||lao_id||closes||closed_at)",
-		}
-	}
-
 	c.rollCall.id = string(rollCallData.UpdateID)
 	c.rollCall.state = Closed
 
@@ -112,16 +86,4 @@ func (c *laoChannel) processCloseRollCall(data message.Data) error {
 
 func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
-}
-
-// Check if the id of the roll call corresponds to the hash of the correct parameters
-// Return true if the hash corresponds to the id and false otherwise
-func (c *laoChannel) checkRollCallID(str1, str2 fmt.Stringer, id []byte) bool {
-	laoID := c.channelID[6:]
-	hash, err := message.Hash(message.Stringer('R'), message.Stringer(laoID), str1, str2)
-	if err != nil {
-		return false
-	}
-
-	return bytes.Equal(hash, id)
 }

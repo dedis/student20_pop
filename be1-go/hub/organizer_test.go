@@ -286,10 +286,8 @@ func TestOrganizer_CreateRollCallWrongID(t *testing.T) {
 	id := []byte{1}
 	dataCreate := newCreateRollCallData(id, timestamp(), "my roll call")
 	msg := createMessage(dataCreate, organizerKeyPair.publicBuf)
-	err = laoChannel.processRollCallObject(msg)
+	err = laoChannel.idValidator.VerifyIDs(&msg)
 	require.Error(t, err)
-	require.Equal(t, string(laoChannel.rollCall.state), "")
-	require.Equal(t, string(laoChannel.rollCall.id), "")
 }
 
 func TestOrganizer_CreateRollCallWrongSender(t *testing.T) {
