@@ -357,10 +357,19 @@ type ElectionEndData struct {
 	RegisteredVotes Base64URLBytes `json:"registered_votes"`
 }
 
+// BallotOptionCount represents the the number of number of received votes for
+// particular Ballot Option
+type BallotOptionCount struct{
+	Option BallotOption `json:"ballot_option"`
+	Count int           `json:"count"`
+}
+
 // QuestionResult represents the result of a question in an election.
 type QuestionResult struct {
-	ID     PublicKey      `json:"id"`
-	Result []BallotOption `json:"result"`
+	//ID     PublicKey      `json:"id"`
+	ID     string      `json:"id"`
+	//Result []BallotOption `json:"result"`
+	Result2 []BallotOptionCount `json:"result"`
 }
 
 // ElectionResultData represents the message data for the result of an election.
