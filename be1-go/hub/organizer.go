@@ -311,7 +311,26 @@ func (c *laoChannel) processElectionObject(msg message.Message) error {
 		}
 	}
 
-	err := c.createElection(msg)
+	sender := msg.Sender
+
+	// Check if the sender of election creation message is the organizer
+	senderPoint := student20_pop.Suite.Point()
+	err := senderPoint.UnmarshalBinary(sender)
+	if err != nil {
+		return &message.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("failed to unmarshal public key of the sender: %v", err),
+		}
+	}
+
+	if !c.hub.public.Equal(senderPoint) {
+		return &message.Error{
+			Code:        -5,
+			Description: "The sender of the election setup message has a different public key from the organizer",
+		}
+	}
+
+	err = c.createElection(msg)
 	if err != nil {
 		return message.NewError("failed to setup the election", err)
 	}
